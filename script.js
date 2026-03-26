@@ -67,6 +67,9 @@ class BibleQuoteGenerator {
         const bookSelect = document.getElementById('book-select');
         const books = bibleAPI.getAllBooks(this.bibleData);
         
+        // Debug: Log actual book names
+        console.log('Actual book names from API:', books.map(b => b.name));
+        
         // Define canonical Bible book order
         const canonicalOrder = [
             'التكوين', 'الخروج', 'اللاويين', 'العدد', 'التثنية',
@@ -83,6 +86,9 @@ class BibleQuoteGenerator {
             'العبرانيين', 'يعقوب', 'بطرس الأولى', 'بطرس الثانية', 'يوحنا الأولى',
             'يوحنا الثانية', 'يوحنا الثالثة', 'يهوذا', 'رؤيا يوحنا'
         ];
+        
+        // Debug: Log canonical order
+        console.log('Canonical order:', canonicalOrder);
         
         // Sort books according to canonical order
         books.sort((a, b) => {
