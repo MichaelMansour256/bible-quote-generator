@@ -67,6 +67,9 @@ class BibleQuoteGenerator {
         const bookSelect = document.getElementById('book-select');
         const books = bibleAPI.getAllBooks(this.bibleData);
         
+        // Debug: Log actual book names
+        console.log('Actual book names from API:', books.map(b => b.name));
+        
         // Define canonical Bible book order matching API names
         const canonicalOrder = [
             'تكوين', 'خروج', 'لاويين', 'عدد', 'تثنية',
