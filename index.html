@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>مولد اقتباسات الكتاب المقدس</title>
+    <link rel="stylesheet" href="styles.css">
+    <link href="https://fonts.googleapis.com/css2?family=Amiri:wght@400;700&family=Tajawal:wght@400;700&display=swap" rel="stylesheet">
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>مولد اقتباسات الكتاب المقدس</h1>
+            <p>حول آيات الكتاب المقدس إلى صور جميلة للمشاركة على وسائل التواصل الاجتماعي</p>
+        </header>
+
+        <main>
+            <section class="input-section">
+                <div class="verse-browser">
+                    <div class="loading-indicator" style="display: none;">
+                        <div class="spinner"></div>
+                        <p>جاري تحميل بيانات الكتاب المقدس...</p>
+                    </div>
+                    
+                    <div class="input-group">
+                        <label for="book-select">اختر السفر:</label>
+                        <select id="book-select">
+                            <option value="">-- اختر سفر --</option>
+                        </select>
+                    </div>
+                    
+                    <div class="input-group">
+                        <label for="chapter-select">اختر الإصحاح:</label>
+                        <select id="chapter-select" disabled>
+                            <option value="">-- اختر إصحاح --</option>
+                        </select>
+                    </div>
+                    
+                    <div class="input-group">
+                        <label for="verse-select">اختر الآية:</label>
+                        <select id="verse-select" disabled>
+                            <option value="">-- اختر آية --</option>
+                        </select>
+                    </div>
+                    
+                    <button id="load-verse-btn" class="load-verse-btn" disabled>تحميل الآية</button>
+                </div>
+
+                <div class="divider"></div>
+
+                <div class="manual-input">
+                    <div class="input-group">
+                        <label for="verse-search">البحث في الآيات:</label>
+                        <input type="text" id="verse-search" placeholder="ابحث عن كلمة في الآيات...">
+                        <div id="search-results" class="search-results" style="display: none;"></div>
+                    </div>
+                    
+                    <div class="input-group">
+                        <label for="verse-text">نص الآية:</label>
+                        <textarea id="verse-text" placeholder="سيتم ملؤه تلقائياً عند اختيار آية" rows="4" readonly></textarea>
+                    </div>
+                    
+                    <div class="input-group">
+                        <label for="verse-reference">المرجع:</label>
+                        <input type="text" id="verse-reference" placeholder="سيتم ملؤه تلقائياً" readonly>
+                    </div>
+                </div>
+
+                <div class="input-group">
+                    <label for="background-style">الخلفية:</label>
+                    <select id="background-style">
+                        <option value="gradient1">تدرج أزرق</option>
+                        <option value="gradient2">تدرج ذهبي</option>
+                        <option value="gradient3">تدرج بنفسجي</option>
+                        <option value="gradient4">تدرج أخضر</option>
+                        <option value="pattern1">نمط هندسي</option>
+                    </select>
+                </div>
+
+                <div class="input-group">
+                    <label for="text-color">لون النص:</label>
+                    <select id="text-color">
+                        <option value="white">أبيض</option>
+                        <option value="gold">ذهبي</option>
+                        <option value="cream">كريمي</option>
+                    </select>
+                </div>
+
+                <button id="generate-btn" class="generate-btn">إنشاء الصورة</button>
+            </section>
+
+            <section class="preview-section">
+                <div class="canvas-container">
+                    <canvas id="quote-canvas" width="1080" height="1080"></canvas>
+                </div>
+                
+                <div class="download-section">
+                    <button id="download-btn" class="download-btn" disabled>تحميل الصورة</button>
+                    <div id="success-message" class="success-message" style="display: none;">
+                        تم إنشاء الصورة بنجاح!
+                    </div>
+                </div>
+            </section>
+        </main>
+    </div>
+
+    <script src="bible-database.js"></script>
+    <script src="bible-api.js"></script>
+    <script src="script.js"></script>
+</body>
+</html>
