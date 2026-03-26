@@ -335,41 +335,47 @@ class BibleQuoteGenerator {
 
         switch (style) {
             case 'gradient1':
+                // Blue purple gradient - works with white text
                 const gradient1 = ctx.createLinearGradient(0, 0, width, height);
-                gradient1.addColorStop(0, '#3498db');
-                gradient1.addColorStop(0.5, '#2980b9');
-                gradient1.addColorStop(1, '#1e5f8e');
+                gradient1.addColorStop(0, '#667eea');
+                gradient1.addColorStop(1, '#764ba2');
                 return gradient1;
             
             case 'gradient2':
+                // Pink gradient - works with white text
                 const gradient2 = ctx.createRadialGradient(width/2, height/2, 0, width/2, height/2, width/2);
-                gradient2.addColorStop(0, '#f39c12');
-                gradient2.addColorStop(0.5, '#e67e22');
-                gradient2.addColorStop(1, '#d35400');
+                gradient2.addColorStop(0, '#ee9ca7');
+                gradient2.addColorStop(1, '#ffdde1');
                 return gradient2;
             
             case 'gradient3':
+                // Sky blue gradient - works with white text
                 const gradient3 = ctx.createLinearGradient(width, 0, 0, height);
-                gradient3.addColorStop(0, '#9b59b6');
-                gradient3.addColorStop(0.5, '#8e44ad');
-                gradient3.addColorStop(1, '#663399');
+                gradient3.addColorStop(0, '#2193b0');
+                gradient3.addColorStop(1, '#6dd5ed');
                 return gradient3;
             
-            case 'gradient4':
-                const gradient4 = ctx.createLinearGradient(0, height, width, 0);
-                gradient4.addColorStop(0, '#27ae60');
-                gradient4.addColorStop(0.5, '#229954');
-                gradient4.addColorStop(1, '#1e8449');
-                return gradient4;
+            case 'solid-white':
+                // White background - works with gold or dark text
+                return '#ffffff';
             
-            case 'pattern1':
-                // Create geometric pattern
-                const patternGradient = ctx.createLinearGradient(0, 0, width, height);
-                patternGradient.addColorStop(0, '#2c3e50');
-                patternGradient.addColorStop(1, '#34495e');
-                return patternGradient;
+            case 'solid-cream':
+                // Cream background - works with gold or dark text
+                return '#fffdd0';
+            
+            case 'solid-lightblue':
+                // Light blue background - works with white or gold text
+                return '#add8e6';
+            
+            case 'decorative':
+                // Dark decorative pattern - works with white or gold text
+                const decorativeGradient = ctx.createLinearGradient(0, 0, width, height);
+                decorativeGradient.addColorStop(0, '#2c3e50');
+                decorativeGradient.addColorStop(1, '#34495e');
+                return decorativeGradient;
             
             default:
+                // Default gradient - works with white text
                 const defaultGradient = ctx.createLinearGradient(0, 0, width, height);
                 defaultGradient.addColorStop(0, '#667eea');
                 defaultGradient.addColorStop(1, '#764ba2');
@@ -385,6 +391,10 @@ class BibleQuoteGenerator {
                 return '#ffd700';
             case 'cream':
                 return '#f5f5dc';
+            case 'black':
+                return '#000000';
+            case 'darkblue':
+                return '#1e3a8a';
             default:
                 return '#ffffff';
         }
