@@ -492,7 +492,7 @@ class BibleQuoteGenerator {
 
         // Draw verse reference
         if (verseReference) {
-            ctx.font = 'bold 36px Amiri';
+            ctx.font = 'bold 60px Amiri';
             ctx.fillText(verseReference, width / 2, height - 100);
         }
 
@@ -510,6 +510,10 @@ class BibleQuoteGenerator {
     }
 
     addLogo(ctx, width, height) {
+        // Check if logo toggle is enabled
+        const logoToggle = document.getElementById('logo-toggle');
+        if (!logoToggle.checked) return;
+        
         // Only draw logo if image is loaded
         if (!this.logoLoaded) return;
         
@@ -535,18 +539,18 @@ class BibleQuoteGenerator {
     }
 
     calculateFontSize(text, maxWidth) {
-        let fontSize = 80; // Increased from 60 for larger base size
+        let fontSize = 140; // Much larger base size
         this.ctx.font = `${fontSize}px Amiri`;
         
         // More aggressive reduction for long text
-        while (this.ctx.measureText(text).width > maxWidth && fontSize > 20) {
-            fontSize -= 2;
+        while (this.ctx.measureText(text).width > maxWidth && fontSize > 50) {
+            fontSize -= 3;
             this.ctx.font = `${fontSize}px Amiri`;
         }
         
-        // Ensure minimum readable size (increased from 16)
-        if (fontSize < 20) {
-            fontSize = 20;
+        // Ensure minimum readable size (much larger minimum)
+        if (fontSize < 50) {
+            fontSize = 50;
         }
         
         return fontSize;
