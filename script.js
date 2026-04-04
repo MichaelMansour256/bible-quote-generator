@@ -597,23 +597,98 @@ class BibleQuoteGenerator {
 }
 
 generateImage() {
-    const verseText = document.getElementById('verse-text').value.trim();
-    const verseReference = document.getElementById('verse-reference').value.trim();
-        let fontSize = 140; // Much larger base size
-        this.ctx.font = `${fontSize}px Amiri`;
+        const verseText = document.getElementById('verse-text').value.trim();
+        const verseReference = document.getElementById('verse-reference').value.trim();
+
+        if (!verseText) {
+            this.showValidationMessage('الرجاء اختيار آية أولاً', 'error');
+            return;
+        }
+
+        // Set canvas size for high quality
+        this.canvas.width = 1080;
+        this.canvas.height = 1080;
+
+        // Get selected color combination
+        const backgroundStyle = this.getBackgroundStyle(this.selectedBg);
+        const textColor = this.getTextColor(this.selectedText);
+
+        // Clear canvas
+        this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
+
+        // Draw background
+        if (typeof backgroundStyle === 'string') {
+            this.ctx.fillStyle = backgroundStyle;
+            this.ctx.fillRect(0, 0, this.canvas.width, this.canvas.height);
+        } else {
+            this.ctx.fillStyle = backgroundStyle;
+            this.ctx.fillRect(0, 0, this.canvas.width, this.canvas.height);
+        }
+
+        // Draw decorative border
+        this.ctx.strokeStyle = textColor;
+        this.ctx.lineWidth = 4;
+        this.ctx.strokeRect(40, 40, this.canvas.width - 80, this.canvas.height - 80);
+
+        // Inner border
+        this.ctx.strokeStyle = textColor;
+        this.ctx.lineWidth = 2;
+        this.ctx.strokeRect(60, 60, this.canvas.width - 120, this.canvas.height - 120);
+
+        // Set text properties
+        this.ctx.fillStyle = textColor;
+        this.ctx.textAlign = 'center';
+        this.ctx.textBaseline = 'middle';
+
+        // Calculate text layout
+        const padding = 120;
+        const maxWidth = this.canvas.width - (padding * 2);
+        const centerY = this.canvas.height / 2;
+
+        // Draw verse text with proper wrapping
+        const fontSize = this.calculateFontSize(verseText, maxWidth);
+        const lines = this.wrapText(verseText, maxWidth, fontSize);
         
-        // More aggressive reduction for long text
-        while (this.ctx.measureText(text).width > maxWidth && fontSize > 50) {
-            fontSize -= 3;
+        // Dynamic line height based on font size
+        const lineHeight = fontSize * 1.4;
+        const totalTextHeight = lines.length * lineHeight;
+        const startY = centerY - (totalTextHeight / 2) + (fontSize / 2);
+
+        // Add text shadow for better readability
+        this.ctx.shadowColor = 'rgba(0, 0, 0, 0.5)';
+        this.ctx.shadowBlur = 8;
+        this.ctx.shadowOffsetX = 2;
+        this.ctx.shadowOffsetY = 2;
+
+        lines.forEach((line, index) => {
+            const y = startY + (index * lineHeight);
             this.ctx.font = `${fontSize}px Amiri`;
+            this.ctx.fillText(line, this.canvas.width / 2, y);
+        });
+
+        // Reset shadow for reference
+        this.ctx.shadowColor = 'transparent';
+        this.ctx.shadowBlur = 0;
+        this.ctx.shadowOffsetX = 0;
+        this.ctx.shadowOffsetY = 0;
+
+        // Draw verse reference
+        if (verseReference) {
+            this.ctx.font = 'bold 60px Amiri';
+            this.ctx.fillText(verseReference, this.canvas.width / 2, this.canvas.height - 100);
         }
-        
-        // Ensure minimum readable size (much larger minimum)
-        if (fontSize < 50) {
-            fontSize = 50;
-        }
-        
-        return fontSize;
+
+        // Add decorative elements (cross symbols)
+        this.ctx.font = '48px Amiri';
+        this.ctx.fillText('✝', 100, 100);
+        this.ctx.fillText('✝', this.canvas.width - 100, this.canvas.height - 100);
+
+        // Add logo
+        this.addLogo(this.ctx, this.canvas.width, this.canvas.height);
+
+        // Enable download button and show success message
+        document.getElementById('download-btn').disabled = false;
+        this.showSuccessMessage();
     }
 
     showSuccessMessage() {
