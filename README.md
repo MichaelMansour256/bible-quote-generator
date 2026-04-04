@@ -1,6 +1,6 @@
 # Bible Quote Generator
 
-A modern Arabic Bible verse image generator with beautiful typography and design.
+A modern Arabic Bible verse image generator with beautiful typography and intelligent design.
 
 ## Features
 
@@ -10,14 +10,84 @@ A modern Arabic Bible verse image generator with beautiful typography and design
 - **Verse Selection**: Browse by book, chapter, and verse
 - **Real-time Search**: Arabic text search with diacritics support
 - **Image Generation**: Beautiful typography with customizable backgrounds
-- **Logo Integration**: Custom SVG logo support (120px, transparent)
+- **Smart Logo System**: Optional logo with automatic color inversion
 - **Download Support**: Save generated images locally with timestamps
 
 ### 🎨 Design Features
 - **Arabic Typography**: Optimized Amiri font for beautiful Arabic text
-- **Dynamic Font Sizing**: Smart sizing for long verses (20px-80px range)
+- **Dynamic Font Sizing**: Smart sizing for long verses (50px-140px range)
+- **Visual Color Combinations**: Click-to-select color pairs with perfect contrast
+- **Smart Background Detection**: Automatic logo color adaptation
 - **Multiple Backgrounds**: Gradient, solid, and decorative styles
-- **Custom Colors**: Text and background color customization
+- **Responsive Design**: Works seamlessly across all device sizes
+
+### 🎯 Advanced Features
+- **Color Combination System**: 
+  - Dark backgrounds automatically paired with light text
+  - Light backgrounds automatically paired with dark text
+  - Visual preview boxes showing exact color combinations
+  - No more dropdown menus - intuitive click selection
+- **Intelligent Logo Adaptation**:
+  - Dark logo automatically appears on light backgrounds
+  - Original logo automatically appears on dark backgrounds
+  - Ensures perfect visibility on any background
+- **Enhanced Font Sizes**: Much larger text for better readability
+
+### 🌈 Available Color Combinations
+
+#### Dark Backgrounds + Light Text:
+- **أزرق أبيض** - Blue gradient with white text
+- **بنفسجي أبيض** - Purple gradient with white text  
+- **وردي أبيض** - Pink gradient with white text
+- **داكن ذهبي** - Dark decorative with gold text
+
+#### Light Backgrounds + Dark Text:
+- **أبيض أسود** - White background with black text
+- **كريمي أزرق** - Cream background with dark blue text
+- **أزرق فاتح أسود** - Light blue background with black text
+
+### 💻 Technical Implementation
+- **Canvas API**: High-quality 1080x1080 image generation
+- **CSS Grid**: Responsive layout system
+- **Event Handling**: Smooth user interactions
+- **Error Validation**: User-friendly feedback system
+- **Font Optimization**: Dynamic sizing based on text length
+
+### 🎨 Design System
+- **Modern UI**: Clean, intuitive interface
+- **Visual Feedback**: Hover effects and selection states
+- **Accessibility**: High contrast combinations only
+- **Mobile Responsive**: Optimized for all screen sizes
+
+## 🚀 Getting Started
+
+1. **Open the website** in your browser
+2. **Select a verse** using the navigation or search
+3. **Choose color combination** by clicking the visual color boxes
+4. **Toggle logo** if desired (optional, off by default)
+5. **Generate image** with one click
+6. **Download** your beautiful Bible verse image
+
+## 📱 Responsive Design
+
+- **Desktop**: Full-featured interface with all options
+- **Tablet**: Optimized layout for touch interaction
+- **Mobile**: Streamlined interface with essential features
+
+## 🔧 Customization Options
+
+- **7 Color Combinations**: Professionally designed contrast pairs
+- **Logo Toggle**: Show/hide logo as needed
+- **Font Scaling**: Automatic adjustment for verse length
+- **Background Styles**: Gradients and solid colors
+- **Text Colors**: Optimized for readability
+
+## 🎯 User Experience
+
+- **No More Bad Combinations**: Smart system prevents poor contrast
+- **Visual Selection**: See exactly what you're choosing
+- **Instant Feedback**: Immediate visual response to selections
+- **Professional Results**: Publication-ready image quality
 - **Professional Layout**: Centered text with shadows and proper spacing
 - **Logo Placement**: Top-right corner, 60px from edge to avoid frame
 - **Arabic References**: Proper RTL formatting with Arabic numbers and colon separator
