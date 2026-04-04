@@ -584,10 +584,22 @@ class BibleQuoteGenerator {
         // Save current context state
         ctx.save();
         
+        // Determine if background is light or dark
+        const isLightBackground = this.isLightBackground(this.selectedBg);
+        
         // Set logo properties - slightly left from right corner to avoid frame
         const logoSize = 120;
         const logoX = width - logoSize - 60; // Moved further left from frame (was -20)
         const logoY = 20;
+        
+        // Apply color filter based on background
+        if (isLightBackground) {
+            // Dark logo for light backgrounds
+            ctx.filter = 'invert(1) brightness(0.5)';
+        } else {
+            // Normal logo for dark backgrounds
+            ctx.filter = 'none';
+        }
         
         // Draw the transparent logo image directly (no background)
         ctx.drawImage(
@@ -598,8 +610,16 @@ class BibleQuoteGenerator {
             logoSize
         );
         
+        // Reset filter
+        ctx.filter = 'none';
+        
         // Restore context state
         ctx.restore();
+    }
+
+    isLightBackground(bgStyle) {
+        const lightBackgrounds = ['solid-white', 'solid-cream', 'solid-lightblue'];
+        return lightBackgrounds.includes(bgStyle);
     }
 
     calculateFontSize(text, maxWidth) {
