@@ -345,13 +345,25 @@ class BibleQuoteGenerator {
         const width = this.canvas.width;
         const height = this.canvas.height;
 
-        // Clear canvas
-        ctx.clearRect(0, 0, width, height);
+        // Restore context state
+        ctx.restore();
+    }
 
-        // Draw gradient background
-        const gradient = ctx.createLinearGradient(0, 0, width, height);
-        gradient.addColorStop(0, '#667eea');
-        gradient.addColorStop(1, '#764ba2');
+    getLogoFilter(textColor) {
+        switch (textColor) {
+            case '#ffffff': // White text
+                return 'brightness(0) contrast(100%)';
+            case '#ffd700': // Gold text
+                return 'sepia(1) saturate(0) brightness(0.2)';
+            case '#f5f5dc': // Cream text
+                return 'sepia(0.5) saturate(0.5) brightness(0.3)';
+            case '#000000': // Black text
+                return 'brightness(0) invert(1)';
+            case '#1e3a8a': // Dark blue text
+                return 'hue-rotate(180) saturate(2) brightness(0.3)';
+            default:
+                return 'none';
+        }
         ctx.fillStyle = gradient;
         ctx.fillRect(0, 0, width, height);
 
@@ -579,50 +591,14 @@ class BibleQuoteGenerator {
         if (!logoToggle.checked) return;
         
         // Only draw logo if image is loaded
-        if (!this.logoLoaded) return;
-        
-        // Save current context state
-        ctx.save();
-        
-        // Determine if background is light or dark
-        const isLightBackground = this.isLightBackground(this.selectedBg);
-        
-        // Set logo properties - slightly left from right corner to avoid frame
-        const logoSize = 120;
-        const logoX = width - logoSize - 60; // Moved further left from frame (was -20)
-        const logoY = 20;
-        
-        // Apply color filter based on background
-        if (isLightBackground) {
-            // Dark logo for light backgrounds
-            ctx.filter = 'invert(1) brightness(0.5)';
-        } else {
-            // Normal logo for dark backgrounds
-            ctx.filter = 'none';
-        }
-        
-        // Draw the transparent logo image directly (no background)
-        ctx.drawImage(
-            this.logoImage,
-            logoX,
-            logoY,
-            logoSize,
-            logoSize
-        );
-        
-        // Reset filter
-        ctx.filter = 'none';
-        
-        // Restore context state
-        ctx.restore();
     }
 
-    isLightBackground(bgStyle) {
-        const lightBackgrounds = ['solid-white', 'solid-cream', 'solid-lightblue'];
-        return lightBackgrounds.includes(bgStyle);
-    }
+    return lines;
+}
 
-    calculateFontSize(text, maxWidth) {
+generateImage() {
+    const verseText = document.getElementById('verse-text').value.trim();
+    const verseReference = document.getElementById('verse-reference').value.trim();
         let fontSize = 140; // Much larger base size
         this.ctx.font = `${fontSize}px Amiri`;
         
