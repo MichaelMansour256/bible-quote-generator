@@ -75,7 +75,18 @@ main {
 .color-option.selected {
     border-color: #667eea;
     background: #f8f9ff;
-    box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+    box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.2);
+    transform: translateY(-2px);
+}
+
+.color-option.selected .color-preview {
+    transform: scale(1.1);
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+}
+
+.color-option.selected span {
+    color: #667eea;
+    font-weight: 600;
 }
 
 .color-preview {

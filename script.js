@@ -22,6 +22,8 @@ class BibleQuoteGenerator {
         
         this.initializeEventListeners();
         this.loadBibleData();
+        this.setupColorCombinations();
+        this.initializeCanvas();
     }
 
     async loadBibleData() {
@@ -35,7 +37,9 @@ class BibleQuoteGenerator {
         const colorOptions = document.querySelectorAll('.color-option');
         
         // Set first option as selected by default
-        colorOptions[0].classList.add('selected');
+        if (colorOptions.length > 0) {
+            colorOptions[0].classList.add('selected');
+        }
         
         colorOptions.forEach(option => {
             option.addEventListener('click', () => {
@@ -48,8 +52,17 @@ class BibleQuoteGenerator {
                 // Update selected colors
                 this.selectedBg = option.dataset.bg;
                 this.selectedText = option.dataset.text;
+                
+                console.log('Selected colors:', this.selectedBg, this.selectedText);
             });
         });
+    }
+
+    initializeCanvas() {
+        // Set initial canvas size
+        this.canvas.width = 1080;
+        this.canvas.height = 1080;
+        this.drawPlaceholder();
     }
 
     initializeEventListeners() {
