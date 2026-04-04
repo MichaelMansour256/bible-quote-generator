@@ -345,25 +345,13 @@ class BibleQuoteGenerator {
         const width = this.canvas.width;
         const height = this.canvas.height;
 
-        // Restore context state
-        ctx.restore();
-    }
+        // Clear canvas
+        ctx.clearRect(0, 0, width, height);
 
-    getLogoFilter(textColor) {
-        switch (textColor) {
-            case '#ffffff': // White text
-                return 'brightness(0) contrast(100%)';
-            case '#ffd700': // Gold text
-                return 'sepia(1) saturate(0) brightness(0.2)';
-            case '#f5f5dc': // Cream text
-                return 'sepia(0.5) saturate(0.5) brightness(0.3)';
-            case '#000000': // Black text
-                return 'brightness(0) invert(1)';
-            case '#1e3a8a': // Dark blue text
-                return 'hue-rotate(180) saturate(2) brightness(0.3)';
-            default:
-                return 'none';
-        }
+        // Draw gradient background
+        const gradient = ctx.createLinearGradient(0, 0, width, height);
+        gradient.addColorStop(0, '#667eea');
+        gradient.addColorStop(1, '#764ba2');
         ctx.fillStyle = gradient;
         ctx.fillRect(0, 0, width, height);
 
@@ -591,104 +579,65 @@ class BibleQuoteGenerator {
         if (!logoToggle.checked) return;
         
         // Only draw logo if image is loaded
+        if (!this.logoLoaded) return;
+        
+        // Save current context state
+        ctx.save();
+        
+        // Determine if background is light or dark
+        const isLightBackground = this.isLightBackground(this.selectedBg);
+        
+        // Set logo properties - slightly left from right corner to avoid frame
+        const logoSize = 120;
+        const logoX = width - logoSize - 60; // Moved further left from frame (was -20)
+        const logoY = 20;
+        
+        // Apply color filter based on background
+        if (isLightBackground) {
+            // Dark logo for light backgrounds
+            ctx.filter = 'invert(1) brightness(0.5)';
+        } else {
+            // Normal logo for dark backgrounds
+            ctx.filter = 'none';
+        }
+        
+        // Draw the transparent logo image directly (no background)
+        ctx.drawImage(
+            this.logoImage,
+            logoX,
+            logoY,
+            logoSize,
+            logoSize
+        );
+        
+        // Reset filter
+        ctx.filter = 'none';
+        
+        // Restore context state
+        ctx.restore();
     }
 
-    return lines;
-}
+    isLightBackground(bgStyle) {
+        const lightBackgrounds = ['solid-white', 'solid-cream', 'solid-lightblue'];
+        return lightBackgrounds.includes(bgStyle);
+    }
 
-generateImage() {
-        const verseText = document.getElementById('verse-text').value.trim();
-        const verseReference = document.getElementById('verse-reference').value.trim();
-
-        if (!verseText) {
-            this.showValidationMessage('الرجاء اختيار آية أولاً', 'error');
-            return;
-        }
-
-        // Set canvas size for high quality
-        this.canvas.width = 1080;
-        this.canvas.height = 1080;
-
-        // Get selected color combination
-        const backgroundStyle = this.getBackgroundStyle(this.selectedBg);
-        const textColor = this.getTextColor(this.selectedText);
-
-        // Clear canvas
-        this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
-
-        // Draw background
-        if (typeof backgroundStyle === 'string') {
-            this.ctx.fillStyle = backgroundStyle;
-            this.ctx.fillRect(0, 0, this.canvas.width, this.canvas.height);
-        } else {
-            this.ctx.fillStyle = backgroundStyle;
-            this.ctx.fillRect(0, 0, this.canvas.width, this.canvas.height);
-        }
-
-        // Draw decorative border
-        this.ctx.strokeStyle = textColor;
-        this.ctx.lineWidth = 4;
-        this.ctx.strokeRect(40, 40, this.canvas.width - 80, this.canvas.height - 80);
-
-        // Inner border
-        this.ctx.strokeStyle = textColor;
-        this.ctx.lineWidth = 2;
-        this.ctx.strokeRect(60, 60, this.canvas.width - 120, this.canvas.height - 120);
-
-        // Set text properties
-        this.ctx.fillStyle = textColor;
-        this.ctx.textAlign = 'center';
-        this.ctx.textBaseline = 'middle';
-
-        // Calculate text layout
-        const padding = 120;
-        const maxWidth = this.canvas.width - (padding * 2);
-        const centerY = this.canvas.height / 2;
-
-        // Draw verse text with proper wrapping
-        const fontSize = this.calculateFontSize(verseText, maxWidth);
-        const lines = this.wrapText(verseText, maxWidth, fontSize);
+    calculateFontSize(text, maxWidth) {
+        let fontSize = 140; // Much larger base size
+        this.ctx.font = `${fontSize}px Amiri`;
         
-        // Dynamic line height based on font size
-        const lineHeight = fontSize * 1.4;
-        const totalTextHeight = lines.length * lineHeight;
-        const startY = centerY - (totalTextHeight / 2) + (fontSize / 2);
-
-        // Add text shadow for better readability
-        this.ctx.shadowColor = 'rgba(0, 0, 0, 0.5)';
-        this.ctx.shadowBlur = 8;
-        this.ctx.shadowOffsetX = 2;
-        this.ctx.shadowOffsetY = 2;
-
-        lines.forEach((line, index) => {
-            const y = startY + (index * lineHeight);
+        // More aggressive reduction for long text
+        while (this.ctx.measureText(text).width > maxWidth && fontSize > 50) {
+            fontSize -= 3;
             this.ctx.font = `${fontSize}px Amiri`;
-            this.ctx.fillText(line, this.canvas.width / 2, y);
-        });
-
-        // Reset shadow for reference
-        this.ctx.shadowColor = 'transparent';
-        this.ctx.shadowBlur = 0;
-        this.ctx.shadowOffsetX = 0;
-        this.ctx.shadowOffsetY = 0;
-
-        // Draw verse reference
-        if (verseReference) {
-            this.ctx.font = 'bold 60px Amiri';
-            this.ctx.fillText(verseReference, this.canvas.width / 2, this.canvas.height - 100);
         }
-
-        // Add decorative elements (cross symbols)
-        this.ctx.font = '48px Amiri';
-        this.ctx.fillText('✝', 100, 100);
-        this.ctx.fillText('✝', this.canvas.width - 100, this.canvas.height - 100);
-
-        // Add logo
-        this.addLogo(this.ctx, this.canvas.width, this.canvas.height);
-
-        // Enable download button and show success message
-        document.getElementById('download-btn').disabled = false;
-        this.showSuccessMessage();
+        
+        // Ensure minimum readable size (much larger minimum)
+        if (fontSize < 50) {
+            fontSize = 50;
+        }
+        
+        return fontSize;
     }
 
     showSuccessMessage() {
