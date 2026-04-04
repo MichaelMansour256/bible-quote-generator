@@ -46,6 +46,82 @@ main {
     padding: 40px;
 }
 
+/* Color Combinations */
+.color-combinations {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+    gap: 15px;
+    margin-top: 10px;
+}
+
+.color-option {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 12px;
+    border: 2px solid #e0e0e0;
+    border-radius: 12px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    background: #ffffff;
+}
+
+.color-option:hover {
+    border-color: #667eea;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(102, 126, 234, 0.15);
+}
+
+.color-option.selected {
+    border-color: #667eea;
+    background: #f8f9ff;
+    box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+}
+
+.color-preview {
+    width: 40px;
+    height: 40px;
+    border-radius: 8px;
+    margin-bottom: 8px;
+    border: 1px solid rgba(0, 0, 0, 0.1);
+}
+
+.color-option span {
+    font-size: 12px;
+    font-weight: 500;
+    color: #2c3e50;
+    text-align: center;
+}
+
+/* Background Preview Classes */
+.bg-gradient1 {
+    background: linear-gradient(135deg, #3498db, #2980b9, #1e5f8e);
+}
+
+.bg-gradient5 {
+    background: linear-gradient(135deg, #9b59b6, #8e44ad, #663399);
+}
+
+.bg-gradient3 {
+    background: radial-gradient(circle, #ee9ca7, #ffdde1);
+}
+
+.bg-decorative {
+    background: linear-gradient(135deg, #2c3e50, #34495e);
+}
+
+.bg-solid-white {
+    background: #ffffff;
+}
+
+.bg-solid-cream {
+    background: #fffdd0;
+}
+
+.bg-solid-lightblue {
+    background: #add8e6;
+}
+
 /* Responsive Design */
 @media (max-width: 1200px) {
     .container {

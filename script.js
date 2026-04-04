@@ -2,24 +2,25 @@ class BibleQuoteGenerator {
     constructor() {
         this.canvas = document.getElementById('quote-canvas');
         this.ctx = this.canvas.getContext('2d');
-        this.currentVerse = null;
         this.bibleData = null;
+        this.currentBook = null;
+        this.currentChapter = null;
+        this.currentVerse = null;
+        this.searchTimeout = null;
         this.logoImage = new Image();
         this.logoLoaded = false;
         
-        // Load the logo image
+        // Initialize color combination
+        this.selectedBg = 'gradient1';
+        this.selectedText = 'white';
+        
+        // Load logo image
         this.logoImage.onload = () => {
             this.logoLoaded = true;
         };
-        this.logoImage.src = 'logo.svg'; // Path to your logo image
-        
-        // Clear form fields on page load
-        document.getElementById('verse-text').value = '';
-        document.getElementById('verse-reference').value = '';
-        document.getElementById('verse-search').value = '';
+        this.logoImage.src = 'logo.svg';
         
         this.initializeEventListeners();
-        this.setupCanvas();
         this.loadBibleData();
     }
 
@@ -28,6 +29,27 @@ class BibleQuoteGenerator {
         if (this.bibleData) {
             this.populateBookSelect();
         }
+    }
+
+    setupColorCombinations() {
+        const colorOptions = document.querySelectorAll('.color-option');
+        
+        // Set first option as selected by default
+        colorOptions[0].classList.add('selected');
+        
+        colorOptions.forEach(option => {
+            option.addEventListener('click', () => {
+                // Remove selected class from all options
+                colorOptions.forEach(opt => opt.classList.remove('selected'));
+                
+                // Add selected class to clicked option
+                option.classList.add('selected');
+                
+                // Update selected colors
+                this.selectedBg = option.dataset.bg;
+                this.selectedText = option.dataset.text;
+            });
+        });
     }
 
     initializeEventListeners() {
@@ -446,90 +468,92 @@ class BibleQuoteGenerator {
     generateImage() {
         const verseText = document.getElementById('verse-text').value.trim();
         const verseReference = document.getElementById('verse-reference').value.trim();
-        const backgroundStyle = document.getElementById('background-style').value;
-        const textColor = document.getElementById('text-color').value;
 
         if (!verseText) {
             this.showValidationMessage('الرجاء اختيار آية أولاً', 'error');
             return;
         }
 
-        if (!this.currentVerse) {
-            this.showValidationMessage('الرجاء اختيار آية من قاعدة البيانات لضمان الدقة', 'warning');
+        // Set canvas size for high quality
+        this.canvas.width = 1080;
+        this.canvas.height = 1080;
+
+        // Get selected color combination
+        const backgroundStyle = this.getBackgroundStyle(this.selectedBg);
+        const textColor = this.getTextColor(this.selectedText);
+
+        // Clear canvas
+        this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
+
+        // Draw background
+        if (typeof backgroundStyle === 'string') {
+            this.ctx.fillStyle = backgroundStyle;
+            this.ctx.fillRect(0, 0, this.canvas.width, this.canvas.height);
+        } else {
+            this.ctx.fillStyle = backgroundStyle;
+            this.ctx.fillRect(0, 0, this.canvas.width, this.canvas.height);
         }
 
-        const ctx = this.ctx;
-        const width = this.canvas.width;
-        const height = this.canvas.height;
-
-        // Clear canvas and draw background
-        ctx.clearRect(0, 0, width, height);
-        ctx.fillStyle = this.getBackgroundStyle(backgroundStyle);
-        ctx.fillRect(0, 0, width, height);
-
-        // Add subtle overlay for better text readability
-        ctx.fillStyle = 'rgba(0, 0, 0, 0.2)';
-        ctx.fillRect(0, 0, width, height);
-
         // Draw decorative border
-        ctx.strokeStyle = this.getTextColor(textColor);
-        ctx.lineWidth = 4;
-        ctx.strokeRect(40, 40, width - 80, height - 80);
+        this.ctx.strokeStyle = textColor;
+        this.ctx.lineWidth = 4;
+        this.ctx.strokeRect(40, 40, this.canvas.width - 80, this.canvas.height - 80);
 
-        // Draw inner decorative border
-        ctx.lineWidth = 2;
-        ctx.strokeRect(60, 60, width - 120, height - 120);
+        // Inner border
+        this.ctx.strokeStyle = textColor;
+        this.ctx.lineWidth = 2;
+        this.ctx.strokeRect(60, 60, this.canvas.width - 120, this.canvas.height - 120);
 
         // Set text properties
-        ctx.fillStyle = this.getTextColor(textColor);
-        ctx.textAlign = 'center';
-        ctx.textBaseline = 'middle';
+        this.ctx.fillStyle = textColor;
+        this.ctx.textAlign = 'center';
+        this.ctx.textBaseline = 'middle';
 
         // Calculate text layout
         const padding = 120;
-        const maxWidth = width - (padding * 2);
-        const centerY = height / 2;
+        const maxWidth = this.canvas.width - (padding * 2);
+        const centerY = this.canvas.height / 2;
 
         // Draw verse text with proper wrapping
         const fontSize = this.calculateFontSize(verseText, maxWidth);
         const lines = this.wrapText(verseText, maxWidth, fontSize);
         
         // Dynamic line height based on font size
-        const lineHeight = fontSize * 1.4; // Slightly tighter for longer text
+        const lineHeight = fontSize * 1.4;
         const totalTextHeight = lines.length * lineHeight;
         const startY = centerY - (totalTextHeight / 2) + (fontSize / 2);
 
         // Add text shadow for better readability
-        ctx.shadowColor = 'rgba(0, 0, 0, 0.5)';
-        ctx.shadowBlur = 8;
-        ctx.shadowOffsetX = 2;
-        ctx.shadowOffsetY = 2;
+        this.ctx.shadowColor = 'rgba(0, 0, 0, 0.5)';
+        this.ctx.shadowBlur = 8;
+        this.ctx.shadowOffsetX = 2;
+        this.ctx.shadowOffsetY = 2;
 
         lines.forEach((line, index) => {
             const y = startY + (index * lineHeight);
-            ctx.font = `${fontSize}px Amiri`;
-            ctx.fillText(line, width / 2, y);
+            this.ctx.font = `${fontSize}px Amiri`;
+            this.ctx.fillText(line, this.canvas.width / 2, y);
         });
 
         // Reset shadow for reference
-        ctx.shadowColor = 'transparent';
-        ctx.shadowBlur = 0;
-        ctx.shadowOffsetX = 0;
-        ctx.shadowOffsetY = 0;
+        this.ctx.shadowColor = 'transparent';
+        this.ctx.shadowBlur = 0;
+        this.ctx.shadowOffsetX = 0;
+        this.ctx.shadowOffsetY = 0;
 
         // Draw verse reference
         if (verseReference) {
-            ctx.font = 'bold 60px Amiri';
-            ctx.fillText(verseReference, width / 2, height - 100);
+            this.ctx.font = 'bold 60px Amiri';
+            this.ctx.fillText(verseReference, this.canvas.width / 2, this.canvas.height - 100);
         }
 
         // Add decorative elements (cross symbols)
-        ctx.font = '48px Amiri';
-        ctx.fillText('✝', 100, 100);
-        ctx.fillText('✝', width - 100, height - 100);
+        this.ctx.font = '48px Amiri';
+        this.ctx.fillText('✝', 100, 100);
+        this.ctx.fillText('✝', this.canvas.width - 100, this.canvas.height - 100);
 
         // Add logo
-        this.addLogo(ctx, width, height);
+        this.addLogo(this.ctx, this.canvas.width, this.canvas.height);
 
         // Enable download button and show success message
         document.getElementById('download-btn').disabled = false;

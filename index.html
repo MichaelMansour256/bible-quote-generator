@@ -67,18 +67,37 @@
                 </div>
 
                 <div class="input-group">
-                    <label for="background-style">الخلفية:</label>
-                    <select id="background-style">
-                        <option value="gradient1" selected>تدرج أزرق</option>
-                        <option value="gradient2">تدرج أزرق بنفسجي</option>
-                        <option value="gradient3">تدرج وردي</option>
-                        <option value="gradient4">تدرج أزرق سماوي</option>
-                        <option value="gradient5">تدرج بنفسجي</option>
-                        <option value="solid-white">أبيض</option>
-                        <option value="solid-cream">كريمي</option>
-                        <option value="solid-lightblue">أزرق فاتح</option>
-                        <option value="decorative">زخرفي</option>
-                    </select>
+                    <label>مظهر الألوان:</label>
+                    <div class="color-combinations">
+                        <div class="color-option" data-bg="gradient1" data-text="white">
+                            <div class="color-preview bg-gradient1"></div>
+                            <span>أزرق أبيض</span>
+                        </div>
+                        <div class="color-option" data-bg="gradient5" data-text="white">
+                            <div class="color-preview bg-gradient5"></div>
+                            <span>بنفسجي أبيض</span>
+                        </div>
+                        <div class="color-option" data-bg="gradient3" data-text="white">
+                            <div class="color-preview bg-gradient3"></div>
+                            <span>وردي أبيض</span>
+                        </div>
+                        <div class="color-option" data-bg="decorative" data-text="gold">
+                            <div class="color-preview bg-decorative"></div>
+                            <span>داكن ذهبي</span>
+                        </div>
+                        <div class="color-option" data-bg="solid-white" data-text="black">
+                            <div class="color-preview bg-solid-white"></div>
+                            <span>أبيض أسود</span>
+                        </div>
+                        <div class="color-option" data-bg="solid-cream" data-text="darkblue">
+                            <div class="color-preview bg-solid-cream"></div>
+                            <span>كريمي أزرق</span>
+                        </div>
+                        <div class="color-option" data-bg="solid-lightblue" data-text="black">
+                            <div class="color-preview bg-solid-lightblue"></div>
+                            <span>أزرق فاتح أسود</span>
+                        </div>
+                    </div>
                 </div>
 
                 <div class="input-group">
@@ -86,17 +105,6 @@
                         <input type="checkbox" id="logo-toggle">
                         إظهار الشعار
                     </label>
-                </div>
-
-                <div class="input-group">
-                    <label for="text-color">لون النص:</label>
-                    <select id="text-color">
-                        <option value="white">أبيض</option>
-                        <option value="gold">ذهبي</option>
-                        <option value="cream">كريمي</option>
-                        <option value="black">أسود</option>
-                        <option value="darkblue">أزرق داكن</option>
-                    </select>
                 </div>
 
                 <button id="generate-btn" class="generate-btn">إنشاء الصورة</button>
