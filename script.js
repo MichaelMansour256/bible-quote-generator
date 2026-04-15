@@ -13,7 +13,7 @@ class BibleQuoteGenerator {
         // Initialize color combination
         this.selectedBg = 'gradient1';
         this.selectedText = 'white';
-        this.selectedFont = 'amiri';
+        this.selectedFont = 'thuluth-deco';
         
         // Load logo image
         this.logoImage.onload = () => {
@@ -559,6 +559,12 @@ class BibleQuoteGenerator {
             // Set font based on selection and make it bolder
             let fontFamily;
             switch (this.selectedFont) {
+                case 'thuluth-deco':
+                    fontFamily = 'Thuluth Deco, serif';
+                    break;
+                case 'amiri':
+                    fontFamily = 'Amiri, serif';
+                    break;
                 case 'aref-ruqaa':
                     fontFamily = 'Aref Ruqaa, serif';
                     break;
@@ -595,20 +601,11 @@ class BibleQuoteGenerator {
                 case 'el-messiri':
                     fontFamily = 'El Messiri, sans-serif';
                     break;
-                case 'diwani-letter':
-                    fontFamily = 'Diwan Letter, cursive';
-                    break;
-                case 'thuluth':
-                    fontFamily = 'Thuluth, serif';
-                    break;
-                case 'decotype-naskh':
-                    fontFamily = 'DecoType Naskh, serif';
-                    break;
-                case 'traditional-arabic':
-                    fontFamily = 'Traditional Arabic, serif';
+                case 'diwan-kufi':
+                    fontFamily = 'Diwan Kufi, cursive';
                     break;
                 default:
-                    fontFamily = 'Amiri, serif';
+                    fontFamily = 'Thuluth Deco, serif';
                     break;
             }
             
@@ -626,6 +623,12 @@ class BibleQuoteGenerator {
         if (verseReference) {
             let fontFamily;
             switch (this.selectedFont) {
+                case 'thuluth-deco':
+                    fontFamily = 'Thuluth Deco, serif';
+                    break;
+                case 'amiri':
+                    fontFamily = 'Amiri, serif';
+                    break;
                 case 'aref-ruqaa':
                     fontFamily = 'Aref Ruqaa, serif';
                     break;
@@ -662,20 +665,11 @@ class BibleQuoteGenerator {
                 case 'el-messiri':
                     fontFamily = 'El Messiri, sans-serif';
                     break;
-                case 'diwani-letter':
-                    fontFamily = 'Diwan Letter, cursive';
-                    break;
-                case 'thuluth':
-                    fontFamily = 'Thuluth, serif';
-                    break;
-                case 'decotype-naskh':
-                    fontFamily = 'DecoType Naskh, serif';
-                    break;
-                case 'traditional-arabic':
-                    fontFamily = 'Traditional Arabic, serif';
+                case 'diwan-kufi':
+                    fontFamily = 'Diwan Kufi, cursive';
                     break;
                 default:
-                    fontFamily = 'Amiri, serif';
+                    fontFamily = 'Thuluth Deco, serif';
                     break;
             }
             
