@@ -580,6 +580,33 @@ class BibleQuoteGenerator {
                 case 'cairo':
                     fontFamily = 'Cairo, sans-serif';
                     break;
+                case 'markazi-text':
+                    fontFamily = 'Markazi Text, serif';
+                    break;
+                case 'katibeh':
+                    fontFamily = 'Katibeh, sans-serif';
+                    break;
+                case 'mirza':
+                    fontFamily = 'Mirza, cursive';
+                    break;
+                case 'harmattan':
+                    fontFamily = 'Harmattan, sans-serif';
+                    break;
+                case 'el-messiri':
+                    fontFamily = 'El Messiri, sans-serif';
+                    break;
+                case 'diwani-letter':
+                    fontFamily = 'Diwan Letter, cursive';
+                    break;
+                case 'thuluth':
+                    fontFamily = 'Thuluth, serif';
+                    break;
+                case 'decotype-naskh':
+                    fontFamily = 'DecoType Naskh, serif';
+                    break;
+                case 'traditional-arabic':
+                    fontFamily = 'Traditional Arabic, serif';
+                    break;
                 default:
                     fontFamily = 'Amiri, serif';
                     break;
@@ -619,6 +646,33 @@ class BibleQuoteGenerator {
                     break;
                 case 'cairo':
                     fontFamily = 'Cairo, sans-serif';
+                    break;
+                case 'markazi-text':
+                    fontFamily = 'Markazi Text, serif';
+                    break;
+                case 'katibeh':
+                    fontFamily = 'Katibeh, sans-serif';
+                    break;
+                case 'mirza':
+                    fontFamily = 'Mirza, cursive';
+                    break;
+                case 'harmattan':
+                    fontFamily = 'Harmattan, sans-serif';
+                    break;
+                case 'el-messiri':
+                    fontFamily = 'El Messiri, sans-serif';
+                    break;
+                case 'diwani-letter':
+                    fontFamily = 'Diwan Letter, cursive';
+                    break;
+                case 'thuluth':
+                    fontFamily = 'Thuluth, serif';
+                    break;
+                case 'decotype-naskh':
+                    fontFamily = 'DecoType Naskh, serif';
+                    break;
+                case 'traditional-arabic':
+                    fontFamily = 'Traditional Arabic, serif';
                     break;
                 default:
                     fontFamily = 'Amiri, serif';
