@@ -13,6 +13,7 @@ class BibleQuoteGenerator {
         // Initialize color combination
         this.selectedBg = 'gradient1';
         this.selectedText = 'white';
+        this.selectedFont = 'amiri';
         
         // Load logo image
         this.logoImage.onload = () => {
@@ -23,6 +24,7 @@ class BibleQuoteGenerator {
         this.initializeEventListeners();
         this.loadBibleData();
         this.setupColorCombinations();
+        this.setupFontSelection();
         this.initializeCanvas();
     }
 
@@ -55,6 +57,15 @@ class BibleQuoteGenerator {
                 
                 console.log('Selected colors:', this.selectedBg, this.selectedText);
             });
+        });
+    }
+
+    setupFontSelection() {
+        const fontSelect = document.getElementById('font-style');
+        
+        fontSelect.addEventListener('change', () => {
+            this.selectedFont = fontSelect.value;
+            console.log('Selected font:', this.selectedFont);
         });
     }
 
@@ -544,7 +555,16 @@ class BibleQuoteGenerator {
 
         lines.forEach((line, index) => {
             const y = startY + (index * lineHeight);
-            this.ctx.font = `${fontSize}px Amiri`;
+            
+            // Set font based on selection and make it bolder
+            let fontFamily;
+            if (this.selectedFont === 'handwritten') {
+                fontFamily = 'Caveat, cursive';
+            } else {
+                fontFamily = 'Amiri, serif';
+            }
+            
+            this.ctx.font = `bold ${fontSize}px ${fontFamily}`;
             this.ctx.fillText(line, this.canvas.width / 2, y);
         });
 
@@ -556,7 +576,14 @@ class BibleQuoteGenerator {
 
         // Draw verse reference
         if (verseReference) {
-            this.ctx.font = 'bold 60px Amiri';
+            let fontFamily;
+            if (this.selectedFont === 'handwritten') {
+                fontFamily = 'Caveat, cursive';
+            } else {
+                fontFamily = 'Amiri, serif';
+            }
+            
+            this.ctx.font = `bold 60px ${fontFamily}`;
             this.ctx.fillText(verseReference, this.canvas.width / 2, this.canvas.height - 100);
         }
 
