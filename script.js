@@ -741,12 +741,66 @@ class BibleQuoteGenerator {
 
     calculateFontSize(text, maxWidth) {
         let fontSize = 140; // Much larger base size
-        this.ctx.font = `${fontSize}px Amiri`;
+        
+        // Use the selected font for measurement
+        let fontFamily;
+        switch (this.selectedFont) {
+            case 'thuluth-deco':
+                fontFamily = 'Thuluth Deco, serif';
+                break;
+            case 'amiri':
+                fontFamily = 'Amiri, serif';
+                break;
+            case 'aref-ruqaa':
+                fontFamily = 'Aref Ruqaa, serif';
+                break;
+            case 'reem-kufi':
+                fontFamily = 'Reem Kufi, sans-serif';
+                break;
+            case 'lateef':
+                fontFamily = 'Lateef, serif';
+                break;
+            case 'scheherazade':
+                fontFamily = 'Scheherazade, serif';
+                break;
+            case 'noto-naskh':
+                fontFamily = 'Noto Naskh Arabic, serif';
+                break;
+            case 'changa':
+                fontFamily = 'Changa, sans-serif';
+                break;
+            case 'cairo':
+                fontFamily = 'Cairo, sans-serif';
+                break;
+            case 'markazi-text':
+                fontFamily = 'Markazi Text, serif';
+                break;
+            case 'katibeh':
+                fontFamily = 'Katibeh, sans-serif';
+                break;
+            case 'mirza':
+                fontFamily = 'Mirza, cursive';
+                break;
+            case 'harmattan':
+                fontFamily = 'Harmattan, sans-serif';
+                break;
+            case 'el-messiri':
+                fontFamily = 'El Messiri, sans-serif';
+                break;
+            case 'diwan-kufi':
+                fontFamily = 'Diwan Kufi, cursive';
+                break;
+            default:
+                fontFamily = 'Thuluth Deco, serif';
+                break;
+        }
+        
+        this.ctx.font = `${fontSize}px ${fontFamily}`;
         
         // More aggressive reduction for long text
         while (this.ctx.measureText(text).width > maxWidth && fontSize > 50) {
             fontSize -= 3;
-            this.ctx.font = `${fontSize}px Amiri`;
+            this.ctx.font = `${fontSize}px ${fontFamily}`;
         }
         
         // Ensure minimum readable size (much larger minimum)
