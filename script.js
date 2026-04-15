@@ -558,10 +558,31 @@ class BibleQuoteGenerator {
             
             // Set font based on selection and make it bolder
             let fontFamily;
-            if (this.selectedFont === 'handwritten') {
-                fontFamily = 'Caveat, cursive';
-            } else {
-                fontFamily = 'Amiri, serif';
+            switch (this.selectedFont) {
+                case 'aref-ruqaa':
+                    fontFamily = 'Aref Ruqaa, serif';
+                    break;
+                case 'reem-kufi':
+                    fontFamily = 'Reem Kufi, sans-serif';
+                    break;
+                case 'lateef':
+                    fontFamily = 'Lateef, serif';
+                    break;
+                case 'scheherazade':
+                    fontFamily = 'Scheherazade, serif';
+                    break;
+                case 'noto-naskh':
+                    fontFamily = 'Noto Naskh Arabic, serif';
+                    break;
+                case 'changa':
+                    fontFamily = 'Changa, sans-serif';
+                    break;
+                case 'cairo':
+                    fontFamily = 'Cairo, sans-serif';
+                    break;
+                default:
+                    fontFamily = 'Amiri, serif';
+                    break;
             }
             
             this.ctx.font = `bold ${fontSize}px ${fontFamily}`;
@@ -577,10 +598,31 @@ class BibleQuoteGenerator {
         // Draw verse reference
         if (verseReference) {
             let fontFamily;
-            if (this.selectedFont === 'handwritten') {
-                fontFamily = 'Caveat, cursive';
-            } else {
-                fontFamily = 'Amiri, serif';
+            switch (this.selectedFont) {
+                case 'aref-ruqaa':
+                    fontFamily = 'Aref Ruqaa, serif';
+                    break;
+                case 'reem-kufi':
+                    fontFamily = 'Reem Kufi, sans-serif';
+                    break;
+                case 'lateef':
+                    fontFamily = 'Lateef, serif';
+                    break;
+                case 'scheherazade':
+                    fontFamily = 'Scheherazade, serif';
+                    break;
+                case 'noto-naskh':
+                    fontFamily = 'Noto Naskh Arabic, serif';
+                    break;
+                case 'changa':
+                    fontFamily = 'Changa, sans-serif';
+                    break;
+                case 'cairo':
+                    fontFamily = 'Cairo, sans-serif';
+                    break;
+                default:
+                    fontFamily = 'Amiri, serif';
+                    break;
             }
             
             this.ctx.font = `bold 60px ${fontFamily}`;
