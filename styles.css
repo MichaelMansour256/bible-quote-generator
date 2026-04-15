@@ -133,6 +133,69 @@ main {
     background: #add8e6;
 }
 
+/* Main Layout */
+main {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 40px;
+    padding: 40px;
+}
+
+.verse-selection-section {
+    background: #f8f9fa;
+    padding: 30px;
+    border-radius: 15px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+}
+
+.selection-controls {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 30px;
+    align-items: start;
+}
+
+.book-chapter-controls {
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+}
+
+.search-control {
+    display: flex;
+    flex-direction: column;
+}
+
+.main-content-section {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 40px;
+}
+
+.controls-panel {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+}
+
+.verse-preview {
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+}
+
+.preview-panel {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.action-buttons {
+    display: flex;
+    gap: 15px;
+    margin-top: 20px;
+}
+
 /* Responsive Design */
 @media (max-width: 1200px) {
     .container {

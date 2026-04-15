@@ -56,8 +56,18 @@ class BibleQuoteGenerator {
                 this.selectedText = option.dataset.text;
                 
                 console.log('Selected colors:', this.selectedBg, this.selectedText);
+                this.updatePreview(); // Update preview when colors change
             });
         });
+    }
+
+    updatePreview() {
+        const verseText = document.getElementById('verse-text').value.trim();
+        const verseReference = document.getElementById('verse-reference').value.trim();
+        
+        if (verseText) {
+            this.generateImage();
+        }
     }
 
     setupFontSelection() {
@@ -66,6 +76,7 @@ class BibleQuoteGenerator {
         fontSelect.addEventListener('change', () => {
             this.selectedFont = fontSelect.value;
             console.log('Selected font:', this.selectedFont);
+            this.updatePreview(); // Update preview when font changes
         });
     }
 

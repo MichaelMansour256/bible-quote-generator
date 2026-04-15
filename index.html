@@ -15,129 +15,32 @@
         </header>
 
         <main>
-            <section class="input-section">
-                <div class="verse-browser">
-                    <div class="loading-indicator" style="display: none;">
-                        <div class="spinner"></div>
-                        <p>جاري تحميل بيانات الكتاب المقدس...</p>
-                    </div>
-                    
-                    <div class="input-group">
-                        <label for="book-select">اختر السفر:</label>
-                        <select id="book-select">
-                            <option value="">-- اختر سفر --</option>
-                        </select>
-                    </div>
-                    
-                    <div class="input-group">
-                        <label for="chapter-select">اختر الإصحاح:</label>
-                        <select id="chapter-select" disabled>
-                            <option value="">-- اختر إصحاح --</option>
-                        </select>
-                    </div>
-                    
-                    <div class="input-group">
-                        <label for="verse-select">اختر الآية:</label>
-                        <select id="verse-select" disabled>
-                            <option value="">-- اختر آية --</option>
-                        </select>
-                    </div>
-                    
-                    <button id="load-verse-btn" class="load-verse-btn" disabled>تحميل الآية</button>
-                </div>
-
-                <div class="divider"></div>
-
-                <div class="manual-input">
-                    <div class="input-group">
-                        <label for="verse-search">البحث في الآيات:</label>
-                        <input type="text" id="verse-search" placeholder="ابحث عن كلمة في الآيات...">
-                        <div id="search-results" class="search-results" style="display: none;"></div>
-                    </div>
-                    
-                    <div class="input-group">
-                        <label for="verse-text">نص الآية:</label>
-                        <textarea id="verse-text" placeholder="سيتم ملؤه تلقائياً عند اختيار آية" rows="4" readonly></textarea>
-                    </div>
-                    
-                    <div class="input-group">
-                        <label for="verse-reference">المرجع:</label>
-                        <input type="text" id="verse-reference" placeholder="سيتم ملؤه تلقائياً" readonly>
-                    </div>
-                </div>
-
-                <div class="input-group">
-                    <label>نوع الخط:</label>
-                    <select id="font-style">
-                        <option value="thuluth-deco" selected>ثلث</option>
-                        <option value="amiri">أميري</option>
-                        <option value="aref-ruqaa">عرف رقاع</option>
-                        <option value="reem-kufi">ريم كوفي</option>
-                        <option value="lateef">لطيف</option>
-                        <option value="scheherazade">شهرزاد</option>
-                        <option value="noto-naskh">نسخ</option>
-                        <option value="changa">تشانجا</option>
-                        <option value="cairo">القاهرة</option>
-                        <option value="markazi-text">مرکزي</option>
-                        <option value="katibeh">کاتب</option>
-                        <option value="mirza">مرزا</option>
-                        <option value="harmattan">هرماتان</option>
-                        <option value="el-messiri">المصري</option>
-                        <option value="diwan-kufi">دواني</option>
-                    </select>
-                </div>
-
-                <div class="input-group">
-                    <label>مظهر الألوان:</label>
-                    <div class="color-combinations">
-                        <div class="color-option" data-bg="gradient1" data-text="white">
-                            <div class="color-preview bg-gradient1"></div>
-                            <span>أزرق أبيض</span>
+            <section class="verse-selection-section">
+                <h2>اختر الآية</h2>
+                <div class="selection-controls">
+                    <div class="book-chapter-controls">
+                        <div class="input-group">
+                            <label for="book-select">اختر السفر:</label>
+                            <select id="book-select">
+                                <option value="">-- اختر سفر --</option>
+                            </select>
                         </div>
-                        <div class="color-option" data-bg="gradient5" data-text="white">
-                            <div class="color-preview bg-gradient5"></div>
-                            <span>بنفسجي أبيض</span>
-                        </div>
-                        <div class="color-option" data-bg="gradient3" data-text="white">
-                            <div class="color-preview bg-gradient3"></div>
-                            <span>وردي أبيض</span>
-                        </div>
-                        <div class="color-option" data-bg="decorative" data-text="gold">
-                            <div class="color-preview bg-decorative"></div>
-                            <span>داكن ذهبي</span>
-                        </div>
-                        <div class="color-option" data-bg="solid-white" data-text="black">
-                            <div class="color-preview bg-solid-white"></div>
-                            <span>أبيض أسود</span>
-                        </div>
-                        <div class="color-option" data-bg="solid-cream" data-text="darkblue">
-                            <div class="color-preview bg-solid-cream"></div>
-                            <span>كريمي أزرق</span>
-                        </div>
-                        <div class="color-option" data-bg="solid-lightblue" data-text="black">
-                            <div class="color-preview bg-solid-lightblue"></div>
-                            <span>أزرق فاتح أسود</span>
-                        </div>
-                    </div>
-                </div>
 
-                <div class="input-group">
-                    <label for="logo-toggle">
-                        <input type="checkbox" id="logo-toggle">
-                        إظهار الشعار
-                    </label>
-                </div>
+                        <div class="input-group">
+                            <label for="chapter-select">الإصحاح:</label>
+                            <select id="chapter-select" disabled>
+                                <option value="">-- اختر إصحاح --</option>
+                            </select>
+                        </div>
 
-                <button id="generate-btn" class="generate-btn">إنشاء الصورة</button>
-            </section>
+                        <div class="input-group">
+                            <label for="verse-select">الآية:</label>
+                            <select id="verse-select" disabled>
+                                <option value="">-- اختر آية --</option>
+                            </select>
+                        </div>
 
-            <section class="preview-section">
-                <div class="canvas-container">
-                    <canvas id="quote-canvas" width="1080" height="1080"></canvas>
-                </div>
-                
-                <div class="download-section">
-                    <button id="download-btn" class="download-btn" disabled>تحميل الصورة</button>
+                        <button id="load-verse-btn" class="load-verse-btn" disabled>تحميل الآية</button>
                     <div id="success-message" class="success-message" style="display: none;">
                         تم إنشاء الصورة بنجاح!
                     </div>
