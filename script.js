@@ -797,8 +797,8 @@ class BibleQuoteGenerator {
         
         this.ctx.font = `${fontSize}px ${fontFamily}`;
         
-        // More aggressive reduction for long text
-        while (this.ctx.measureText(text).width > maxWidth && fontSize > 50) {
+        // More aggressive reduction for long text with safety margin
+        while (this.ctx.measureText(text).width > maxWidth * 0.9 && fontSize > 50) {
             fontSize -= 3;
             this.ctx.font = `${fontSize}px ${fontFamily}`;
         }
