@@ -591,12 +591,6 @@ class BibleQuoteGenerator {
                 case 'noto-naskh':
                     fontFamily = 'Noto Naskh Arabic, serif';
                     break;
-                case 'changa':
-                    fontFamily = 'Changa, sans-serif';
-                    break;
-                case 'cairo':
-                    fontFamily = 'Cairo, sans-serif';
-                    break;
                 case 'markazi-text':
                     fontFamily = 'Markazi Text, serif';
                     break;
@@ -608,9 +602,6 @@ class BibleQuoteGenerator {
                     break;
                 case 'harmattan':
                     fontFamily = 'Harmattan, sans-serif';
-                    break;
-                case 'el-messiri':
-                    fontFamily = 'El Messiri, sans-serif';
                     break;
                 case 'diwan-kufi':
                     fontFamily = 'Diwan Kufi, cursive';
@@ -655,12 +646,6 @@ class BibleQuoteGenerator {
                 case 'noto-naskh':
                     fontFamily = 'Noto Naskh Arabic, serif';
                     break;
-                case 'changa':
-                    fontFamily = 'Changa, sans-serif';
-                    break;
-                case 'cairo':
-                    fontFamily = 'Cairo, sans-serif';
-                    break;
                 case 'markazi-text':
                     fontFamily = 'Markazi Text, serif';
                     break;
@@ -672,9 +657,6 @@ class BibleQuoteGenerator {
                     break;
                 case 'harmattan':
                     fontFamily = 'Harmattan, sans-serif';
-                    break;
-                case 'el-messiri':
-                    fontFamily = 'El Messiri, sans-serif';
                     break;
                 case 'diwan-kufi':
                     fontFamily = 'Diwan Kufi, cursive';
@@ -777,12 +759,6 @@ class BibleQuoteGenerator {
             case 'noto-naskh':
                 fontFamily = 'Noto Naskh Arabic, serif';
                 break;
-            case 'changa':
-                fontFamily = 'Changa, sans-serif';
-                break;
-            case 'cairo':
-                fontFamily = 'Cairo, sans-serif';
-                break;
             case 'markazi-text':
                 fontFamily = 'Markazi Text, serif';
                 break;
@@ -795,9 +771,6 @@ class BibleQuoteGenerator {
             case 'harmattan':
                 fontFamily = 'Harmattan, sans-serif';
                 break;
-            case 'el-messiri':
-                fontFamily = 'El Messiri, sans-serif';
-                break;
             case 'diwan-kufi':
                 fontFamily = 'Diwan Kufi, cursive';
                 break;
@@ -808,9 +781,7 @@ class BibleQuoteGenerator {
         
         // Apply font-specific safety margins
         let safetyMargin = 0.8; // Default 80% safety margin
-        if (['el-messiri', 'cairo', 'changa'].includes(this.selectedFont)) {
-            safetyMargin = 0.5; // Extremely conservative for very wide fonts
-        } else if (['mirza', 'katibeh', 'diwan-kufi'].includes(this.selectedFont)) {
+        if (['mirza', 'katibeh', 'diwan-kufi'].includes(this.selectedFont)) {
             safetyMargin = 0.75; // Medium for decorative fonts
         }
         
