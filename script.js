@@ -809,7 +809,7 @@ class BibleQuoteGenerator {
         // Apply font-specific safety margins
         let safetyMargin = 0.8; // Default 80% safety margin
         if (['el-messiri', 'cairo', 'changa'].includes(this.selectedFont)) {
-            safetyMargin = 0.7; // More conservative for wider fonts
+            safetyMargin = 0.6; // Very conservative for problematic wide fonts
         } else if (['mirza', 'katibeh', 'diwan-kufi'].includes(this.selectedFont)) {
             safetyMargin = 0.75; // Medium for decorative fonts
         }
