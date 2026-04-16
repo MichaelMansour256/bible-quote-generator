@@ -806,10 +806,18 @@ class BibleQuoteGenerator {
                 break;
         }
         
+        // Apply font-specific safety margins
+        let safetyMargin = 0.8; // Default 80% safety margin
+        if (['el-messiri', 'cairo', 'changa'].includes(this.selectedFont)) {
+            safetyMargin = 0.7; // More conservative for wider fonts
+        } else if (['mirza', 'katibeh', 'diwan-kufi'].includes(this.selectedFont)) {
+            safetyMargin = 0.75; // Medium for decorative fonts
+        }
+        
         this.ctx.font = `${fontSize}px ${fontFamily}`;
         
-        // More aggressive reduction for long text with safety margin
-        while (this.ctx.measureText(text).width > maxWidth * 0.9 && fontSize > 50) {
+        // More aggressive reduction with font-specific safety margin
+        while (this.ctx.measureText(text).width > maxWidth * safetyMargin && fontSize > 50) {
             fontSize -= 3;
             this.ctx.font = `${fontSize}px ${fontFamily}`;
         }
