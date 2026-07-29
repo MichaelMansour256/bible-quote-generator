@@ -106,7 +106,9 @@ main {
     gap: 40px;
     padding: 40px;
 }
-
+label {
+    color: var(--line-strong);
+}
 /* Color Combinations */
 .color-combinations {
     display: grid;
