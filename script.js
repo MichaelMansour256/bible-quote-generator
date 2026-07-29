@@ -111,7 +111,7 @@ class BibleQuoteGenerator {
         const gameSpecificBtn = document.getElementById('game-specific-btn');
         const gameCheckBtn = document.getElementById('game-check-btn');
         const gameRevealBtn = document.getElementById('game-reveal-btn');
-        const gameAnswer = document.getElementById('game-answer');
+        const gameVerseDisplay = document.getElementById('game-verse-display');
 
         gameSpecificBtn.disabled = true;
 
@@ -122,8 +122,8 @@ class BibleQuoteGenerator {
         gameSpecificBtn.addEventListener('click', () => this.startMemorizeGameFromSelection());
         gameCheckBtn.addEventListener('click', () => this.checkMemorizeGameAnswer());
         gameRevealBtn.addEventListener('click', () => this.revealMemorizeGameAnswer());
-        gameAnswer.addEventListener('input', () => {
-            gameCheckBtn.disabled = !this.gameState.verse || gameAnswer.value.trim().length === 0;
+        gameVerseDisplay.addEventListener('input', () => {
+            gameCheckBtn.disabled = !this.gameState.verse || gameVerseDisplay.value.trim().length === 0;
         });
 
         gameBookSelect.addEventListener('change', () => this.onGameBookChange());
@@ -395,11 +395,10 @@ class BibleQuoteGenerator {
             lastScore: 0
         };
 
-        document.getElementById('game-verse-display').textContent = masked.maskedText;
         document.getElementById('game-reference').textContent = verse.reference;
         document.getElementById('game-hidden-count').textContent = masked.hiddenIndices.length.toString();
-        document.getElementById('game-answer').value = '';
-        document.getElementById('game-answer').disabled = false;
+        document.getElementById('game-verse-display').value = masked.maskedText;
+        document.getElementById('game-verse-display').disabled = false;
         document.getElementById('game-check-btn').disabled = true;
         document.getElementById('game-reveal-btn').disabled = false;
         document.getElementById('game-status').textContent = 'تم اختيار آية جديدة. حاول تذكر الكلمات المخفية.';
@@ -442,7 +441,7 @@ class BibleQuoteGenerator {
             return;
         }
 
-        const userText = document.getElementById('game-answer').value.trim();
+        const userText = document.getElementById('game-verse-display').value.trim();
         if (!userText) {
             this.showValidationMessage('اكتب إجابتك أولاً.', 'warning');
             return;
@@ -468,7 +467,7 @@ class BibleQuoteGenerator {
             return;
         }
 
-        document.getElementById('game-verse-display').textContent = this.gameState.verse.text;
+        document.getElementById('game-verse-display').value = this.gameState.verse.text;
         document.getElementById('game-status').textContent = 'تم إظهار الإجابة الكاملة.';
         document.getElementById('game-reveal-btn').disabled = true;
     }
