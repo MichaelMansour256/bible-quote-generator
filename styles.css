@@ -171,7 +171,7 @@ main {
 }
 
 .bg-gradient5 {
-    background: linear-gradient(135deg, #0f172a, #13253c, #1f3653);
+    background: linear-gradient(135deg, #9b59b6, #8e44ad, #663399);
 }
 
 .bg-gradient3 {
@@ -224,6 +224,23 @@ main {
 .memorize-game-section p,
 .memorize-game-section strong {
     color: inherit;
+}
+
+.memorize-game-section .input-group label,
+.memorize-game-section .game-stat span,
+.memorize-game-section .game-status,
+.memorize-game-section .game-score-card span {
+    color: #f4f7fb;
+}
+
+.memorize-game-section .game-status,
+.memorize-game-section .game-score-card strong,
+.memorize-game-section .game-stat strong {
+    color: #ffffff;
+}
+
+.verse-selection-section .input-group label {
+    color: #1f2f40;
 }
 
 .game-header {
@@ -1070,7 +1087,7 @@ main {
 
 .input-group label {
     font-weight: 600;
-    color: #203146;
+    color: #1f2f40;
     font-size: 1rem;
 }
 

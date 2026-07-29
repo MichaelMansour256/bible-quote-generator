@@ -1150,11 +1150,11 @@ class BibleQuoteGenerator {
                 return gradient4;
             
             case 'gradient5':
-                // Deep slate gradient - works with white text
+                // Purple-white gradient - works with white text
                 const gradient5 = ctx.createLinearGradient(width, 0, 0, height);
-                gradient5.addColorStop(0, '#0f172a');
-                gradient5.addColorStop(0.5, '#13253c');
-                gradient5.addColorStop(1, '#1f3653');
+                gradient5.addColorStop(0, '#9b59b6');
+                gradient5.addColorStop(0.5, '#8e44ad');
+                gradient5.addColorStop(1, '#663399');
                 return gradient5;
             
             case 'solid-white':
