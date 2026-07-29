@@ -14,6 +14,12 @@ class BibleQuoteGenerator {
         this.selectedBg = 'gradient1';
         this.selectedText = 'white';
         this.selectedFont = 'thuluth-deco';
+        this.gameState = {
+            verse: null,
+            maskedText: '',
+            hiddenIndices: [],
+            lastScore: 0
+        };
         
         // Load logo image
         this.logoImage.onload = () => {
@@ -95,10 +101,20 @@ class BibleQuoteGenerator {
         const chapterSelect = document.getElementById('chapter-select');
         const verseSelect = document.getElementById('verse-select');
         const searchInput = document.getElementById('verse-search');
+        const gameStartBtn = document.getElementById('game-start-btn');
+        const gameCheckBtn = document.getElementById('game-check-btn');
+        const gameRevealBtn = document.getElementById('game-reveal-btn');
+        const gameAnswer = document.getElementById('game-answer');
 
         generateBtn.addEventListener('click', () => this.generateImage());
         downloadBtn.addEventListener('click', () => this.downloadImage());
         loadVerseBtn.addEventListener('click', () => this.loadSelectedVerse());
+        gameStartBtn.addEventListener('click', () => this.startMemorizeGame());
+        gameCheckBtn.addEventListener('click', () => this.checkMemorizeGameAnswer());
+        gameRevealBtn.addEventListener('click', () => this.revealMemorizeGameAnswer());
+        gameAnswer.addEventListener('input', () => {
+            gameCheckBtn.disabled = !this.gameState.verse || gameAnswer.value.trim().length === 0;
+        });
         
         bookSelect.addEventListener('change', () => this.onBookChange());
         chapterSelect.addEventListener('change', () => this.onChapterChange());
@@ -118,6 +134,166 @@ class BibleQuoteGenerator {
         searchInput.value = '';
         document.getElementById('search-results').innerHTML = '';
         document.getElementById('search-results').style.display = 'none';
+    }
+
+    getGameVersePool() {
+        const verses = [];
+
+        if (this.currentVerse && this.currentVerse.text && this.currentVerse.reference) {
+            verses.push({
+                text: this.currentVerse.text,
+                reference: this.currentVerse.reference
+            });
+        }
+
+        if (this.bibleData) {
+            const popularVerses = bibleAPI.getPopularVerses(this.bibleData);
+            popularVerses.forEach(verse => verses.push(verse));
+        }
+
+        if (typeof sampleVerses !== 'undefined') {
+            sampleVerses.forEach(verse => verses.push(verse));
+        }
+
+        return verses;
+    }
+
+    normalizeGameText(text) {
+        return bibleAPI.removeDiacritics(text)
+            .replace(/[\u064B-\u065F\u0670]/g, '')
+            .replace(/[\u0640]/g, '')
+            .replace(/[\u060C\u061B\u061F\.,!?:;"'()\[\]{}«»ـ]/g, ' ')
+            .replace(/\s+/g, ' ')
+            .trim()
+            .toLowerCase();
+    }
+
+    buildMaskedVerse(text) {
+        const tokens = text.split(/(\s+)/);
+        const wordIndices = [];
+
+        tokens.forEach((token, index) => {
+            if (index % 2 === 0 && token.trim().length > 2) {
+                wordIndices.push(index);
+            }
+        });
+
+        if (wordIndices.length === 0) {
+            return {
+                maskedText: text,
+                hiddenIndices: []
+            };
+        }
+
+        const wordsToHide = Math.max(2, Math.round(wordIndices.length * 0.35));
+        const shuffledIndices = [...wordIndices].sort(() => Math.random() - 0.5);
+        const hiddenIndices = shuffledIndices.slice(0, Math.min(wordsToHide, shuffledIndices.length));
+
+        const maskedTokens = tokens.map((token, index) => {
+            if (hiddenIndices.includes(index)) {
+                return '_____';
+            }
+            return token;
+        });
+
+        return {
+            maskedText: maskedTokens.join(''),
+            hiddenIndices
+        };
+    }
+
+    startMemorizeGame() {
+        const verses = this.getGameVersePool();
+        if (!verses.length) {
+            this.showValidationMessage('لا توجد آيات متاحة للعبة بعد.', 'error');
+            return;
+        }
+
+        const verse = verses[Math.floor(Math.random() * verses.length)];
+        const masked = this.buildMaskedVerse(verse.text);
+        this.gameState = {
+            verse,
+            maskedText: masked.maskedText,
+            hiddenIndices: masked.hiddenIndices,
+            lastScore: 0
+        };
+
+        document.getElementById('game-verse-display').textContent = masked.maskedText;
+        document.getElementById('game-reference').textContent = verse.reference;
+        document.getElementById('game-hidden-count').textContent = masked.hiddenIndices.length.toString();
+        document.getElementById('game-answer').value = '';
+        document.getElementById('game-answer').disabled = false;
+        document.getElementById('game-check-btn').disabled = true;
+        document.getElementById('game-reveal-btn').disabled = false;
+        document.getElementById('game-status').textContent = 'تم اختيار آية جديدة. حاول تذكر الكلمات المخفية.';
+        this.updateGameScore(0);
+    }
+
+    calculateGameScore(expectedText, userText) {
+        const expectedWords = this.normalizeGameText(expectedText).split(' ').filter(Boolean);
+        const userWords = this.normalizeGameText(userText).split(' ').filter(Boolean);
+
+        if (expectedWords.length === 0) {
+            return 0;
+        }
+
+        let exactMatches = 0;
+        const userWordSet = new Set(userWords);
+
+        for (let index = 0; index < expectedWords.length; index++) {
+            if (expectedWords[index] && userWords[index] && expectedWords[index] === userWords[index]) {
+                exactMatches += 1;
+            }
+        }
+
+        const coverageMatches = expectedWords.filter(word => userWordSet.has(word)).length;
+        const exactScore = (exactMatches / expectedWords.length) * 70;
+        const coverageScore = (coverageMatches / expectedWords.length) * 30;
+
+        return Math.round(exactScore + coverageScore);
+    }
+
+    updateGameScore(score) {
+        const safeScore = Math.max(0, Math.min(100, score));
+        this.gameState.lastScore = safeScore;
+        document.getElementById('game-score').textContent = `${safeScore}%`;
+    }
+
+    checkMemorizeGameAnswer() {
+        if (!this.gameState.verse) {
+            this.showValidationMessage('ابدأ آية جديدة أولاً.', 'error');
+            return;
+        }
+
+        const userText = document.getElementById('game-answer').value.trim();
+        if (!userText) {
+            this.showValidationMessage('اكتب إجابتك أولاً.', 'warning');
+            return;
+        }
+
+        const score = this.calculateGameScore(this.gameState.verse.text, userText);
+        this.updateGameScore(score);
+
+        let message = 'محاولة جيدة، واصل التدريب.';
+        if (score >= 95) {
+            message = 'ممتاز، إجابة شبه كاملة.';
+        } else if (score >= 80) {
+            message = 'جيد جداً، بقيت تفاصيل بسيطة.';
+        } else if (score >= 60) {
+            message = 'هناك أجزاء صحيحة، حاول مرة أخرى.';
+        }
+
+        document.getElementById('game-status').textContent = `${message} درجتك: ${score}%`;
+    }
+
+    revealMemorizeGameAnswer() {
+        if (!this.gameState.verse) {
+            return;
+        }
+
+        document.getElementById('game-verse-display').textContent = this.gameState.verse.text;
+        document.getElementById('game-status').textContent = 'تم إظهار الإجابة الكاملة.';
+        document.getElementById('game-reveal-btn').disabled = true;
     }
 
     populateBookSelect() {
