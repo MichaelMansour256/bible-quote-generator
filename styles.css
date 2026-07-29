@@ -212,6 +212,10 @@ main {
     color: #1d2c3d;
 }
 
+.quote-workspace {
+    color: var(--text);
+}
+
 .memorize-game-section {
     background: linear-gradient(135deg, #0c1728 0%, #152640 100%);
     color: #edf4ff;
@@ -228,11 +232,18 @@ main {
     color: inherit;
 }
 
-.quote-workspace .input-group label,
 .quote-workspace h2,
 .quote-workspace h3,
-.quote-workspace p {
-    color: #203146;
+.quote-workspace p,
+.quote-workspace .section-title,
+.quote-workspace .verse-selection-section,
+.quote-workspace .controls-panel,
+.quote-workspace .preview-panel {
+    color: var(--text);
+}
+
+.quote-workspace .input-group label {
+    color: #ffffff;
 }
 
 .memorize-game-section .input-group label,
@@ -249,7 +260,7 @@ main {
 }
 
 .verse-selection-section .input-group label {
-    color: #1f2f40;
+    color: inherit;
 }
 
 .game-header {
