@@ -241,6 +241,44 @@ main {
     margin-bottom: 20px;
 }
 
+.game-stats-bar {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 12px;
+}
+
+.game-stat {
+    padding: 14px 16px;
+    border-radius: 14px;
+    background: rgba(255, 255, 255, 0.08);
+    border: 1px solid rgba(255, 255, 255, 0.12);
+    text-align: center;
+}
+
+.game-stat span {
+    display: block;
+    font-size: 0.82rem;
+    opacity: 0.78;
+    margin-bottom: 4px;
+}
+
+.game-stat strong {
+    font-size: 1.1rem;
+}
+
+.game-settings-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 12px;
+}
+
+.game-toggle-group label {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    min-height: 44px;
+}
+
 .game-picker-group {
     margin-bottom: 6px;
 }
@@ -494,6 +532,12 @@ main {
     }
 
     .game-board {
+        grid-template-columns: 1fr;
+    }
+
+    .game-stats-bar,
+    .game-settings-grid,
+    .game-picker-grid {
         grid-template-columns: 1fr;
     }
 

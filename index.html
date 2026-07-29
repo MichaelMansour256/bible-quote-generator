@@ -165,6 +165,31 @@
                 </div>
 
                 <div class="game-controls">
+                    <div class="game-stats-bar">
+                        <div class="game-stat"><span>الوقت</span><strong id="game-timer">00:00</strong></div>
+                        <div class="game-stat"><span>أفضل درجة</span><strong id="game-high-score">0%</strong></div>
+                        <div class="game-stat"><span>الآية التالية</span><strong id="game-next-reference">-</strong></div>
+                    </div>
+
+                    <div class="game-settings-grid">
+                        <div class="input-group">
+                            <label for="game-difficulty-select">مستوى الصعوبة:</label>
+                            <select id="game-difficulty-select">
+                                <option value="easy">سهل</option>
+                                <option value="medium" selected>متوسط</option>
+                                <option value="hard">صعب</option>
+                                <option value="expert">خبير</option>
+                            </select>
+                        </div>
+
+                        <div class="input-group game-toggle-group">
+                            <label for="game-continue-toggle">
+                                <input type="checkbox" id="game-continue-toggle" checked>
+                                جهّز الآية التالية تلقائياً
+                            </label>
+                        </div>
+                    </div>
+
                     <div class="input-group game-picker-group">
                         <label>اختر آية محددة:</label>
                         <div class="game-picker-grid">
@@ -183,6 +208,7 @@
                     <div class="game-buttons">
                         <button id="game-specific-btn" class="game-btn primary">ابدأ الآية المحددة</button>
                         <button id="game-start-btn" class="game-btn">آية عشوائية</button>
+                        <button id="game-next-btn" class="game-btn" disabled>الآية التالية</button>
                         <button id="game-check-btn" class="game-btn" disabled>تحقق من الإجابة</button>
                         <button id="game-reveal-btn" class="game-btn secondary" disabled>أظهر الإجابة</button>
                     </div>
