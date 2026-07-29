@@ -107,7 +107,7 @@ main {
     padding: 40px;
 }
 label {
-    color: var(--line-strong);
+    color: #203146;
 }
 /* Color Combinations */
 .color-combinations {
@@ -226,6 +226,13 @@ main {
 .memorize-game-section p,
 .memorize-game-section strong {
     color: inherit;
+}
+
+.quote-workspace .input-group label,
+.quote-workspace h2,
+.quote-workspace h3,
+.quote-workspace p {
+    color: #203146;
 }
 
 .memorize-game-section .input-group label,
