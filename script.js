@@ -450,13 +450,22 @@ class BibleQuoteGenerator {
     }
 
     normalizeGameText(text) {
-        return bibleAPI.removeDiacritics(text)
-            .replace(/[\u064B-\u065F\u0670]/g, '')
-            .replace(/[\u0640]/g, '')
+        return this.normalizeArabicForMatch(text)
             .replace(/[\u060C\u061B\u061F\.,!?:;"'()\[\]{}«»ـ]/g, ' ')
             .replace(/\s+/g, ' ')
             .trim()
             .toLowerCase();
+    }
+
+    normalizeArabicForMatch(text) {
+        return String(text || '')
+            .normalize('NFKD')
+            .replace(/[\u064B-\u065F\u0670\u0640]/g, '')
+            .replace(/[أإآٱ]/g, 'ا')
+            .replace(/ى/g, 'ي')
+            .replace(/ة/g, 'ه')
+            .replace(/ؤ/g, 'و')
+            .replace(/ئ/g, 'ي');
     }
 
     escapeHtml(text) {
@@ -754,9 +763,9 @@ class BibleQuoteGenerator {
 
     calculateGameScore(expectedText, userText) {
         const expectedWords = (this.gameState.hiddenWords && this.gameState.hiddenWords.length > 0)
-            ? this.gameState.hiddenWords.map(word => this.normalizeGameText(word))
+            ? this.gameState.hiddenWords.map(word => this.normalizeArabicForMatch(word).trim())
             : this.normalizeGameText(expectedText).split(' ').filter(Boolean);
-        const userWords = this.normalizeGameText(userText).split(' ').filter(Boolean);
+        const userWords = this.normalizeGameText(userText).split(' ').filter(Boolean).map(word => this.normalizeArabicForMatch(word).trim());
 
         if (expectedWords.length === 0) {
             return 0;
