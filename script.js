@@ -26,11 +26,9 @@ class BibleQuoteGenerator {
         this.gameStartTime = null;
         this.gameElapsedSeconds = 0;
         this.gameDifficulty = 'medium';
-        this.gameContinueInOrder = true;
         this.gameHighScoreKey = 'bible-game-high-score';
         this.gameStateKey = 'bible-game-state';
         this.gameDifficultyKey = 'bible-game-difficulty';
-        this.gameContinueKey = 'bible-game-continue';
         this.pendingGameRestore = null;
         this.gameVersePool = [];
         
@@ -129,7 +127,6 @@ class BibleQuoteGenerator {
         const gameNextBtn = document.getElementById('game-next-btn');
         const gameVerseDisplay = document.getElementById('game-verse-display');
         const gameDifficultySelect = document.getElementById('game-difficulty-select');
-        const gameContinueToggle = document.getElementById('game-continue-toggle');
 
         gameSpecificBtn.disabled = true;
         gameNextBtn.disabled = true;
@@ -150,12 +147,6 @@ class BibleQuoteGenerator {
             this.gameDifficulty = gameDifficultySelect.value;
             this.persistGamePreferences();
             this.refreshGamePreviewForCurrentVerse();
-        });
-
-        gameContinueToggle.addEventListener('change', () => {
-            this.gameContinueInOrder = gameContinueToggle.checked;
-            this.persistGamePreferences();
-            this.updateNextVersePreview();
         });
 
         gameBookSelect.addEventListener('change', () => this.onGameBookChange());
@@ -184,24 +175,15 @@ class BibleQuoteGenerator {
 
     loadGamePreferences() {
         const savedDifficulty = localStorage.getItem(this.gameDifficultyKey);
-        const savedContinue = localStorage.getItem(this.gameContinueKey);
         const savedHighScore = localStorage.getItem(this.gameHighScoreKey);
 
         if (savedDifficulty) {
             this.gameDifficulty = savedDifficulty;
         }
 
-        if (savedContinue !== null) {
-            this.gameContinueInOrder = savedContinue === 'true';
-        }
-
         const difficultySelect = document.getElementById('game-difficulty-select');
-        const continueToggle = document.getElementById('game-continue-toggle');
         if (difficultySelect) {
             difficultySelect.value = this.gameDifficulty;
-        }
-        if (continueToggle) {
-            continueToggle.checked = this.gameContinueInOrder;
         }
 
         if (savedHighScore !== null) {
@@ -236,7 +218,6 @@ class BibleQuoteGenerator {
 
     persistGamePreferences() {
         localStorage.setItem(this.gameDifficultyKey, this.gameDifficulty);
-        localStorage.setItem(this.gameContinueKey, String(this.gameContinueInOrder));
     }
 
     persistGameState() {
@@ -664,11 +645,10 @@ class BibleQuoteGenerator {
         const nextReferenceEl = document.getElementById('game-next-reference');
         const gameNextBtn = document.getElementById('game-next-btn');
         const nextVerse = this.getNextVerseReference(this.gameState.verse);
-        const canContinue = this.gameContinueInOrder && !!nextVerse;
 
         if (nextVerse) {
             nextReferenceEl.textContent = nextVerse.reference;
-            gameNextBtn.disabled = !canContinue;
+            gameNextBtn.disabled = false;
         } else {
             nextReferenceEl.textContent = '-';
             gameNextBtn.disabled = true;
@@ -828,7 +808,7 @@ class BibleQuoteGenerator {
 
         document.getElementById('game-status').textContent = `${message} درجتك: ${score}%`;
 
-        const shouldContinue = this.gameContinueInOrder && this.gameState.nextVerse;
+        const shouldContinue = this.gameState.nextVerse;
         document.getElementById('game-next-btn').disabled = !shouldContinue;
         if (shouldContinue) {
             document.getElementById('game-status').textContent += ' يمكنك المتابعة إلى الآية التالية مباشرة.';
@@ -1121,13 +1101,13 @@ class BibleQuoteGenerator {
 
         // Draw gradient background
         const gradient = ctx.createLinearGradient(0, 0, width, height);
-        gradient.addColorStop(0, '#667eea');
-        gradient.addColorStop(1, '#764ba2');
+        gradient.addColorStop(0, '#0f1c2e');
+        gradient.addColorStop(1, '#1b3557');
         ctx.fillStyle = gradient;
         ctx.fillRect(0, 0, width, height);
 
         // Draw placeholder text
-        ctx.fillStyle = 'rgba(255, 255, 255, 0.3)';
+        ctx.fillStyle = 'rgba(232, 238, 247, 0.38)';
         ctx.font = '24px Tajawal';
         ctx.textAlign = 'center';
         ctx.textBaseline = 'middle';
@@ -1141,40 +1121,40 @@ class BibleQuoteGenerator {
 
         switch (style) {
             case 'gradient1':
-                // Original good gradient - works with white text
+                // Modern navy gradient - works with white text
                 const gradient1 = ctx.createLinearGradient(0, 0, width, height);
-                gradient1.addColorStop(0, '#3498db');
-                gradient1.addColorStop(0.5, '#2980b9');
-                gradient1.addColorStop(1, '#1e5f8e');
+                gradient1.addColorStop(0, '#13253c');
+                gradient1.addColorStop(0.5, '#1f3653');
+                gradient1.addColorStop(1, '#2a4d78');
                 return gradient1;
             
             case 'gradient2':
-                // Blue purple gradient - works with white text
+                // Accent gradient - works with white text
                 const gradient2 = ctx.createLinearGradient(0, 0, width, height);
-                gradient2.addColorStop(0, '#667eea');
-                gradient2.addColorStop(1, '#764ba2');
+                gradient2.addColorStop(0, '#5b8cff');
+                gradient2.addColorStop(1, '#7f5af0');
                 return gradient2;
             
             case 'gradient3':
-                // Pink gradient - works with white text
+                // Warm highlight gradient - works with dark text
                 const gradient3 = ctx.createRadialGradient(width/2, height/2, 0, width/2, height/2, width/2);
-                gradient3.addColorStop(0, '#ee9ca7');
-                gradient3.addColorStop(1, '#ffdde1');
+                gradient3.addColorStop(0, '#f1d7a1');
+                gradient3.addColorStop(1, '#d4a855');
                 return gradient3;
             
             case 'gradient4':
-                // Sky blue gradient - works with white text
+                // Teal gradient - works with white text
                 const gradient4 = ctx.createLinearGradient(width, 0, 0, height);
-                gradient4.addColorStop(0, '#2193b0');
-                gradient4.addColorStop(1, '#6dd5ed');
+                gradient4.addColorStop(0, '#24c4b2');
+                gradient4.addColorStop(1, '#1aa67a');
                 return gradient4;
             
             case 'gradient5':
-                // Purple gradient - works with white text
+                // Deep slate gradient - works with white text
                 const gradient5 = ctx.createLinearGradient(width, 0, 0, height);
-                gradient5.addColorStop(0, '#9b59b6');
-                gradient5.addColorStop(0.5, '#8e44ad');
-                gradient5.addColorStop(1, '#663399');
+                gradient5.addColorStop(0, '#0f172a');
+                gradient5.addColorStop(0.5, '#13253c');
+                gradient5.addColorStop(1, '#1f3653');
                 return gradient5;
             
             case 'solid-white':
@@ -1192,16 +1172,16 @@ class BibleQuoteGenerator {
             case 'decorative':
                 // Dark decorative pattern - works with white or gold text
                 const decorativeGradient = ctx.createLinearGradient(0, 0, width, height);
-                decorativeGradient.addColorStop(0, '#2c3e50');
-                decorativeGradient.addColorStop(1, '#34495e');
+                decorativeGradient.addColorStop(0, '#08111f');
+                decorativeGradient.addColorStop(1, '#152640');
                 return decorativeGradient;
             
             default:
-                // Default to the good gradient
+                // Default to the modern navy gradient
                 const defaultGradient = ctx.createLinearGradient(0, 0, width, height);
-                defaultGradient.addColorStop(0, '#3498db');
-                defaultGradient.addColorStop(0.5, '#2980b9');
-                defaultGradient.addColorStop(1, '#1e5f8e');
+                defaultGradient.addColorStop(0, '#13253c');
+                defaultGradient.addColorStop(0.5, '#1f3653');
+                defaultGradient.addColorStop(1, '#2a4d78');
                 return defaultGradient;
         }
     }
