@@ -39,6 +39,40 @@ header p {
     opacity: 0.9;
 }
 
+.view-switcher {
+    display: flex;
+    justify-content: center;
+    gap: 12px;
+    padding: 18px 20px 0;
+    flex-wrap: wrap;
+}
+
+.view-switch-btn {
+    border: 1px solid rgba(44, 62, 80, 0.15);
+    background: rgba(255, 255, 255, 0.85);
+    color: #2c3e50;
+    padding: 12px 18px;
+    border-radius: 999px;
+    cursor: pointer;
+    font-weight: 700;
+    transition: all 0.25s ease;
+}
+
+.view-switch-btn:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 6px 16px rgba(44, 62, 80, 0.12);
+}
+
+.view-switch-btn.active {
+    background: linear-gradient(135deg, #2c3e50 0%, #34495e 100%);
+    color: #ffffff;
+    border-color: transparent;
+}
+
+.view-panel.hidden {
+    display: none !important;
+}
+
 main {
     display: grid;
     grid-template-columns: 1fr 1fr;
@@ -207,6 +241,16 @@ main {
     margin-bottom: 20px;
 }
 
+.game-picker-group {
+    margin-bottom: 6px;
+}
+
+.game-picker-grid {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 10px;
+}
+
 .game-buttons {
     display: flex;
     flex-wrap: wrap;
@@ -229,6 +273,11 @@ main {
 .game-btn.primary {
     background: linear-gradient(135deg, #f97316 0%, #ef4444 100%);
     box-shadow: 0 10px 20px rgba(239, 68, 68, 0.25);
+}
+
+.game-btn.primary:disabled {
+    background: rgba(255, 255, 255, 0.18);
+    box-shadow: none;
 }
 
 .game-btn.secondary {
@@ -313,6 +362,11 @@ main {
 
 .game-meta strong {
     font-size: 1rem;
+}
+
+.game-picker-grid .input-group,
+.game-picker-grid select {
+    width: 100%;
 }
 
 .selection-controls {
@@ -415,6 +469,10 @@ main {
     }
 
     .game-board {
+        grid-template-columns: 1fr;
+    }
+
+    .game-picker-grid {
         grid-template-columns: 1fr;
     }
     

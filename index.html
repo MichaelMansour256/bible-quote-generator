@@ -14,8 +14,13 @@
             <p>حول آيات الكتاب المقدس إلى صور جميلة للمشاركة على وسائل التواصل الاجتماعي</p>
         </header>
 
+        <div class="view-switcher" role="tablist" aria-label="التنقل بين الصفحات">
+            <button class="view-switch-btn active" id="quote-view-btn" type="button">صفحة إنشاء الاقتباس</button>
+            <button class="view-switch-btn" id="game-view-btn" type="button">لعبة الحفظ</button>
+        </div>
+
         <main>
-            <section class="verse-selection-section">
+            <section class="verse-selection-section view-panel" id="quote-view-panel">
                 <h2>اختر الآية</h2>
                 <div class="selection-controls">
                     <div class="book-chapter-controls">
@@ -53,7 +58,7 @@
                 </div>
             </section>
 
-            <section class="memorize-game-section">
+            <section class="memorize-game-section view-panel hidden" id="game-view-panel">
                 <div class="game-header">
                     <div>
                         <h2>لعبة حفظ الآيات</h2>
@@ -66,8 +71,24 @@
                 </div>
 
                 <div class="game-controls">
+                    <div class="input-group game-picker-group">
+                        <label>اختر آية محددة:</label>
+                        <div class="game-picker-grid">
+                            <select id="game-book-select">
+                                <option value="">-- اختر سفر --</option>
+                            </select>
+                            <select id="game-chapter-select" disabled>
+                                <option value="">-- اختر إصحاح --</option>
+                            </select>
+                            <select id="game-verse-select" disabled>
+                                <option value="">-- اختر آية --</option>
+                            </select>
+                        </div>
+                    </div>
+
                     <div class="game-buttons">
-                        <button id="game-start-btn" class="game-btn primary">ابدأ آية جديدة</button>
+                        <button id="game-specific-btn" class="game-btn primary">ابدأ الآية المحددة</button>
+                        <button id="game-start-btn" class="game-btn">آية عشوائية</button>
                         <button id="game-check-btn" class="game-btn" disabled>تحقق من الإجابة</button>
                         <button id="game-reveal-btn" class="game-btn secondary" disabled>أظهر الإجابة</button>
                     </div>

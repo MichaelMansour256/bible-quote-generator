@@ -20,6 +20,7 @@ class BibleQuoteGenerator {
             hiddenIndices: [],
             lastScore: 0
         };
+        this.activeView = 'quote';
         
         // Load logo image
         this.logoImage.onload = () => {
@@ -31,6 +32,7 @@ class BibleQuoteGenerator {
         this.loadBibleData();
         this.setupColorCombinations();
         this.setupFontSelection();
+        this.setupViewSwitcher();
         this.initializeCanvas();
     }
 
@@ -38,6 +40,7 @@ class BibleQuoteGenerator {
         this.bibleData = await bibleAPI.loadBibleData();
         if (this.bibleData) {
             this.populateBookSelect();
+            this.populateGameBookSelect();
         }
     }
 
@@ -101,20 +104,31 @@ class BibleQuoteGenerator {
         const chapterSelect = document.getElementById('chapter-select');
         const verseSelect = document.getElementById('verse-select');
         const searchInput = document.getElementById('verse-search');
+        const gameBookSelect = document.getElementById('game-book-select');
+        const gameChapterSelect = document.getElementById('game-chapter-select');
+        const gameVerseSelect = document.getElementById('game-verse-select');
         const gameStartBtn = document.getElementById('game-start-btn');
+        const gameSpecificBtn = document.getElementById('game-specific-btn');
         const gameCheckBtn = document.getElementById('game-check-btn');
         const gameRevealBtn = document.getElementById('game-reveal-btn');
         const gameAnswer = document.getElementById('game-answer');
+
+        gameSpecificBtn.disabled = true;
 
         generateBtn.addEventListener('click', () => this.generateImage());
         downloadBtn.addEventListener('click', () => this.downloadImage());
         loadVerseBtn.addEventListener('click', () => this.loadSelectedVerse());
         gameStartBtn.addEventListener('click', () => this.startMemorizeGame());
+        gameSpecificBtn.addEventListener('click', () => this.startMemorizeGameFromSelection());
         gameCheckBtn.addEventListener('click', () => this.checkMemorizeGameAnswer());
         gameRevealBtn.addEventListener('click', () => this.revealMemorizeGameAnswer());
         gameAnswer.addEventListener('input', () => {
             gameCheckBtn.disabled = !this.gameState.verse || gameAnswer.value.trim().length === 0;
         });
+
+        gameBookSelect.addEventListener('change', () => this.onGameBookChange());
+        gameChapterSelect.addEventListener('change', () => this.onGameChapterChange());
+        gameVerseSelect.addEventListener('change', () => this.onGameVerseChange());
         
         bookSelect.addEventListener('change', () => this.onBookChange());
         chapterSelect.addEventListener('change', () => this.onChapterChange());
@@ -134,6 +148,31 @@ class BibleQuoteGenerator {
         searchInput.value = '';
         document.getElementById('search-results').innerHTML = '';
         document.getElementById('search-results').style.display = 'none';
+    }
+
+    setupViewSwitcher() {
+        const quoteViewBtn = document.getElementById('quote-view-btn');
+        const gameViewBtn = document.getElementById('game-view-btn');
+
+        quoteViewBtn.addEventListener('click', () => this.setActiveView('quote'));
+        gameViewBtn.addEventListener('click', () => this.setActiveView('game'));
+
+        this.setActiveView('quote');
+    }
+
+    setActiveView(view) {
+        this.activeView = view;
+
+        const quoteViewPanel = document.getElementById('quote-view-panel');
+        const gameViewPanel = document.getElementById('game-view-panel');
+        const quoteViewBtn = document.getElementById('quote-view-btn');
+        const gameViewBtn = document.getElementById('game-view-btn');
+
+        const isQuoteView = view === 'quote';
+        quoteViewPanel.classList.toggle('hidden', !isQuoteView);
+        gameViewPanel.classList.toggle('hidden', isQuoteView);
+        quoteViewBtn.classList.toggle('active', isQuoteView);
+        gameViewBtn.classList.toggle('active', !isQuoteView);
     }
 
     getGameVersePool() {
@@ -156,6 +195,100 @@ class BibleQuoteGenerator {
         }
 
         return verses;
+    }
+
+    populateGameBookSelect() {
+        const gameBookSelect = document.getElementById('game-book-select');
+        const books = bibleAPI.getAllBooks(this.bibleData);
+
+        gameBookSelect.innerHTML = '<option value="">-- اختر سفر --</option>';
+        books.forEach(book => {
+            const option = document.createElement('option');
+            option.value = book.id;
+            option.textContent = book.name;
+            gameBookSelect.appendChild(option);
+        });
+    }
+
+    populateGameChapterSelect() {
+        const gameBookSelect = document.getElementById('game-book-select');
+        const gameChapterSelect = document.getElementById('game-chapter-select');
+        const gameVerseSelect = document.getElementById('game-verse-select');
+        const gameSpecificBtn = document.getElementById('game-specific-btn');
+
+        gameChapterSelect.innerHTML = '<option value="">-- اختر إصحاح --</option>';
+        gameVerseSelect.innerHTML = '<option value="">-- اختر آية --</option>';
+        gameChapterSelect.disabled = true;
+        gameVerseSelect.disabled = true;
+        gameSpecificBtn.disabled = true;
+
+        const selectedBookId = gameBookSelect.value;
+        if (!selectedBookId || !this.bibleData) {
+            return;
+        }
+
+        const chapters = bibleAPI.getChaptersForBook(this.bibleData, selectedBookId);
+        chapters.forEach(chapter => {
+            const option = document.createElement('option');
+            option.value = chapter.number;
+            option.textContent = `الإصحاح ${chapter.number}`;
+            gameChapterSelect.appendChild(option);
+        });
+
+        gameChapterSelect.disabled = false;
+    }
+
+    populateGameVerseSelect() {
+        const gameBookSelect = document.getElementById('game-book-select');
+        const gameChapterSelect = document.getElementById('game-chapter-select');
+        const gameVerseSelect = document.getElementById('game-verse-select');
+        const gameSpecificBtn = document.getElementById('game-specific-btn');
+
+        gameVerseSelect.innerHTML = '<option value="">-- اختر آية --</option>';
+        gameVerseSelect.disabled = true;
+        gameSpecificBtn.disabled = true;
+
+        const selectedBookId = gameBookSelect.value;
+        const selectedChapter = gameChapterSelect.value;
+        if (!selectedBookId || !selectedChapter || !this.bibleData) {
+            return;
+        }
+
+        const chapters = bibleAPI.getChaptersForBook(this.bibleData, selectedBookId);
+        const chapterData = chapters.find(ch => ch.number === parseInt(selectedChapter));
+
+        if (chapterData && chapterData.verses) {
+            const verseNumbers = Object.keys(chapterData.verses)
+                .map(v => parseInt(v))
+                .filter(v => !isNaN(v))
+                .sort((a, b) => a - b);
+
+            verseNumbers.forEach(verseNum => {
+                const option = document.createElement('option');
+                option.value = verseNum;
+                option.textContent = `الآية ${verseNum}`;
+                gameVerseSelect.appendChild(option);
+            });
+        }
+
+        gameVerseSelect.disabled = false;
+    }
+
+    onGameBookChange() {
+        this.populateGameChapterSelect();
+    }
+
+    onGameChapterChange() {
+        this.populateGameVerseSelect();
+    }
+
+    onGameVerseChange() {
+        const gameBookSelect = document.getElementById('game-book-select');
+        const gameChapterSelect = document.getElementById('game-chapter-select');
+        const gameVerseSelect = document.getElementById('game-verse-select');
+        const gameSpecificBtn = document.getElementById('game-specific-btn');
+
+        gameSpecificBtn.disabled = !(gameBookSelect.value && gameChapterSelect.value && gameVerseSelect.value);
     }
 
     normalizeGameText(text) {
@@ -202,14 +335,58 @@ class BibleQuoteGenerator {
         };
     }
 
+    getVerseBySelection(bookId, chapter, verse) {
+        if (!this.bibleData || !bookId || !chapter || !verse) {
+            return null;
+        }
+
+        const verseText = bibleAPI.getVerse(this.bibleData, bookId, chapter, verse);
+        if (!verseText) {
+            return null;
+        }
+
+        const book = bibleAPI.getBookByName(this.bibleData, bookId);
+        if (!book) {
+            return null;
+        }
+
+        return {
+            text: verseText,
+            reference: bibleAPI.formatArabicReference(book.name_ar || book.name, chapter, verse)
+        };
+    }
+
+    startMemorizeGameFromSelection() {
+        const gameBookSelect = document.getElementById('game-book-select');
+        const gameChapterSelect = document.getElementById('game-chapter-select');
+        const gameVerseSelect = document.getElementById('game-verse-select');
+
+        const verse = this.getVerseBySelection(
+            gameBookSelect.value,
+            gameChapterSelect.value,
+            gameVerseSelect.value
+        );
+
+        if (!verse) {
+            document.getElementById('game-status').textContent = 'اختر سفرًا وإصحاحًا وآية أولًا، ثم ابدأ الآية المحددة.';
+            return;
+        }
+
+        this.startMemorizeGameWithVerse(verse);
+    }
+
     startMemorizeGame() {
         const verses = this.getGameVersePool();
         if (!verses.length) {
-            this.showValidationMessage('لا توجد آيات متاحة للعبة بعد.', 'error');
+            document.getElementById('game-status').textContent = 'لا توجد آيات متاحة للعبة بعد.';
             return;
         }
 
         const verse = verses[Math.floor(Math.random() * verses.length)];
+        this.startMemorizeGameWithVerse(verse);
+    }
+
+    startMemorizeGameWithVerse(verse) {
         const masked = this.buildMaskedVerse(verse.text);
         this.gameState = {
             verse,
