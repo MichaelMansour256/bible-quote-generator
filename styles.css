@@ -336,6 +336,34 @@ main {
     box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.6);
 }
 
+.game-blank {
+    display: inline-block;
+    min-width: 100px;
+    width: auto;
+    padding: 4px 8px;
+    margin: 0 4px;
+    border: 0;
+    border-bottom: 2px solid #1e3a8a;
+    background: transparent;
+    color: #1e3a8a;
+    font: inherit;
+    text-align: center;
+    line-height: 1.8;
+    border-radius: 0;
+    outline: none;
+}
+
+.game-blank:focus {
+    background: rgba(30, 58, 138, 0.06);
+    border-bottom-color: #ef4444;
+}
+
+.game-blank:disabled {
+    opacity: 1;
+    -webkit-text-fill-color: #1e3a8a;
+    color: #1e3a8a;
+}
+
 .game-meta {
     display: grid;
     grid-template-columns: repeat(2, minmax(0, 1fr));
