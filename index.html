@@ -18,6 +18,7 @@
             <button class="view-switch-btn active" id="quote-view-btn" type="button">صفحة إنشاء الاقتباس</button>
             <button class="view-switch-btn" id="game-view-btn" type="button">لعبة الحفظ</button>
             <button class="view-switch-btn" id="reverse-view-btn" type="button">الكلمات المعكوسة</button>
+            <button class="view-switch-btn" id="scramble-view-btn" type="button">الكلمات المبعثرة</button>
         </div>
 
         <main>
@@ -285,6 +286,73 @@
                             <div class="input-group">
                                 <label for="reverse-game-answer">اكتب الإجابة الصحيحة:</label>
                                 <input id="reverse-game-answer" type="text" placeholder="اكتب الاسم أو المكان أو السفر" autocomplete="off">
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <section class="scramble-game-section view-panel hidden" id="scramble-view-panel">
+                <div class="game-header">
+                    <div>
+                        <h2>لعبة الكلمات المبعثرة</h2>
+                        <p>اختر الفئة، ثم فك الحروف المبعثرة واكتب الكلمة الأصلية بسرعة.</p>
+                    </div>
+                    <div class="game-score-card">
+                        <span>الدرجة</span>
+                        <strong id="scramble-game-score">0%</strong>
+                    </div>
+                </div>
+
+                <div class="scramble-game-shell">
+                    <div class="game-controls scramble-controls">
+                        <div class="game-stats-bar scramble-stats-bar">
+                            <div class="game-stat"><span>الوقت</span><strong id="scramble-game-timer">00:00</strong></div>
+                            <div class="game-stat"><span>أفضل درجة</span><strong id="scramble-game-high-score">0%</strong></div>
+                            <div class="game-stat"><span>الفئة</span><strong id="scramble-game-category">-</strong></div>
+                        </div>
+
+                        <div class="game-settings-grid scramble-settings-grid">
+                            <div class="input-group">
+                                <label for="scramble-category-select">نوع الكلمات:</label>
+                                <select id="scramble-category-select">
+                                    <option value="random" selected>عشوائي</option>
+                                    <option value="book">اسم سفر</option>
+                                    <option value="name">اسم</option>
+                                    <option value="place">مكان</option>
+                                </select>
+                            </div>
+                            <div class="input-group">
+                                <label for="scramble-difficulty-select">مستوى الصعوبة:</label>
+                                <select id="scramble-difficulty-select">
+                                    <option value="easy">سهل</option>
+                                    <option value="medium" selected>متوسط</option>
+                                    <option value="hard">صعب</option>
+                                    <option value="expert">خبير</option>
+                                </select>
+                            </div>
+                        </div>
+
+                        <div class="game-buttons">
+                            <button id="scramble-start-btn" class="game-btn primary">ابدأ الكلمة المبعثرة</button>
+                            <button id="scramble-next-btn" class="game-btn" disabled>كلمة جديدة</button>
+                            <button id="scramble-check-btn" class="game-btn" disabled>تحقق من الإجابة</button>
+                            <button id="scramble-reveal-btn" class="game-btn secondary" disabled>أظهر الإجابة</button>
+                        </div>
+
+                        <div class="game-status" id="scramble-game-status">اضغط على البدء للحصول على كلمة مبعثرة.</div>
+                    </div>
+
+                    <div class="game-board scramble-board">
+                        <div class="game-prompt scramble-prompt">
+                            <label>الكلمة المبعثرة - فك الحروف لتعرفها:</label>
+                            <div id="scramble-game-clue" class="scramble-game-clue" aria-label="التلميح المبعثر">---</div>
+                        </div>
+
+                        <div class="game-inputs scramble-inputs">
+                            <div class="input-group">
+                                <label for="scramble-game-answer">اكتب الإجابة الصحيحة:</label>
+                                <input id="scramble-game-answer" type="text" placeholder="اكتب الاسم أو المكان أو السفر" autocomplete="off">
                             </div>
                         </div>
                     </div>

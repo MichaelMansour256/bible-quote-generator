@@ -224,7 +224,8 @@ main {
     box-shadow: 0 18px 40px rgba(4, 11, 24, 0.28);
 }
 
-.reverse-game-section {
+.reverse-game-section,
+.scramble-game-section {
     background: linear-gradient(135deg, #0b192c 0%, #162946 100%);
     color: #edf4ff;
     padding: 30px;
@@ -244,7 +245,12 @@ main {
 .reverse-game-section label,
 .reverse-game-section span,
 .reverse-game-section p,
-.reverse-game-section strong {
+.reverse-game-section strong,
+.scramble-game-section h2,
+.scramble-game-section label,
+.scramble-game-section span,
+.scramble-game-section p,
+.scramble-game-section strong {
     color: inherit;
 }
 
@@ -272,7 +278,11 @@ main {
 .reverse-game-section .input-group label,
 .reverse-game-section .game-stat span,
 .reverse-game-section .game-status,
-.reverse-game-section .game-score-card span {
+.reverse-game-section .game-score-card span,
+.scramble-game-section .input-group label,
+.scramble-game-section .game-stat span,
+.scramble-game-section .game-status,
+.scramble-game-section .game-score-card span {
     color: #f4f7fb;
 }
 
@@ -284,7 +294,10 @@ main {
 
 .reverse-game-section .game-status,
 .reverse-game-section .game-score-card strong,
-.reverse-game-section .game-stat strong {
+.reverse-game-section .game-stat strong,
+.scramble-game-section .game-status,
+.scramble-game-section .game-score-card strong,
+.scramble-game-section .game-stat strong {
     color: #ffffff;
 }
 
@@ -334,20 +347,31 @@ main {
     gap: 18px;
 }
 
-.reverse-controls {
+.scramble-game-shell {
+    display: flex;
+    flex-direction: column;
+    gap: 18px;
+}
+
+.reverse-controls,
+.scramble-controls {
     margin-bottom: 0;
 }
 
-.reverse-board {
+.reverse-board,
+.scramble-board {
     grid-template-columns: 1fr 0.9fr;
 }
 
 .reverse-prompt,
-.reverse-inputs {
+.reverse-inputs,
+.scramble-prompt,
+.scramble-inputs {
     min-height: 160px;
 }
 
-.reverse-game-clue {
+.reverse-game-clue,
+.scramble-game-clue {
     margin-top: 10px;
     min-height: 140px;
     display: flex;
@@ -364,15 +388,18 @@ main {
     text-align: center;
 }
 
-.reverse-inputs input {
+.reverse-inputs input,
+.scramble-inputs input {
     font-size: 1.05rem;
 }
 
-.reverse-settings-grid {
+.reverse-settings-grid,
+.scramble-settings-grid {
     grid-template-columns: 1fr;
 }
 
-.reverse-stats-bar {
+.reverse-stats-bar,
+.scramble-stats-bar {
     grid-template-columns: repeat(3, minmax(0, 1fr));
 }
 

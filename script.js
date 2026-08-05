@@ -45,6 +45,20 @@ class BibleQuoteGenerator {
         this.reverseGameCategoryKey = 'bible-reverse-game-category';
         this.reverseGameDifficultyKey = 'bible-reverse-game-difficulty';
         this.reverseGamePool = this.createReverseGamePool();
+        this.scrambleGameTimer = null;
+        this.scrambleGameStartTime = null;
+        this.scrambleGameState = {
+            term: null,
+            clue: '',
+            category: '',
+            difficulty: 'medium',
+            lastScore: 0
+        };
+        this.scrambleGameHighScoreKey = 'bible-scramble-game-high-score';
+        this.scrambleGameStateKey = 'bible-scramble-game-state';
+        this.scrambleGameCategoryKey = 'bible-scramble-game-category';
+        this.scrambleGameDifficultyKey = 'bible-scramble-game-difficulty';
+        this.scrambleGamePool = this.reverseGamePool;
         
         // Load logo image
         this.logoImage.onload = () => {
@@ -59,6 +73,7 @@ class BibleQuoteGenerator {
         this.setupViewSwitcher();
         this.loadGamePreferences();
         this.loadReverseGamePreferences();
+        this.loadScrambleGamePreferences();
         this.initializeCanvas();
     }
 
@@ -149,10 +164,18 @@ class BibleQuoteGenerator {
         const reverseAnswer = document.getElementById('reverse-game-answer');
         const reverseCategorySelect = document.getElementById('reverse-category-select');
         const reverseDifficultySelect = document.getElementById('reverse-difficulty-select');
+        const scrambleStartBtn = document.getElementById('scramble-start-btn');
+        const scrambleNextBtn = document.getElementById('scramble-next-btn');
+        const scrambleCheckBtn = document.getElementById('scramble-check-btn');
+        const scrambleRevealBtn = document.getElementById('scramble-reveal-btn');
+        const scrambleAnswer = document.getElementById('scramble-game-answer');
+        const scrambleCategorySelect = document.getElementById('scramble-category-select');
+        const scrambleDifficultySelect = document.getElementById('scramble-difficulty-select');
 
         gameSpecificBtn.disabled = true;
         gameNextBtn.disabled = true;
         reverseNextBtn.disabled = true;
+        scrambleNextBtn.disabled = true;
 
         generateBtn.addEventListener('click', () => this.generateImage());
         downloadBtn.addEventListener('click', () => this.downloadImage());
@@ -189,6 +212,21 @@ class BibleQuoteGenerator {
         reverseDifficultySelect.addEventListener('change', () => {
             this.reverseGameState.difficulty = reverseDifficultySelect.value;
             this.persistReverseGamePreferences();
+        });
+        scrambleStartBtn.addEventListener('click', () => this.startScrambleGame());
+        scrambleNextBtn.addEventListener('click', () => this.startScrambleGame());
+        scrambleCheckBtn.addEventListener('click', () => this.checkScrambleGameAnswer());
+        scrambleRevealBtn.addEventListener('click', () => this.revealScrambleGameAnswer());
+        scrambleAnswer.addEventListener('input', () => {
+            scrambleCheckBtn.disabled = !this.scrambleGameState.term || scrambleAnswer.value.trim().length === 0;
+        });
+        scrambleCategorySelect.addEventListener('change', () => {
+            this.scrambleGameState.category = scrambleCategorySelect.value;
+            this.persistScrambleGamePreferences();
+        });
+        scrambleDifficultySelect.addEventListener('change', () => {
+            this.scrambleGameState.difficulty = scrambleDifficultySelect.value;
+            this.persistScrambleGamePreferences();
         });
         
         bookSelect.addEventListener('change', () => this.onBookChange());
@@ -257,6 +295,64 @@ class BibleQuoteGenerator {
         }
 
         localStorage.setItem(this.reverseGameStateKey, JSON.stringify(this.reverseGameState));
+    }
+
+    persistScrambleGamePreferences() {
+        const categorySelect = document.getElementById('scramble-category-select');
+        const difficultySelect = document.getElementById('scramble-difficulty-select');
+        localStorage.setItem(this.scrambleGameCategoryKey, categorySelect.value);
+        localStorage.setItem(this.scrambleGameDifficultyKey, difficultySelect.value);
+    }
+
+    loadScrambleGamePreferences() {
+        const savedCategory = localStorage.getItem(this.scrambleGameCategoryKey) || 'random';
+        const savedDifficulty = localStorage.getItem(this.scrambleGameDifficultyKey) || 'medium';
+        const categorySelect = document.getElementById('scramble-category-select');
+        const difficultySelect = document.getElementById('scramble-difficulty-select');
+
+        if (categorySelect) {
+            categorySelect.value = savedCategory;
+        }
+        if (difficultySelect) {
+            difficultySelect.value = savedDifficulty;
+        }
+
+        this.scrambleGameState.category = savedCategory;
+        this.scrambleGameState.difficulty = savedDifficulty;
+
+        const savedScore = parseInt(localStorage.getItem(this.scrambleGameHighScoreKey) || '0', 10) || 0;
+        const highScoreEl = document.getElementById('scramble-game-high-score');
+        if (highScoreEl) {
+            highScoreEl.textContent = `${savedScore}%`;
+        }
+
+        const savedStateRaw = localStorage.getItem(this.scrambleGameStateKey);
+        if (savedStateRaw) {
+            try {
+                const savedState = JSON.parse(savedStateRaw);
+                if (savedState && savedState.term) {
+                    this.scrambleGameState = { ...this.scrambleGameState, ...savedState };
+                }
+            } catch (error) {
+                console.warn('Failed to restore scramble game state', error);
+            }
+        }
+    }
+
+    persistScrambleGameState() {
+        if (!this.scrambleGameState.term) {
+            return;
+        }
+
+        localStorage.setItem(this.scrambleGameStateKey, JSON.stringify(this.scrambleGameState));
+    }
+
+    updateScrambleHighScore(score) {
+        const currentBest = parseInt(localStorage.getItem(this.scrambleGameHighScoreKey) || '0', 10) || 0;
+        if (score > currentBest) {
+            localStorage.setItem(this.scrambleGameHighScoreKey, String(score));
+            document.getElementById('scramble-game-high-score').textContent = `${score}%`;
+        }
     }
 
     createReverseGamePool() {
@@ -384,6 +480,30 @@ class BibleQuoteGenerator {
         return Array.from(String(text || '').replace(/\s+/g, ' ').trim()).reverse().join('');
     }
 
+    scrambleWord(word) {
+        const letters = Array.from(String(word || '').replace(/\s+/g, ' ').trim()).filter(Boolean);
+        if (letters.length <= 2) {
+            return letters.join('');
+        }
+
+        for (let attempt = 0; attempt < 8; attempt += 1) {
+            const shuffled = [...letters].sort(() => Math.random() - 0.5).join('');
+            if (shuffled !== letters.join('')) {
+                return shuffled;
+            }
+        }
+
+        return letters.reverse().join('');
+    }
+
+    scrambleText(text) {
+        return String(text || '')
+            .split(/(\s+)/)
+            .map(part => (part.trim() ? this.scrambleWord(part) : part))
+            .join('')
+            .trim();
+    }
+
     getReverseDifficultyRank(difficulty) {
         switch (difficulty) {
             case 'easy':
@@ -463,6 +583,105 @@ class BibleQuoteGenerator {
         }
 
         return terms;
+    }
+
+    buildScrambleGamePool(category, difficulty = 'medium') {
+        return this.buildReverseGamePool(category, difficulty);
+    }
+
+    pickScrambleGameTerm() {
+        const category = document.getElementById('scramble-category-select').value || 'random';
+        const difficulty = document.getElementById('scramble-difficulty-select').value || 'medium';
+        const pool = this.buildScrambleGamePool(category, difficulty);
+        if (!pool.length) {
+            return null;
+        }
+
+        return pool[Math.floor(Math.random() * pool.length)];
+    }
+
+    startScrambleGame() {
+        const selected = this.pickScrambleGameTerm();
+        if (!selected) {
+            document.getElementById('scramble-game-status').textContent = 'لا توجد كلمات متاحة لهذه الفئة.';
+            return;
+        }
+
+        const scrambled = this.scrambleText(selected.term);
+        this.scrambleGameState = {
+            term: selected.term,
+            clue: scrambled,
+            category: selected.category,
+            difficulty: document.getElementById('scramble-difficulty-select').value || 'medium',
+            lastScore: 0,
+            answers: selected.answers || this.getReverseAnswerVariants(selected.term)
+        };
+
+        document.getElementById('scramble-game-clue').textContent = scrambled;
+        document.getElementById('scramble-game-category').textContent = selected.category;
+        document.getElementById('scramble-game-answer').value = '';
+        document.getElementById('scramble-game-answer').disabled = false;
+        document.getElementById('scramble-check-btn').disabled = true;
+        document.getElementById('scramble-reveal-btn').disabled = false;
+        document.getElementById('scramble-next-btn').disabled = true;
+        document.getElementById('scramble-game-status').textContent = 'فك الحروف المبعثرة واكتب الكلمة الأصلية.';
+        document.getElementById('scramble-game-score').textContent = '0%';
+        this.startScrambleGameTimer();
+        this.persistScrambleGameState();
+    }
+
+    startScrambleGameTimer() {
+        const timerEl = document.getElementById('scramble-game-timer');
+        this.stopScrambleGameTimer();
+        this.scrambleGameStartTime = Date.now();
+        this.scrambleGameTimer = setInterval(() => {
+            const elapsed = Math.floor((Date.now() - this.scrambleGameStartTime) / 1000);
+            const minutes = String(Math.floor(elapsed / 60)).padStart(2, '0');
+            const seconds = String(elapsed % 60).padStart(2, '0');
+            timerEl.textContent = `${minutes}:${seconds}`;
+        }, 1000);
+    }
+
+    stopScrambleGameTimer() {
+        if (this.scrambleGameTimer) {
+            clearInterval(this.scrambleGameTimer);
+            this.scrambleGameTimer = null;
+        }
+    }
+
+    checkScrambleGameAnswer() {
+        if (!this.scrambleGameState.term) {
+            this.showValidationMessage('ابدأ لعبة الكلمات المبعثرة أولاً.', 'error');
+            return;
+        }
+
+        const userAnswer = this.normalizeReverseGameText(document.getElementById('scramble-game-answer').value);
+        const expectedAnswers = this.scrambleGameState.answers && this.scrambleGameState.answers.length
+            ? this.scrambleGameState.answers
+            : this.getReverseAnswerVariants(this.scrambleGameState.term);
+
+        const score = expectedAnswers.some(answer => userAnswer === answer) ? 100 : 0;
+        this.scrambleGameState.lastScore = score;
+        document.getElementById('scramble-game-status').textContent = score === 100
+            ? 'إجابة صحيحة. أحسنت.'
+            : 'إجابة غير صحيحة. جرّب مرة أخرى.';
+        document.getElementById('scramble-game-score').textContent = `${score}%`;
+        this.updateScrambleHighScore(score);
+        this.persistScrambleGameState();
+        this.stopScrambleGameTimer();
+        document.getElementById('scramble-check-btn').disabled = true;
+        document.getElementById('scramble-next-btn').disabled = false;
+    }
+
+    revealScrambleGameAnswer() {
+        if (!this.scrambleGameState.term) {
+            return;
+        }
+
+        document.getElementById('scramble-game-answer').value = this.scrambleGameState.term;
+        document.getElementById('scramble-game-status').textContent = 'تم إظهار الإجابة الصحيحة.';
+        document.getElementById('scramble-reveal-btn').disabled = true;
+        this.stopScrambleGameTimer();
     }
 
     startReverseGame() {
@@ -695,10 +914,12 @@ class BibleQuoteGenerator {
         const quoteViewBtn = document.getElementById('quote-view-btn');
         const gameViewBtn = document.getElementById('game-view-btn');
         const reverseViewBtn = document.getElementById('reverse-view-btn');
+        const scrambleViewBtn = document.getElementById('scramble-view-btn');
 
         quoteViewBtn.addEventListener('click', () => this.setActiveView('quote'));
         gameViewBtn.addEventListener('click', () => this.setActiveView('game'));
         reverseViewBtn.addEventListener('click', () => this.setActiveView('reverse'));
+        scrambleViewBtn.addEventListener('click', () => this.setActiveView('scramble'));
 
         this.setActiveView('quote');
     }
@@ -709,19 +930,24 @@ class BibleQuoteGenerator {
         const quoteViewPanel = document.getElementById('quote-view-panel');
         const gameViewPanel = document.getElementById('game-view-panel');
         const reverseViewPanel = document.getElementById('reverse-view-panel');
+        const scrambleViewPanel = document.getElementById('scramble-view-panel');
         const quoteViewBtn = document.getElementById('quote-view-btn');
         const gameViewBtn = document.getElementById('game-view-btn');
         const reverseViewBtn = document.getElementById('reverse-view-btn');
+        const scrambleViewBtn = document.getElementById('scramble-view-btn');
 
         const isQuoteView = view === 'quote';
         const isGameView = view === 'game';
         const isReverseView = view === 'reverse';
+        const isScrambleView = view === 'scramble';
         quoteViewPanel.classList.toggle('hidden', !isQuoteView);
         gameViewPanel.classList.toggle('hidden', !isGameView);
         reverseViewPanel.classList.toggle('hidden', !isReverseView);
+        scrambleViewPanel.classList.toggle('hidden', !isScrambleView);
         quoteViewBtn.classList.toggle('active', isQuoteView);
         gameViewBtn.classList.toggle('active', isGameView);
         reverseViewBtn.classList.toggle('active', isReverseView);
+        scrambleViewBtn.classList.toggle('active', isScrambleView);
     }
 
     getGameVersePool() {
