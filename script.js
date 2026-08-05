@@ -1739,17 +1739,33 @@ class BibleQuoteGenerator {
     }
 
     selectVerse(verseData) {
-        this.currentVerse = verseData;
-        document.getElementById('verse-text').value = verseData.text;
-        document.getElementById('verse-reference').value = verseData.reference;
         document.getElementById('verse-search').value = '';
-        if (!this.currentVerse.bookId) {
-            this.currentVerse.bookId = verseData.book || verseData.book_ar || verseData.bookName || '';
+
+        const bookSelect = document.getElementById('book-select');
+        const chapterSelect = document.getElementById('chapter-select');
+        const verseSelect = document.getElementById('verse-select');
+        const loadVerseBtn = document.getElementById('load-verse-btn');
+
+        const targetBookName = verseData.book_ar || verseData.bookName || verseData.book || verseData.bookId || '';
+        const resolvedBook = bibleAPI.getBookByName(this.bibleData, targetBookName) || bibleAPI.getBookByName(this.bibleData, verseData.book || '');
+
+        if (!resolvedBook) {
+            this.showValidationMessage('تعذر تحديد السفر المرتبط بهذه النتيجة.', 'error');
+            return;
         }
-        if (!this.currentVerse.bookName) {
-            this.currentVerse.bookName = verseData.book_ar || verseData.book || verseData.bookName || '';
-        }
-        this.showValidationMessage('تم اختيار الآية بنجاح', 'success');
+
+        const resolvedBookId = resolvedBook.abbreviation || resolvedBook.name;
+        bookSelect.value = resolvedBookId;
+        this.onBookChange();
+
+        chapterSelect.value = String(verseData.chapter);
+        this.onChapterChange();
+
+        verseSelect.value = String(verseData.verse);
+        this.onVerseChange();
+
+        loadVerseBtn.disabled = false;
+        this.loadSelectedVerse();
     }
 
     showValidationMessage(message, type) {
