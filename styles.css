@@ -224,11 +224,27 @@ main {
     box-shadow: 0 18px 40px rgba(4, 11, 24, 0.28);
 }
 
+.reverse-game-section {
+    background: linear-gradient(135deg, #0b192c 0%, #162946 100%);
+    color: #edf4ff;
+    padding: 30px;
+    border-radius: 18px;
+    box-shadow: 0 18px 40px rgba(4, 11, 24, 0.28);
+}
+
 .memorize-game-section h2,
 .memorize-game-section label,
 .memorize-game-section span,
 .memorize-game-section p,
 .memorize-game-section strong {
+    color: inherit;
+}
+
+.reverse-game-section h2,
+.reverse-game-section label,
+.reverse-game-section span,
+.reverse-game-section p,
+.reverse-game-section strong {
     color: inherit;
 }
 
@@ -253,9 +269,22 @@ main {
     color: #f4f7fb;
 }
 
+.reverse-game-section .input-group label,
+.reverse-game-section .game-stat span,
+.reverse-game-section .game-status,
+.reverse-game-section .game-score-card span {
+    color: #f4f7fb;
+}
+
 .memorize-game-section .game-status,
 .memorize-game-section .game-score-card strong,
 .memorize-game-section .game-stat strong {
+    color: #ffffff;
+}
+
+.reverse-game-section .game-status,
+.reverse-game-section .game-score-card strong,
+.reverse-game-section .game-stat strong {
     color: #ffffff;
 }
 

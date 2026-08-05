@@ -31,7 +31,6 @@ class BibleQuoteGenerator {
         this.gameDifficultyKey = 'bible-game-difficulty';
         this.pendingGameRestore = null;
         this.gameVersePool = [];
-        this.gameMode = 'memorize';
         this.reverseGameTimer = null;
         this.reverseGameStartTime = null;
         this.reverseGameState = {
@@ -42,30 +41,8 @@ class BibleQuoteGenerator {
         };
         this.reverseGameHighScoreKey = 'bible-reverse-game-high-score';
         this.reverseGameStateKey = 'bible-reverse-game-state';
-        this.reverseGameModeKey = 'bible-game-mode';
         this.reverseGameCategoryKey = 'bible-reverse-game-category';
-        this.reverseGamePool = {
-            books: [
-                'تكوين', 'خروج', 'لاويين', 'عدد', 'تثنية', 'يشوع', 'القضاة', 'راعوث',
-                'صموئيل', 'ملوك', 'أخبار الأيام', 'عزرا', 'نحميا', 'أستير', 'أيوب',
-                'المزامير', 'الأمثال', 'جامعة', 'نشيد الأنشاد', 'إشعياء', 'إرميا',
-                'حزقيال', 'دانيال', 'هوشع', 'يوئيل', 'عاموس', 'عوبديا', 'يونان',
-                'ميخا', 'ناحوم', 'حبقوق', 'صفنيا', 'حجي', 'زكريا', 'ملاخي', 'متى',
-                'مرقس', 'لوقا', 'يوحنا', 'أعمال الرسل', 'رومية', 'كورنثوس', 'غلاطية',
-                'أفسس', 'فيلبي', 'كولوسي', 'تسالونيكي', 'تيموثاوس', 'تيطس', 'فليمون',
-                'عبرانيين', 'يعقوب', 'بطرس', 'يوحنا', 'يهوذا', 'الرؤيا'
-            ],
-            names: [
-                'إبراهيم', 'إسحاق', 'يعقوب', 'يوسف', 'موسى', 'هارون', 'داود', 'سليمان',
-                'إيليا', 'إليشع', 'يوحنا', 'بطرس', 'بولس', 'مريم', 'مرثا', 'لوقا',
-                'متى', 'مرقس', 'تيموثاوس', 'تيطس', 'يوشع', 'أستير', 'نحميا'
-            ],
-            places: [
-                'أورشليم', 'بيت لحم', 'الناصرة', 'الجليل', 'أريحا', 'السامرة', 'بيت إيل',
-                'أورشليم الجديدة', 'قادش', 'أدوم', 'مصر', 'بابل', 'أورشليم العليا',
-                'الخليج', 'النهر', 'البرية', 'جبل سيناء', 'جبل الكرمل'
-            ]
-        };
+        this.reverseGamePool = this.createReverseGamePool();
         
         // Load logo image
         this.logoImage.onload = () => {
@@ -78,7 +55,6 @@ class BibleQuoteGenerator {
         this.setupColorCombinations();
         this.setupFontSelection();
         this.setupViewSwitcher();
-        this.setupGameModeSwitcher();
         this.loadGamePreferences();
         this.loadReverseGamePreferences();
         this.initializeCanvas();
@@ -164,8 +140,6 @@ class BibleQuoteGenerator {
         const gameNextBtn = document.getElementById('game-next-btn');
         const gameVerseDisplay = document.getElementById('game-verse-display');
         const gameDifficultySelect = document.getElementById('game-difficulty-select');
-        const memorizeModeBtn = document.getElementById('memorize-mode-btn');
-        const reverseModeBtn = document.getElementById('reverse-mode-btn');
         const reverseStartBtn = document.getElementById('reverse-start-btn');
         const reverseNextBtn = document.getElementById('reverse-next-btn');
         const reverseCheckBtn = document.getElementById('reverse-check-btn');
@@ -198,8 +172,6 @@ class BibleQuoteGenerator {
         gameBookSelect.addEventListener('change', () => this.onGameBookChange());
         gameChapterSelect.addEventListener('change', () => this.onGameChapterChange());
         gameVerseSelect.addEventListener('change', () => this.onGameVerseChange());
-        memorizeModeBtn.addEventListener('click', () => this.setGameMode('memorize'));
-        reverseModeBtn.addEventListener('click', () => this.setGameMode('reverse'));
         reverseStartBtn.addEventListener('click', () => this.startReverseGame());
         reverseNextBtn.addEventListener('click', () => this.startReverseGame());
         reverseCheckBtn.addEventListener('click', () => this.checkReverseGameAnswer());
@@ -230,26 +202,6 @@ class BibleQuoteGenerator {
         searchInput.value = '';
         document.getElementById('search-results').innerHTML = '';
         document.getElementById('search-results').style.display = 'none';
-    }
-
-    setupGameModeSwitcher() {
-        const savedMode = localStorage.getItem(this.reverseGameModeKey) || 'memorize';
-        this.setGameMode(savedMode);
-    }
-
-    setGameMode(mode) {
-        this.gameMode = mode;
-        const memorizeModeBtn = document.getElementById('memorize-mode-btn');
-        const reverseModeBtn = document.getElementById('reverse-mode-btn');
-        const memorizePanel = document.getElementById('memorize-game-panel');
-        const reversePanel = document.getElementById('reverse-game-panel');
-
-        const isMemorize = mode === 'memorize';
-        memorizeModeBtn.classList.toggle('active', isMemorize);
-        reverseModeBtn.classList.toggle('active', !isMemorize);
-        memorizePanel.classList.toggle('hidden', !isMemorize);
-        reversePanel.classList.toggle('hidden', isMemorize);
-        localStorage.setItem(this.reverseGameModeKey, mode);
     }
 
     persistReverseGamePreferences() {
@@ -292,8 +244,59 @@ class BibleQuoteGenerator {
         localStorage.setItem(this.reverseGameStateKey, JSON.stringify(this.reverseGameState));
     }
 
+    createReverseGamePool() {
+        const bookNames = (typeof bibleDatabase !== 'undefined' && Array.isArray(bibleDatabase.books))
+            ? bibleDatabase.books.map(book => book.name)
+            : [
+                'التكوين', 'الخروج', 'اللاويين', 'العدد', 'التثنية', 'يشوع', 'القضاة', 'راعوث',
+                'صموئيل الأول', 'صموئيل الثاني', 'الملوك الأول', 'الملوك الثاني', 'أخبار الأيام الأول',
+                'أخبار الأيام الثاني', 'عزرا', 'نحميا', 'أستير', 'أيوب', 'المزامير', 'الأمثال', 'جامعة',
+                'نشيد الأنشاد', 'إشعياء', 'إرميا', 'مراثي إرميا', 'حزقيال', 'دانيال', 'هوشع', 'يوئيل',
+                'عاموس', 'عوبديا', 'يونان', 'ميخا', 'ناحوم', 'حبقوق', 'صفنيا', 'حجي', 'زكريا', 'ملاخي',
+                'متى', 'مرقس', 'لوقا', 'يوحنا', 'أعمال الرسل', 'رومية', 'كورنثوس الأولى', 'كورنثوس الثانية',
+                'غلاطية', 'أفسس', 'فيلبي', 'كولوسي', 'تسالونيكي الأولى', 'تسالونيكي الثانية', 'تيموثاوس الأولى',
+                'تيموثاوس الثانية', 'تيطس', 'فليمون', 'العبرانيين', 'يعقوب', 'بطرس الأولى', 'بطرس الثانية',
+                'يوحنا الأولى', 'يوحنا الثانية', 'يوحنا الثالثة', 'يهوذا', 'رؤيا يوحنا'
+            ];
+
+        return {
+            books: Array.from(new Set(bookNames)),
+            names: [
+                'إبراهيم', 'إسحاق', 'يعقوب', 'يوسف', 'موسى', 'هارون', 'يوشع', 'داود', 'سليمان', 'شاول',
+                'صموئيل', 'إيليا', 'إليشع', 'إشعياء', 'إرميا', 'حزقيال', 'دانيال', 'عزرا', 'نحميا', 'أستير',
+                'أيوب', 'يوئيل', 'عاموس', 'يونان', 'ميخا', 'مريم', 'مرثا', 'يوحنا المعمدان', 'يوحنا', 'بطرس',
+                'بولس', 'برنابا', 'تيموثاوس', 'تيطس', 'فليمون', 'يعقوب', 'يهوذا', 'متى', 'مرقس', 'لوقا',
+                'آدم', 'نوح', 'إبراهيم الخليل', 'إسحاق بن إبراهيم', 'راحيل', 'ليئة', 'دبورة', 'راعوث', 'أبيجايل',
+                'مردخاي', 'أورشليمية', 'مجدلية'
+            ],
+            places: [
+                'أورشليم', 'بيت لحم', 'الناصرة', 'الجليل', 'أريحا', 'السامرة', 'بيت إيل', 'بيت عنيا', 'بيت صيدا',
+                'كفرناحوم', 'أورشليم الجديدة', 'بيت فاجي', 'قانا الجليل', 'الناصرة الجليليّة', 'النهر الأردن',
+                'بحر الجليل', 'بحر الميت', 'جبل سيناء', 'جبل حوريب', 'جبل الكرمل', 'جبل الزيتون', 'البرية',
+                'أدوم', 'مصر', 'بابل', 'نينوى', 'أور', 'حبرون', 'شكيم', 'دور', 'رامة', 'أفرايم', 'جلعاد',
+                'أشقلون', 'غزة', 'صيدا', 'صور', 'دمشق', 'أنطاكية', 'أفسس', 'فيلبي', 'كورنثوس', 'رومية'
+            ]
+        };
+    }
+
     normalizeReverseGameText(text) {
         return this.normalizeArabicForMatch(text).replace(/\s+/g, ' ').trim();
+    }
+
+    getReverseAnswerVariants(text) {
+        const normalized = this.normalizeReverseGameText(text);
+        const variants = new Set([normalized]);
+
+        if (normalized.startsWith('ال') && normalized.length > 2) {
+            variants.add(normalized.slice(2));
+        }
+
+        const words = normalized.split(' ');
+        if (words.length > 1 && words[0] === 'ال') {
+            variants.add(words.slice(1).join(' '));
+        }
+
+        return Array.from(variants).filter(Boolean);
     }
 
     reverseCharacters(text) {
@@ -314,15 +317,27 @@ class BibleQuoteGenerator {
         const terms = [];
 
         if (category === 'book' || category === 'random') {
-            terms.push(...this.reverseGamePool.books.map(term => ({ term, category: 'اسم سفر' })));
+            terms.push(...this.reverseGamePool.books.map(term => ({
+                term,
+                category: 'اسم سفر',
+                answers: this.getReverseAnswerVariants(term)
+            })));
         }
 
         if (category === 'name' || category === 'random') {
-            terms.push(...this.reverseGamePool.names.map(term => ({ term, category: 'اسم' })));
+            terms.push(...this.reverseGamePool.names.map(term => ({
+                term,
+                category: 'اسم',
+                answers: this.getReverseAnswerVariants(term)
+            })));
         }
 
         if (category === 'place' || category === 'random') {
-            terms.push(...this.reverseGamePool.places.map(term => ({ term, category: 'مكان' })));
+            terms.push(...this.reverseGamePool.places.map(term => ({
+                term,
+                category: 'مكان',
+                answers: this.getReverseAnswerVariants(term)
+            })));
         }
 
         return terms;
@@ -340,7 +355,8 @@ class BibleQuoteGenerator {
             term: selected.term,
             clue: reversed,
             category: selected.category,
-            lastScore: 0
+            lastScore: 0,
+            answers: selected.answers || this.getReverseAnswerVariants(selected.term)
         };
 
         document.getElementById('reverse-game-clue').textContent = reversed;
@@ -351,6 +367,7 @@ class BibleQuoteGenerator {
         document.getElementById('reverse-reveal-btn').disabled = false;
         document.getElementById('reverse-next-btn').disabled = true;
         document.getElementById('reverse-game-status').textContent = 'اقرأ الكلمة المعكوسة واكتب الإجابة الصحيحة.';
+        document.getElementById('reverse-game-score').textContent = '0%';
         this.startReverseGameTimer();
         this.persistReverseGameState();
     }
@@ -389,13 +406,16 @@ class BibleQuoteGenerator {
         }
 
         const userAnswer = this.normalizeReverseGameText(document.getElementById('reverse-game-answer').value);
-        const expectedAnswer = this.normalizeReverseGameText(this.reverseGameState.term);
+        const expectedAnswers = this.reverseGameState.answers && this.reverseGameState.answers.length
+            ? this.reverseGameState.answers
+            : this.getReverseAnswerVariants(this.reverseGameState.term);
 
-        const score = userAnswer === expectedAnswer ? 100 : 0;
+        const score = expectedAnswers.some(answer => userAnswer === answer) ? 100 : 0;
         this.reverseGameState.lastScore = score;
         document.getElementById('reverse-game-status').textContent = score === 100
             ? 'إجابة صحيحة. أحسنت.'
             : 'إجابة غير صحيحة. جرّب مرة أخرى.';
+        document.getElementById('reverse-game-score').textContent = `${score}%`;
         this.updateReverseHighScore(score);
         this.persistReverseGameState();
         this.stopReverseGameTimer();
@@ -551,9 +571,11 @@ class BibleQuoteGenerator {
     setupViewSwitcher() {
         const quoteViewBtn = document.getElementById('quote-view-btn');
         const gameViewBtn = document.getElementById('game-view-btn');
+        const reverseViewBtn = document.getElementById('reverse-view-btn');
 
         quoteViewBtn.addEventListener('click', () => this.setActiveView('quote'));
         gameViewBtn.addEventListener('click', () => this.setActiveView('game'));
+        reverseViewBtn.addEventListener('click', () => this.setActiveView('reverse'));
 
         this.setActiveView('quote');
     }
@@ -563,14 +585,20 @@ class BibleQuoteGenerator {
 
         const quoteViewPanel = document.getElementById('quote-view-panel');
         const gameViewPanel = document.getElementById('game-view-panel');
+        const reverseViewPanel = document.getElementById('reverse-view-panel');
         const quoteViewBtn = document.getElementById('quote-view-btn');
         const gameViewBtn = document.getElementById('game-view-btn');
+        const reverseViewBtn = document.getElementById('reverse-view-btn');
 
         const isQuoteView = view === 'quote';
+        const isGameView = view === 'game';
+        const isReverseView = view === 'reverse';
         quoteViewPanel.classList.toggle('hidden', !isQuoteView);
-        gameViewPanel.classList.toggle('hidden', isQuoteView);
+        gameViewPanel.classList.toggle('hidden', !isGameView);
+        reverseViewPanel.classList.toggle('hidden', !isReverseView);
         quoteViewBtn.classList.toggle('active', isQuoteView);
-        gameViewBtn.classList.toggle('active', !isQuoteView);
+        gameViewBtn.classList.toggle('active', isGameView);
+        reverseViewBtn.classList.toggle('active', isReverseView);
     }
 
     getGameVersePool() {
