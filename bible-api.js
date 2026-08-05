@@ -34,11 +34,13 @@ class BibleAPI {
     // Get book data by name
     getBookByName(bibleData, bookName) {
         if (!bibleData || !bibleData.books) return null;
-        
-        return bibleData.books.find(book => 
-            book.name === bookName || 
-            book.name_ar === bookName ||
-            book.abbreviation === bookName
+
+        const normalizedBookName = this.normalizeSearchText(bookName);
+
+        return bibleData.books.find(book =>
+            this.normalizeSearchText(book.name) === normalizedBookName ||
+            this.normalizeSearchText(book.name_ar || book.name) === normalizedBookName ||
+            this.normalizeSearchText(book.abbreviation || '') === normalizedBookName
         );
     }
 
@@ -94,7 +96,15 @@ class BibleAPI {
         if (!bibleData || !bibleData.books || !query) return [];
         
         const results = [];
-        const lowerQuery = this.normalizeSearchText(query);
+        const normalizedQuery = this.normalizeSearchText(query);
+        const referenceQuery = this.parseReferenceQuery(query);
+
+        if (referenceQuery) {
+            const exactVerse = this.findVerseByReference(bibleData, referenceQuery);
+            if (exactVerse) {
+                return [exactVerse];
+            }
+        }
         
         for (const book of bibleData.books) {
             if (!book.chapters || !Array.isArray(book.chapters)) continue;
@@ -106,7 +116,7 @@ class BibleAPI {
                     if (verseObj && verseObj.text) {
                         const cleanVerseText = this.normalizeSearchText(verseObj.text);
                         const cleanReference = this.normalizeSearchText(this.formatArabicReference(book.name_ar || book.name, chapterObj.chapter, verseObj.verse));
-                        if (cleanVerseText.includes(lowerQuery) || cleanReference.includes(lowerQuery)) {
+                        if (cleanVerseText.includes(normalizedQuery) || cleanReference.includes(normalizedQuery)) {
                             // Clean text to remove repeated words
                             let cleanText = verseObj.text;
                             cleanText = cleanText.replace(/\b(أو|او)\b(?:\s+\1)+/g, '$1'); // Remove repeated "أو"
@@ -129,6 +139,47 @@ class BibleAPI {
         return results.slice(0, 50); // Limit results to prevent overwhelming
     }
 
+    parseReferenceQuery(query) {
+        if (!query) return null;
+
+        const normalizedQuery = this.normalizeSearchText(query).replace(/\s+/g, ' ').trim();
+        const referenceMatch = normalizedQuery.match(/^(.*?)(\d+)\s*[:\-]\s*(\d+)$/);
+
+        if (!referenceMatch) {
+            return null;
+        }
+
+        const bookName = referenceMatch[1].trim();
+        const chapter = parseInt(referenceMatch[2], 10);
+        const verse = parseInt(referenceMatch[3], 10);
+
+        if (!bookName || Number.isNaN(chapter) || Number.isNaN(verse)) {
+            return null;
+        }
+
+        return { bookName, chapter, verse };
+    }
+
+    findVerseByReference(bibleData, referenceQuery) {
+        const book = this.getBookByName(bibleData, referenceQuery.bookName);
+        if (!book || !book.chapters || !Array.isArray(book.chapters)) return null;
+
+        const chapterObj = book.chapters.find(ch => ch && ch.chapter == referenceQuery.chapter);
+        if (!chapterObj || !chapterObj.verses || !Array.isArray(chapterObj.verses)) return null;
+
+        const verseObj = chapterObj.verses.find(v => v && v.verse == referenceQuery.verse);
+        if (!verseObj || !verseObj.text) return null;
+
+        return {
+            book: book.name,
+            book_ar: book.name_ar || book.name,
+            chapter: chapterObj.chapter,
+            verse: verseObj.verse,
+            text: verseObj.text,
+            reference: this.formatArabicReference(book.name_ar || book.name, chapterObj.chapter, verseObj.verse)
+        };
+    }
+
     // Remove Arabic diacritics (tashkeel) for better search matching
     removeDiacritics(text) {
         // Normalize common Arabic search variants and remove diacritics
@@ -145,6 +196,7 @@ class BibleAPI {
 
     normalizeSearchText(text) {
         return this.removeDiacritics(text)
+            .replace(/[٠-٩]/g, digit => '0123456789'[parseInt(digit, 10)])
             .replace(/[\u060C\u061B\u061F\.,!?:;"'()\[\]{}«»ـ]/g, ' ')
             .replace(/\s+/g, ' ')
             .trim();

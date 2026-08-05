@@ -10,6 +10,8 @@ class BibleQuoteGenerator {
         this.currentChapter = null;
         this.currentVerse = null;
         this.searchTimeout = null;
+        this.searchResults = [];
+        this.searchActiveIndex = -1;
         this.logoImage = new Image();
         this.logoLoaded = false;
         
@@ -1619,56 +1621,121 @@ class BibleQuoteGenerator {
     setupSearchFunctionality() {
         const searchInput = document.getElementById('verse-search');
         const searchResults = document.getElementById('search-results');
-        let searchTimeout;
+        const searchLoading = document.getElementById('search-loading');
+
+        const closeSearchResults = () => {
+            searchResults.style.display = 'none';
+            this.searchActiveIndex = -1;
+            this.searchResults = [];
+            searchResults.innerHTML = '';
+        };
+
+        const runSearch = query => {
+            this.performSearch(query);
+        };
 
         searchInput.addEventListener('input', (e) => {
-            clearTimeout(searchTimeout);
+            clearTimeout(this.searchTimeout);
             const query = e.target.value.trim();
 
             if (query.length < 2 || !this.bibleData) {
-                searchResults.style.display = 'none';
+                searchLoading.classList.add('hidden');
+                closeSearchResults();
                 return;
             }
 
-            searchTimeout = setTimeout(() => {
-                this.performSearch(query);
-            }, 300);
+            searchLoading.classList.remove('hidden');
+            searchResults.style.display = 'none';
+            this.searchTimeout = setTimeout(() => {
+                runSearch(query);
+            }, 250);
+        });
+
+        searchInput.addEventListener('keydown', (e) => {
+            if (searchResults.style.display !== 'block' || !this.searchResults.length) {
+                if (e.key === 'Escape') {
+                    closeSearchResults();
+                    searchInput.blur();
+                }
+                return;
+            }
+
+            if (e.key === 'ArrowDown') {
+                e.preventDefault();
+                this.searchActiveIndex = (this.searchActiveIndex + 1) % this.searchResults.length;
+                this.renderSearchResults();
+            } else if (e.key === 'ArrowUp') {
+                e.preventDefault();
+                this.searchActiveIndex = this.searchActiveIndex <= 0
+                    ? this.searchResults.length - 1
+                    : this.searchActiveIndex - 1;
+                this.renderSearchResults();
+            } else if (e.key === 'Enter') {
+                e.preventDefault();
+                const activeResult = this.searchResults[this.searchActiveIndex] || this.searchResults[0];
+                if (activeResult) {
+                    this.selectVerse(activeResult);
+                    closeSearchResults();
+                }
+            } else if (e.key === 'Escape') {
+                closeSearchResults();
+            }
         });
 
         // Hide search results when clicking outside
         document.addEventListener('click', (e) => {
-            if (!e.target.closest('.input-group')) {
-                searchResults.style.display = 'none';
+            if (!e.target.closest('.search-control')) {
+                closeSearchResults();
             }
         });
     }
 
     performSearch(query) {
         const searchResults = document.getElementById('search-results');
+        const searchLoading = document.getElementById('search-loading');
         const results = bibleAPI.searchVerses(this.bibleData, query);
 
-        if (results.length === 0) {
-            searchResults.innerHTML = '<div class="search-result-item">لا توجد نتائج</div>';
+        this.searchResults = results.slice(0, 10);
+        this.searchActiveIndex = this.searchResults.length ? 0 : -1;
+
+        if (this.searchResults.length === 0) {
+            searchLoading.classList.add('hidden');
+            searchResults.innerHTML = '<div class="search-result-item empty">لا توجد نتائج</div>';
             searchResults.style.display = 'block';
             return;
         }
 
+        this.renderSearchResults();
+        searchLoading.classList.add('hidden');
+        searchResults.style.display = 'block';
+    }
+
+    renderSearchResults() {
+        const searchResults = document.getElementById('search-results');
         searchResults.innerHTML = '';
-        results.slice(0, 10).forEach(result => {
+
+        this.searchResults.forEach((result, index) => {
             const item = document.createElement('div');
-            item.className = 'search-result-item';
+            item.className = `search-result-item${index === this.searchActiveIndex ? ' active' : ''}`;
+            item.setAttribute('role', 'option');
+            item.setAttribute('aria-selected', index === this.searchActiveIndex ? 'true' : 'false');
+            item.tabIndex = -1;
             item.innerHTML = `
                 <div class="reference">${result.reference}</div>
                 <div class="text">${result.text.substring(0, 100)}${result.text.length > 100 ? '...' : ''}</div>
             `;
+            item.addEventListener('mouseenter', () => {
+                this.searchActiveIndex = index;
+                this.renderSearchResults();
+            });
             item.addEventListener('click', () => {
                 this.selectVerse(result);
                 searchResults.style.display = 'none';
+                this.searchResults = [];
+                this.searchActiveIndex = -1;
             });
             searchResults.appendChild(item);
         });
-
-        searchResults.style.display = 'block';
     }
 
     selectVerse(verseData) {

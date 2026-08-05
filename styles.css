@@ -1136,6 +1136,14 @@ main {
     box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
 }
 
+.search-loading {
+    margin-top: 8px;
+}
+
+.search-loading.hidden {
+    display: none;
+}
+
 .search-result-item {
     padding: 12px;
     border-bottom: 1px solid #f1f3f4;
@@ -1149,6 +1157,16 @@ main {
 
 .search-result-item:hover {
     background-color: #f8f9fa;
+}
+
+.search-result-item.active {
+    background-color: #e8f0fe;
+    outline: 2px solid rgba(91, 140, 255, 0.45);
+}
+
+.search-result-item.empty {
+    color: #6c757d;
+    cursor: default;
 }
 
 .search-result-item .reference {
