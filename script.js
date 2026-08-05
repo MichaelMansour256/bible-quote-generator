@@ -1741,6 +1741,10 @@ class BibleQuoteGenerator {
     selectVerse(verseData) {
         document.getElementById('verse-search').value = '';
 
+        if (this.activeView !== 'quote') {
+            this.setActiveView('quote');
+        }
+
         this.currentVerse = {
             ...verseData,
             bookId: verseData.bookId || verseData.book || verseData.book_ar || verseData.bookName || '',
@@ -1775,6 +1779,15 @@ class BibleQuoteGenerator {
 
         loadVerseBtn.disabled = false;
         this.showValidationMessage('تم اختيار الآية بنجاح', 'success');
+
+        const verseSelectionSection = document.querySelector('.verse-selection-section');
+        if (verseSelectionSection) {
+            verseSelectionSection.classList.add('search-selection-flash');
+            verseSelectionSection.scrollIntoView({ behavior: 'smooth', block: 'start' });
+            window.setTimeout(() => {
+                verseSelectionSection.classList.remove('search-selection-flash');
+            }, 1200);
+        }
     }
 
     showValidationMessage(message, type) {
