@@ -70,6 +70,7 @@ class BibleQuoteGenerator {
         this.logoImage.src = 'logo.svg';
         
         this.initializeEventListeners();
+        this.setupSearchFunctionality();
         this.loadBibleData();
         this.setupColorCombinations();
         this.setupFontSelection();
@@ -235,16 +236,6 @@ class BibleQuoteGenerator {
         bookSelect.addEventListener('change', () => this.onBookChange());
         chapterSelect.addEventListener('change', () => this.onChapterChange());
         verseSelect.addEventListener('change', () => this.onVerseChange());
-        
-        // Search functionality
-        searchInput.addEventListener('input', (e) => {
-            const query = e.target.value.trim();
-            if (query.length > 0) {
-                this.performSearch(query);
-            } else {
-                document.getElementById('search-results').style.display = 'none';
-            }
-        });
         
         // Clear search on page load
         searchInput.value = '';

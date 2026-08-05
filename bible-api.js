@@ -94,7 +94,7 @@ class BibleAPI {
         if (!bibleData || !bibleData.books || !query) return [];
         
         const results = [];
-        const lowerQuery = this.removeDiacritics(query.toLowerCase());
+        const lowerQuery = this.normalizeSearchText(query);
         
         for (const book of bibleData.books) {
             if (!book.chapters || !Array.isArray(book.chapters)) continue;
@@ -104,8 +104,9 @@ class BibleAPI {
                 
                 for (const verseObj of chapterObj.verses) {
                     if (verseObj && verseObj.text) {
-                        const cleanVerseText = this.removeDiacritics(verseObj.text.toLowerCase());
-                        if (cleanVerseText.includes(lowerQuery)) {
+                        const cleanVerseText = this.normalizeSearchText(verseObj.text);
+                        const cleanReference = this.normalizeSearchText(this.formatArabicReference(book.name_ar || book.name, chapterObj.chapter, verseObj.verse));
+                        if (cleanVerseText.includes(lowerQuery) || cleanReference.includes(lowerQuery)) {
                             // Clean text to remove repeated words
                             let cleanText = verseObj.text;
                             cleanText = cleanText.replace(/\b(أو|او)\b(?:\s+\1)+/g, '$1'); // Remove repeated "أو"
@@ -130,13 +131,23 @@ class BibleAPI {
 
     // Remove Arabic diacritics (tashkeel) for better search matching
     removeDiacritics(text) {
-        // More precise diacritics removal - only remove specific marks
+        // Normalize common Arabic search variants and remove diacritics
         return text
-            .replace(/[\u064B]/g, '') // Fathatan
-            .replace(/[\u064C]/g, '') // Dammatan
-            .replace(/[\u064D]/g, '') // Kasratan
-            .replace(/[\u064E]/g, '') // Sukun
-            .replace(/[\u0640]/g, '\u0627') // Ta marbuta to alif
+            .normalize('NFKD')
+            .replace(/[\u064B-\u065F\u0670\u0640]/g, '')
+            .replace(/[أإآٱ]/g, 'ا')
+            .replace(/ى/g, 'ي')
+            .replace(/ؤ/g, 'و')
+            .replace(/ئ/g, 'ي')
+            .replace(/ة/g, 'ه')
+            .toLowerCase();
+    }
+
+    normalizeSearchText(text) {
+        return this.removeDiacritics(text)
+            .replace(/[\u060C\u061B\u061F\.,!?:;"'()\[\]{}«»ـ]/g, ' ')
+            .replace(/\s+/g, ' ')
+            .trim();
     }
 
     // Get popular verses
