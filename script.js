@@ -1,3 +1,6 @@
+import { reverseGameMixin } from './js/games/reverse-game.js';
+import { scrambleGameMixin } from './js/games/scramble-game.js';
+
 class BibleQuoteGenerator {
     constructor() {
         this.canvas = document.getElementById('quote-canvas');
@@ -2176,6 +2179,8 @@ class BibleQuoteGenerator {
         link.click();
     }
 }
+
+Object.assign(BibleQuoteGenerator.prototype, reverseGameMixin, scrambleGameMixin);
 
 // Initialize the generator when the page loads
 document.addEventListener('DOMContentLoaded', () => {

@@ -1,250 +1,90 @@
-# Bible Quote Generator
+# منصة ألعاب الكتاب المقدس
 
-A modern Arabic Bible verse image generator with beautiful typography and intelligent design.
+A modular Arabic Bible web app with a verse image generator and three Bible games in one place.
+
+## What It Does
+
+- Quote generator for Bible verses with Arabic typography and downloadable images
+- Memory game to hide words in a verse and let the player fill them in
+- Reverse-words game for books, names, and places
+- Scrambled-words game using the same curated Bible term pool
+- Searchable Bible verse picker with Arabic-friendly matching
+- Saved preferences and score tracking with `localStorage`
+
+## Architecture
+
+The app is now split into a small core controller plus feature modules:
+
+```text
+bible-quote-generator/
+├── index.html
+├── script.js
+├── bible-api.js
+├── bible-database.js
+├── styles.css
+├── js/
+│   ├── game-utils.js
+│   └── games/
+│       ├── reverse-game.js
+│       └── scramble-game.js
+└── README.md
+```
+
+`script.js` remains the main application shell and imports the game modules as mixins. Shared Arabic normalization, scrambling, reversing, and curated Bible term helpers live in `js/game-utils.js`.
 
 ## Features
 
-### 🌟 Core Functionality
-- **Complete Arabic Bible**: Full Smith & Van Dyck Arabic Bible API integration
-- **Canonical Book Order**: Books sorted in proper biblical sequence (Genesis → Revelation)
-- **Verse Selection**: Browse by book, chapter, and verse
-- **Real-time Search**: Arabic text search with diacritics support
-- **Image Generation**: Beautiful typography with customizable backgrounds
-- **Smart Logo System**: Optional logo with automatic color inversion
-- **Download Support**: Save generated images locally with timestamps
+### Quote Generator
 
-### 🎨 Design Features
-- **Arabic Typography**: Optimized Amiri font for beautiful Arabic text
-- **Dynamic Font Sizing**: Smart sizing for long verses (50px-140px range)
-- **Visual Color Combinations**: Click-to-select color pairs with perfect contrast
-- **Smart Background Detection**: Automatic logo color adaptation
-- **Multiple Backgrounds**: Gradient, solid, and decorative styles
-- **Responsive Design**: Works seamlessly across all device sizes
+- Browse verses by book, chapter, and verse
+- Search Arabic verse text in real time
+- Generate 1080x1080 verse images
+- Choose from multiple backgrounds and Arabic fonts
+- Optional logo overlay with automatic contrast handling
 
-### 🎯 Advanced Features
-- **Color Combination System**: 
-  - Dark backgrounds automatically paired with light text
-  - Light backgrounds automatically paired with dark text
-  - Visual preview boxes showing exact color combinations
-  - No more dropdown menus - intuitive click selection
-- **Intelligent Logo Adaptation**:
-  - Dark logo automatically appears on light backgrounds
-  - Original logo automatically appears on dark backgrounds
-  - Ensures perfect visibility on any background
-- **Enhanced Font Sizes**: Much larger text for better readability
+### Memory Game
 
-### 🌈 Available Color Combinations
+- Pick a specific verse or random verse
+- Hide words by difficulty level
+- Type the missing words inside locked blanks
+- Get score, timer, high score, and next-verse progression
+- Save the last selected verse and continue later
 
-#### Dark Backgrounds + Light Text:
-- **أزرق أبيض** - Blue gradient with white text
-- **بنفسجي أبيض** - Purple gradient with white text  
-- **وردي أبيض** - Pink gradient with white text
-- **داكن ذهبي** - Dark decorative with gold text
+### Reverse Game
 
-#### Light Backgrounds + Dark Text:
-- **أبيض أسود** - White background with black text
-- **كريمي أزرق** - Cream background with dark blue text
-- **أزرق فاتح أسود** - Light blue background with black text
+- Choose between books, names, places, or random selection
+- Reverse the chosen term and guess the original
+- Supports curated aliases and Arabic normalization
+- Tracks score, timer, and high score
 
-### 💻 Technical Implementation
-- **Canvas API**: High-quality 1080x1080 image generation
-- **CSS Grid**: Responsive layout system
-- **Event Handling**: Smooth user interactions
-- **Error Validation**: User-friendly feedback system
-- **Font Optimization**: Dynamic sizing based on text length
+### Scrambled Words Game
 
-### 🎨 Design System
-- **Modern UI**: Clean, intuitive interface
-- **Visual Feedback**: Hover effects and selection states
-- **Accessibility**: High contrast combinations only
-- **Mobile Responsive**: Optimized for all screen sizes
+- Uses the same curated Bible term pool
+- Scrambles the characters in the selected word or phrase
+- Supports category and difficulty filtering
+- Tracks score, timer, and high score
 
-## 🚀 Getting Started
+## Getting Started
 
-1. **Open the website** in your browser
-2. **Select a verse** using the navigation or search
-3. **Choose color combination** by clicking the visual color boxes
-4. **Toggle logo** if desired (optional, off by default)
-5. **Generate image** with one click
-6. **Download** your beautiful Bible verse image
+1. Open the project folder in VS Code or your browser.
+2. Serve the folder with a local static server.
+3. Open `index.html`.
 
-## 📱 Responsive Design
+If you want a quick local server, use something like:
 
-- **Desktop**: Full-featured interface with all options
-- **Tablet**: Optimized layout for touch interaction
-- **Mobile**: Streamlined interface with essential features
-
-## 🔧 Customization Options
-
-- **7 Color Combinations**: Professionally designed contrast pairs
-- **Logo Toggle**: Show/hide logo as needed
-- **Font Scaling**: Automatic adjustment for verse length
-- **Background Styles**: Gradients and solid colors
-- **Text Colors**: Optimized for readability
-
-## 🎯 User Experience
-
-- **No More Bad Combinations**: Smart system prevents poor contrast
-- **Visual Selection**: See exactly what you're choosing
-- **Instant Feedback**: Immediate visual response to selections
-- **Professional Results**: Publication-ready image quality
-- **Professional Layout**: Centered text with shadows and proper spacing
-- **Logo Placement**: Top-right corner, 60px from edge to avoid frame
-- **Arabic References**: Proper RTL formatting with Arabic numbers and colon separator
-
-### 🔍 Search Capabilities
-- **Diacritics Support**: Works with/without Arabic tashkeel (حصن ↔ حصّن)
-- **Smart Matching**: Normalized text for better search results
-- **Real-time Results**: Instant search as you type
-- **Clean Display**: Removes repeated words (أو/او) and extra spaces
-- **Arabic References**: Proper RTL formatting (ناحوم ١: ٧)
-- **Live API Data**: Searches complete Smith & Van Dyck Arabic Bible
-
-### 📖 Bible Data
-- **API Source**: Smith & Van Dyck Arabic Bible (https://api.getbible.net/v2/arabicsv.json)
-- **Complete Coverage**: All 66 books, chapters, and verses
-- **Live Data**: Real-time API calls with caching
-- **Validation**: Verse existence verification
-- **Error Handling**: Graceful fallbacks and user feedback
-- **Fixed Issues**: Nahum 1:7 and all verses now accessible
-
-### 🛠️ Technical Stack
-- **Frontend**: HTML5, CSS3, Vanilla JavaScript (ES6+)
-- **Canvas API**: Dynamic image generation (1080×1080px)
-- **Arabic Support**: RTL text rendering and diacritics handling
-- **Responsive Design**: Mobile-friendly interface
-- **Modern Architecture**: Clean, maintainable code structure
-
-### 📁 Project Structure
-```
-bible-quote-generator/
-├── index.html          # Main application interface
-├── script.js           # Core JavaScript functionality
-├── bible-api.js       # Bible API integration layer
-├── styles.css          # Styling and responsive design
-├── logo.svg           # Custom logo (transparent background)
-└── README.md           # This documentation
+```bash
+python -m http.server 8000
 ```
 
-### 🚀 Getting Started
+Then open `http://localhost:8000`.
 
-1. **Clone/Download** the project files
-2. **Add logo.svg** to the project directory (optional)
-3. **Run local server**: `python -m http.server 8000`
-4. **Open browser**: Navigate to `http://localhost:8000`
-5. **Start generating**: Select verses and create beautiful images
+## Data Source
 
-### 📱 Usage Guide
+- Bible text is loaded from the Arabic Smith & Van Dyck API used by `bible-api.js`
+- Canonical book metadata is stored in `bible-database.js`
 
-#### Verse Selection
-1. **Choose Book**: Select from canonical order dropdown (66 books)
-2. **Choose Chapter**: Auto-populated based on book selection
-3. **Pick Verse**: All available verses displayed (including Nahum 1:7)
-4. **Load Verse**: Click "تحميل الآية" to load text
+## Notes
 
-#### Search Function
-1. **Type Arabic**: Enter search terms in Arabic
-2. **Real-time Results**: See matches instantly (max 10 displayed)
-3. **Click Result**: Load verse directly from search
-4. **Diacritics Support**: Works with/without tashkeel
-
-#### Image Generation
-1. **Customize**: Choose background style and colors
-2. **Generate**: Click "إنشاء صورة" to create image
-3. **Preview**: See beautiful typography with your logo
-4. **Download**: Save as PNG with timestamp
-
-### 🎯 Key Features Explained
-
-#### Canonical Book Order
-Books displayed in proper biblical sequence:
-- **Pentateuch**: تكوين → أستير
-- **Historical Books**: يشوع → أستير  
-- **Wisdom Literature**: أيوب → نشيد الأنشاد
-- **Major Prophets**: إشعياء → ملاخي
-- **Minor Prophets**: هوشع → يونان
-- **Gospels**: متى → يوحنا
-- **Epistles**: رومية → العبرانيين
-- **Revelation**: رؤيا يوحنا
-
-#### Arabic Typography
-- **Amiri Font**: Optimized for beautiful Arabic rendering
-- **Dynamic Sizing**: 80px base, scales down to 20px for long verses
-- **Line Height**: 1.4x font size for optimal readability
-- **Text Shadow**: Enhanced contrast and depth
-- **RTL Support**: Proper right-to-left text rendering
-
-#### Diacritics Handling
-- **Smart Search**: "حصن" finds "حصّن" (Nahum 1:7)
-- **Precise Removal**: Only removes fatha, damma, kasra, sukun
-- **Word Preservation**: Maintains word integrity during search
-- **No False Results**: Accurate matching without broken words
-
-### 🌈 Background Styles
-- **Gradient 1**: Blue-purple gradient
-- **Gradient 2**: Orange-pink gradient  
-- **Gradient 3**: Green-blue gradient
-- **Solid Colors**: White, cream, light blue
-- **Decorative**: Frame with corner decorations
-
-### 🎨 Customization Options
-- **Text Color**: Full color picker for text
-- **Background Style**: Multiple preset options
-- **Logo**: Custom SVG support (120px, transparent background)
-- **Font Size**: Automatic based on verse length
-- **Arabic Numbers**: Proper numeral formatting in references
-
-### 🔧 Configuration
-
-#### Logo Setup
-- **File**: Place `logo.svg` in project root
-- **Format**: SVG with transparent background recommended
-- **Size**: Automatically scaled to 120px
-- **Position**: Top-right corner, 60px from right edge
-
-#### API Configuration
-- **Endpoint**: `https://api.getbible.net/v2/arabicsv.json`
-- **Caching**: Local storage for performance
-- **Timeout**: 10 second request limit
-- **Fallback**: Error handling with user feedback
-- **Structure**: Array-based chapters and verses
-
-### 📊 Browser Support
-- **Modern Browsers**: Chrome, Firefox, Safari, Edge
-- **Canvas API**: Required for image generation
-- **Arabic Rendering**: RTL text support with diacritics
-- **Local Storage**: For caching and preferences
-
-### 🐛 Troubleshooting
-
-#### Common Issues & Solutions
-- **Logo not showing**: Verify `logo.svg` exists in project directory
-- **Search not working**: Check internet connection for API access
-- **Verse not found**: Ensure correct book/chapter/verse selection
-- **Text too small**: Long verses automatically scale for readability
-- **Wrong search results**: Clear browser cache and refresh
-
-#### Performance Tips
-- **Clear Cache**: Refresh page if verses not loading
-- **Check Console**: F12 for debugging information
-- **API Limits**: 50 search results max, 10 displayed
-- **File Size**: Generated images ~200-500KB
-
-### 📄 License
-
-This project is open source and available for educational and religious use.
-The Arabic Bible text is from the Smith & Van Dyck public domain translation.
-
-### 🤝 Contributing
-
-Contributions welcome for:
-- Better Arabic typography and fonts
-- Additional background styles and effects
-- Performance optimizations
-- New Bible translations support
-- Mobile app development
-- Accessibility improvements
-
----
-
-*Generated with ❤️ for Arabic Bible study and beautiful verse sharing*
+- The app uses Arabic normalization so answers are more forgiving with diacritics and common letter variants.
+- The reverse and scrambled games share the same curated pool of books, names, and places.
+- The project is designed to stay fully static and run in the browser.

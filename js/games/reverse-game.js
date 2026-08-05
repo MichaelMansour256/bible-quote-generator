@@ -1,0 +1,208 @@
+import {
+    buildTermPool,
+    createBibleTermPools,
+    getAnswerVariants,
+    getDifficultyRank,
+    normalizeAnswerText,
+    reverseCharacters
+} from '../game-utils.js';
+
+export const reverseGameMixin = {
+    createReverseGamePool() {
+        return createBibleTermPools();
+    },
+
+    normalizeReverseGameText(text) {
+        return normalizeAnswerText(text);
+    },
+
+    normalizeReverseGameDigits(text) {
+        return String(text || '').replace(/[٠-٩]/g, digit => '٠١٢٣٤٥٦٧٨٩'.indexOf(digit).toString());
+    },
+
+    getReverseAnswerVariants(text) {
+        return getAnswerVariants(text);
+    },
+
+    reverseCharacters(text) {
+        return reverseCharacters(text);
+    },
+
+    getReverseDifficultyRank(difficulty) {
+        return getDifficultyRank(difficulty);
+    },
+
+    matchesReverseDifficulty(entry, difficulty) {
+        const wordCount = entry.term.split(/\s+/).filter(Boolean).length;
+
+        if (difficulty === 'easy') {
+            return entry.difficulty === 'easy' || wordCount === 1;
+        }
+
+        if (difficulty === 'medium') {
+            return getDifficultyRank(entry.difficulty) <= 1;
+        }
+
+        if (difficulty === 'hard') {
+            return getDifficultyRank(entry.difficulty) >= 1 && wordCount >= 2;
+        }
+
+        return entry.difficulty === 'expert' || wordCount >= 3 || entry.term.length >= 10;
+    },
+
+    persistReverseGamePreferences() {
+        const categorySelect = document.getElementById('reverse-category-select');
+        const difficultySelect = document.getElementById('reverse-difficulty-select');
+        localStorage.setItem(this.reverseGameCategoryKey, categorySelect.value);
+        localStorage.setItem(this.reverseGameDifficultyKey, difficultySelect.value);
+    },
+
+    loadReverseGamePreferences() {
+        const savedCategory = localStorage.getItem(this.reverseGameCategoryKey) || 'random';
+        const savedDifficulty = localStorage.getItem(this.reverseGameDifficultyKey) || 'medium';
+        const categorySelect = document.getElementById('reverse-category-select');
+        const difficultySelect = document.getElementById('reverse-difficulty-select');
+        if (categorySelect) {
+            categorySelect.value = savedCategory;
+        }
+        if (difficultySelect) {
+            difficultySelect.value = savedDifficulty;
+        }
+        this.reverseGameState.category = savedCategory;
+        this.reverseGameState.difficulty = savedDifficulty;
+
+        const savedScore = parseInt(localStorage.getItem(this.reverseGameHighScoreKey) || '0', 10) || 0;
+        const highScoreEl = document.getElementById('reverse-game-high-score');
+        if (highScoreEl) {
+            highScoreEl.textContent = `${savedScore}%`;
+        }
+
+        const savedStateRaw = localStorage.getItem(this.reverseGameStateKey);
+        if (savedStateRaw) {
+            try {
+                const savedState = JSON.parse(savedStateRaw);
+                if (savedState && savedState.term) {
+                    this.reverseGameState = { ...this.reverseGameState, ...savedState };
+                }
+            } catch (error) {
+                console.warn('Failed to restore reverse game state', error);
+            }
+        }
+    },
+
+    persistReverseGameState() {
+        if (!this.reverseGameState.term) {
+            return;
+        }
+
+        localStorage.setItem(this.reverseGameStateKey, JSON.stringify(this.reverseGameState));
+    },
+
+    buildReverseGamePool(category, difficulty = 'medium') {
+        const sourcePool = this.reverseGamePool || createBibleTermPools();
+        return buildTermPool(sourcePool, category, difficulty);
+    },
+
+    pickReverseGameTerm() {
+        const category = document.getElementById('reverse-category-select').value || 'random';
+        const difficulty = document.getElementById('reverse-difficulty-select').value || 'medium';
+        const pool = this.buildReverseGamePool(category, difficulty);
+        if (!pool.length) {
+            return null;
+        }
+
+        return pool[Math.floor(Math.random() * pool.length)];
+    },
+
+    startReverseGame() {
+        const selected = this.pickReverseGameTerm();
+        if (!selected) {
+            document.getElementById('reverse-game-status').textContent = 'لا توجد كلمات متاحة لهذه الفئة.';
+            return;
+        }
+
+        const reversed = this.reverseCharacters(selected.term);
+        this.reverseGameState = {
+            term: selected.term,
+            clue: reversed,
+            category: selected.category,
+            difficulty: document.getElementById('reverse-difficulty-select').value || 'medium',
+            lastScore: 0,
+            answers: selected.answers || this.getReverseAnswerVariants(selected.term)
+        };
+
+        document.getElementById('reverse-game-clue').textContent = reversed;
+        document.getElementById('reverse-game-category').textContent = selected.category;
+        document.getElementById('reverse-game-answer').value = '';
+        document.getElementById('reverse-game-answer').disabled = false;
+        document.getElementById('reverse-check-btn').disabled = true;
+        document.getElementById('reverse-reveal-btn').disabled = false;
+        document.getElementById('reverse-next-btn').disabled = true;
+        document.getElementById('reverse-game-status').textContent = 'اقرأ الكلمة المعكوسة واكتب الإجابة الصحيحة.';
+        document.getElementById('reverse-game-score').textContent = '0%';
+        this.startReverseGameTimer();
+        this.persistReverseGameState();
+    },
+
+    startReverseGameTimer() {
+        const timerEl = document.getElementById('reverse-game-timer');
+        this.stopReverseGameTimer();
+        this.reverseGameStartTime = Date.now();
+        this.reverseGameTimer = setInterval(() => {
+            const elapsed = Math.floor((Date.now() - this.reverseGameStartTime) / 1000);
+            const minutes = String(Math.floor(elapsed / 60)).padStart(2, '0');
+            const seconds = String(elapsed % 60).padStart(2, '0');
+            timerEl.textContent = `${minutes}:${seconds}`;
+        }, 1000);
+    },
+
+    stopReverseGameTimer() {
+        if (this.reverseGameTimer) {
+            clearInterval(this.reverseGameTimer);
+            this.reverseGameTimer = null;
+        }
+    },
+
+    updateReverseHighScore(score) {
+        const currentBest = parseInt(localStorage.getItem(this.reverseGameHighScoreKey) || '0', 10) || 0;
+        if (score > currentBest) {
+            localStorage.setItem(this.reverseGameHighScoreKey, String(score));
+            document.getElementById('reverse-game-high-score').textContent = `${score}%`;
+        }
+    },
+
+    checkReverseGameAnswer() {
+        if (!this.reverseGameState.term) {
+            this.showValidationMessage('ابدأ لعبة الكلمات المعكوسة أولاً.', 'error');
+            return;
+        }
+
+        const userAnswer = this.normalizeReverseGameText(document.getElementById('reverse-game-answer').value);
+        const expectedAnswers = this.reverseGameState.answers && this.reverseGameState.answers.length
+            ? this.reverseGameState.answers
+            : this.getReverseAnswerVariants(this.reverseGameState.term);
+
+        const score = expectedAnswers.some(answer => userAnswer === answer) ? 100 : 0;
+        this.reverseGameState.lastScore = score;
+        document.getElementById('reverse-game-status').textContent = score === 100
+            ? 'إجابة صحيحة. أحسنت.'
+            : 'إجابة غير صحيحة. جرّب مرة أخرى.';
+        document.getElementById('reverse-game-score').textContent = `${score}%`;
+        this.updateReverseHighScore(score);
+        this.persistReverseGameState();
+        this.stopReverseGameTimer();
+        document.getElementById('reverse-check-btn').disabled = true;
+        document.getElementById('reverse-next-btn').disabled = false;
+    },
+
+    revealReverseGameAnswer() {
+        if (!this.reverseGameState.term) {
+            return;
+        }
+
+        document.getElementById('reverse-game-answer').value = this.reverseGameState.term;
+        document.getElementById('reverse-game-status').textContent = 'تم إظهار الإجابة الصحيحة.';
+        document.getElementById('reverse-reveal-btn').disabled = true;
+        this.stopReverseGameTimer();
+    }
+};
