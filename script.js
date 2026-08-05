@@ -1741,6 +1741,15 @@ class BibleQuoteGenerator {
     selectVerse(verseData) {
         document.getElementById('verse-search').value = '';
 
+        this.currentVerse = {
+            ...verseData,
+            bookId: verseData.bookId || verseData.book || verseData.book_ar || verseData.bookName || '',
+            bookName: verseData.bookName || verseData.book_ar || verseData.book || verseData.bookId || ''
+        };
+
+        document.getElementById('verse-text').value = verseData.text || '';
+        document.getElementById('verse-reference').value = verseData.reference || '';
+
         const bookSelect = document.getElementById('book-select');
         const chapterSelect = document.getElementById('chapter-select');
         const verseSelect = document.getElementById('verse-select');
@@ -1765,7 +1774,7 @@ class BibleQuoteGenerator {
         this.onVerseChange();
 
         loadVerseBtn.disabled = false;
-        this.loadSelectedVerse();
+        this.showValidationMessage('تم اختيار الآية بنجاح', 'success');
     }
 
     showValidationMessage(message, type) {
