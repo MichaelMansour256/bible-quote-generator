@@ -230,7 +230,7 @@ main {
 }
 
 .quote-workspace {
-    color: var(--text);
+    color: var(--accent-2);
 }
 
 .memorize-game-section {
