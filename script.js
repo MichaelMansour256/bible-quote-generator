@@ -517,6 +517,45 @@ class BibleQuoteGenerator {
         } else {
             this.showValidationMessage('الآية غير موجودة', 'error');
         }
+        setupViewSwitcher() {
+    this.viewButtons = {
+        quote: document.getElementById('quote-view-btn'),
+        game: document.getElementById('game-view-btn'),
+        reverse: document.getElementById('reverse-view-btn'),
+        scramble: document.getElementById('scramble-view-btn')
+    };
+
+    this.viewPanels = {
+        quote: document.getElementById('quote-view-panel'),
+        game: document.getElementById('game-view-panel'),
+        reverse: document.getElementById('reverse-view-panel'),
+        scramble: document.getElementById('scramble-view-panel')
+    };
+
+    Object.entries(this.viewButtons).forEach(([key, btn]) => {
+        if (btn) {
+            btn.addEventListener('click', () => this.setActiveView(key));
+        }
+    });
+
+    this.setActiveView('quote');
+}
+
+setActiveView(view) {
+    if (!this.viewButtons || !this.viewPanels || !this.viewPanels[view]) {
+        return;
+    }
+
+    this.activeView = view;
+
+    Object.entries(this.viewButtons).forEach(([key, btn]) => {
+        if (btn) btn.classList.toggle('active', key === view);
+    });
+
+    Object.entries(this.viewPanels).forEach(([key, panel]) => {
+        if (panel) panel.classList.toggle('hidden', key !== view);
+    });
+}
     }
 
     setupSearchFunctionality() {
