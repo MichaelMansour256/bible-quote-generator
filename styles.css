@@ -271,6 +271,82 @@ main {
     margin-bottom: 20px;
 }
 
+.game-mode-switcher {
+    display: flex;
+    gap: 10px;
+    margin-bottom: 18px;
+    flex-wrap: wrap;
+}
+
+.game-mode-btn {
+    border: 1px solid rgba(255, 255, 255, 0.12);
+    background: rgba(255, 255, 255, 0.06);
+    color: #edf4ff;
+    padding: 10px 16px;
+    border-radius: 999px;
+    font-weight: 700;
+    cursor: pointer;
+    transition: all 0.25s ease;
+}
+
+.game-mode-btn.active {
+    background: linear-gradient(135deg, var(--accent-2) 0%, #7f5af0 100%);
+    color: #ffffff;
+    border-color: transparent;
+}
+
+.game-mode-panel.hidden {
+    display: none;
+}
+
+.reverse-game-shell {
+    display: flex;
+    flex-direction: column;
+    gap: 18px;
+}
+
+.reverse-controls {
+    margin-bottom: 0;
+}
+
+.reverse-board {
+    grid-template-columns: 1fr 0.9fr;
+}
+
+.reverse-prompt,
+.reverse-inputs {
+    min-height: 160px;
+}
+
+.reverse-game-clue {
+    margin-top: 10px;
+    min-height: 140px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 18px;
+    border-radius: 14px;
+    background: rgba(248, 250, 255, 0.98);
+    color: #102033;
+    font-size: 1.4rem;
+    font-weight: 700;
+    letter-spacing: 0.04em;
+    word-break: break-word;
+    text-align: center;
+}
+
+.reverse-inputs input {
+    font-size: 1.05rem;
+}
+
+.reverse-settings-grid {
+    grid-template-columns: 1fr;
+}
+
+.reverse-stats-bar {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+}
+
 .game-header p {
     margin-top: 6px;
     opacity: 0.85;
@@ -603,6 +679,11 @@ main {
     .game-stats-bar,
     .game-settings-grid,
     .game-picker-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .reverse-board,
+    .reverse-stats-bar {
         grid-template-columns: 1fr;
     }
 

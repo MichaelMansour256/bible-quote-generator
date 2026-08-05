@@ -164,61 +164,115 @@
                     </div>
                 </div>
 
-                <div class="game-controls">
-                    <div class="game-stats-bar">
-                        <div class="game-stat"><span>الوقت</span><strong id="game-timer">00:00</strong></div>
-                        <div class="game-stat"><span>أفضل درجة</span><strong id="game-high-score">0%</strong></div>
-                        <div class="game-stat"><span>الآية التالية</span><strong id="game-next-reference">-</strong></div>
-                    </div>
-
-                    <div class="game-settings-grid">
-                        <div class="input-group">
-                            <label for="game-difficulty-select">مستوى الصعوبة:</label>
-                            <select id="game-difficulty-select">
-                                <option value="easy">سهل</option>
-                                <option value="medium" selected>متوسط</option>
-                                <option value="hard">صعب</option>
-                                <option value="expert">خبير</option>
-                            </select>
-                        </div>
-                    </div>
-
-                    <div class="input-group game-picker-group">
-                        <label>اختر آية محددة:</label>
-                        <div class="game-picker-grid">
-                            <select id="game-book-select">
-                                <option value="">-- اختر سفر --</option>
-                            </select>
-                            <select id="game-chapter-select" disabled>
-                                <option value="">-- اختر إصحاح --</option>
-                            </select>
-                            <select id="game-verse-select" disabled>
-                                <option value="">-- اختر آية --</option>
-                            </select>
-                        </div>
-                    </div>
-
-                    <div class="game-buttons">
-                        <button id="game-specific-btn" class="game-btn primary">ابدأ الآية المحددة</button>
-                        <button id="game-start-btn" class="game-btn">آية عشوائية</button>
-                        <button id="game-next-btn" class="game-btn" disabled>الآية التالية</button>
-                        <button id="game-check-btn" class="game-btn" disabled>تحقق من الإجابة</button>
-                        <button id="game-reveal-btn" class="game-btn secondary" disabled>أظهر الإجابة</button>
-                    </div>
-                    <div class="game-status" id="game-status">اضغط على بدء آية جديدة لتبدأ الجولة.</div>
+                <div class="game-mode-switcher">
+                    <button class="game-mode-btn active" id="memorize-mode-btn" type="button">حفظ الآيات</button>
+                    <button class="game-mode-btn" id="reverse-mode-btn" type="button">الكلمات المعكوسة</button>
                 </div>
 
-                <div class="game-board">
-                    <div class="game-prompt">
-                        <label>الآية المخفية - املأ الفراغات:</label>
-                        <div id="game-verse-display" class="game-verse-display" aria-label="الآية المخفية"></div>
+                <section class="game-mode-panel active" id="memorize-game-panel">
+                    <div class="game-controls">
+                        <div class="game-stats-bar">
+                            <div class="game-stat"><span>الوقت</span><strong id="game-timer">00:00</strong></div>
+                            <div class="game-stat"><span>أفضل درجة</span><strong id="game-high-score">0%</strong></div>
+                            <div class="game-stat"><span>الآية التالية</span><strong id="game-next-reference">-</strong></div>
+                        </div>
+
+                        <div class="game-settings-grid">
+                            <div class="input-group">
+                                <label for="game-difficulty-select">مستوى الصعوبة:</label>
+                                <select id="game-difficulty-select">
+                                    <option value="easy">سهل</option>
+                                    <option value="medium" selected>متوسط</option>
+                                    <option value="hard">صعب</option>
+                                    <option value="expert">خبير</option>
+                                </select>
+                            </div>
+                        </div>
+
+                        <div class="input-group game-picker-group">
+                            <label>اختر آية محددة:</label>
+                            <div class="game-picker-grid">
+                                <select id="game-book-select">
+                                    <option value="">-- اختر سفر --</option>
+                                </select>
+                                <select id="game-chapter-select" disabled>
+                                    <option value="">-- اختر إصحاح --</option>
+                                </select>
+                                <select id="game-verse-select" disabled>
+                                    <option value="">-- اختر آية --</option>
+                                </select>
+                            </div>
+                        </div>
+
+                        <div class="game-buttons">
+                            <button id="game-specific-btn" class="game-btn primary">ابدأ الآية المحددة</button>
+                            <button id="game-start-btn" class="game-btn">آية عشوائية</button>
+                            <button id="game-next-btn" class="game-btn" disabled>الآية التالية</button>
+                            <button id="game-check-btn" class="game-btn" disabled>تحقق من الإجابة</button>
+                            <button id="game-reveal-btn" class="game-btn secondary" disabled>أظهر الإجابة</button>
+                        </div>
+                        <div class="game-status" id="game-status">اضغط على بدء آية جديدة لتبدأ الجولة.</div>
                     </div>
 
-                    <div class="game-meta">
-                        <div><span>المرجع:</span> <strong id="game-reference">-</strong></div>
-                        <div><span>الكلمات المخفية:</span> <strong id="game-hidden-count">0</strong></div>
+                    <div class="game-board">
+                        <div class="game-prompt">
+                            <label>الآية المخفية - املأ الفراغات:</label>
+                            <div id="game-verse-display" class="game-verse-display" aria-label="الآية المخفية"></div>
+                        </div>
+
+                        <div class="game-meta">
+                            <div><span>المرجع:</span> <strong id="game-reference">-</strong></div>
+                            <div><span>الكلمات المخفية:</span> <strong id="game-hidden-count">0</strong></div>
+                        </div>
                     </div>
-                </div>
+                </section>
+
+                <section class="game-mode-panel hidden" id="reverse-game-panel">
+                    <div class="reverse-game-shell">
+                        <div class="game-controls reverse-controls">
+                            <div class="game-stats-bar reverse-stats-bar">
+                                <div class="game-stat"><span>الوقت</span><strong id="reverse-game-timer">00:00</strong></div>
+                                <div class="game-stat"><span>أفضل درجة</span><strong id="reverse-game-high-score">0%</strong></div>
+                                <div class="game-stat"><span>التلميح</span><strong id="reverse-game-category">-</strong></div>
+                            </div>
+
+                            <div class="game-settings-grid reverse-settings-grid">
+                                <div class="input-group">
+                                    <label for="reverse-category-select">نوع الكلمات:</label>
+                                    <select id="reverse-category-select">
+                                        <option value="random" selected>عشوائي</option>
+                                        <option value="book">اسم سفر</option>
+                                        <option value="name">اسم</option>
+                                        <option value="place">مكان</option>
+                                    </select>
+                                </div>
+                            </div>
+
+                            <div class="game-buttons">
+                                <button id="reverse-start-btn" class="game-btn primary">ابدأ الكلمة المعكوسة</button>
+                                <button id="reverse-next-btn" class="game-btn" disabled>كلمة جديدة</button>
+                                <button id="reverse-check-btn" class="game-btn" disabled>تحقق من الإجابة</button>
+                                <button id="reverse-reveal-btn" class="game-btn secondary" disabled>أظهر الإجابة</button>
+                            </div>
+
+                            <div class="game-status" id="reverse-game-status">اضغط على البدء للحصول على كلمة معكوسة.</div>
+                        </div>
+
+                        <div class="game-board reverse-board">
+                            <div class="game-prompt reverse-prompt">
+                                <label>الكلمة المعكوسة - أول من يكتشفها يفوز:</label>
+                                <div id="reverse-game-clue" class="reverse-game-clue" aria-label="التلميح المعكوس">---</div>
+                            </div>
+
+                            <div class="game-inputs reverse-inputs">
+                                <div class="input-group">
+                                    <label for="reverse-game-answer">اكتب الإجابة الصحيحة:</label>
+                                    <input id="reverse-game-answer" type="text" placeholder="اكتب الاسم أو المكان أو السفر" autocomplete="off">
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </section>
             </section>
         </main>
     </div>

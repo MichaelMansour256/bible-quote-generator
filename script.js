@@ -31,6 +31,41 @@ class BibleQuoteGenerator {
         this.gameDifficultyKey = 'bible-game-difficulty';
         this.pendingGameRestore = null;
         this.gameVersePool = [];
+        this.gameMode = 'memorize';
+        this.reverseGameTimer = null;
+        this.reverseGameStartTime = null;
+        this.reverseGameState = {
+            term: null,
+            clue: '',
+            category: '',
+            lastScore: 0
+        };
+        this.reverseGameHighScoreKey = 'bible-reverse-game-high-score';
+        this.reverseGameStateKey = 'bible-reverse-game-state';
+        this.reverseGameModeKey = 'bible-game-mode';
+        this.reverseGameCategoryKey = 'bible-reverse-game-category';
+        this.reverseGamePool = {
+            books: [
+                'تكوين', 'خروج', 'لاويين', 'عدد', 'تثنية', 'يشوع', 'القضاة', 'راعوث',
+                'صموئيل', 'ملوك', 'أخبار الأيام', 'عزرا', 'نحميا', 'أستير', 'أيوب',
+                'المزامير', 'الأمثال', 'جامعة', 'نشيد الأنشاد', 'إشعياء', 'إرميا',
+                'حزقيال', 'دانيال', 'هوشع', 'يوئيل', 'عاموس', 'عوبديا', 'يونان',
+                'ميخا', 'ناحوم', 'حبقوق', 'صفنيا', 'حجي', 'زكريا', 'ملاخي', 'متى',
+                'مرقس', 'لوقا', 'يوحنا', 'أعمال الرسل', 'رومية', 'كورنثوس', 'غلاطية',
+                'أفسس', 'فيلبي', 'كولوسي', 'تسالونيكي', 'تيموثاوس', 'تيطس', 'فليمون',
+                'عبرانيين', 'يعقوب', 'بطرس', 'يوحنا', 'يهوذا', 'الرؤيا'
+            ],
+            names: [
+                'إبراهيم', 'إسحاق', 'يعقوب', 'يوسف', 'موسى', 'هارون', 'داود', 'سليمان',
+                'إيليا', 'إليشع', 'يوحنا', 'بطرس', 'بولس', 'مريم', 'مرثا', 'لوقا',
+                'متى', 'مرقس', 'تيموثاوس', 'تيطس', 'يوشع', 'أستير', 'نحميا'
+            ],
+            places: [
+                'أورشليم', 'بيت لحم', 'الناصرة', 'الجليل', 'أريحا', 'السامرة', 'بيت إيل',
+                'أورشليم الجديدة', 'قادش', 'أدوم', 'مصر', 'بابل', 'أورشليم العليا',
+                'الخليج', 'النهر', 'البرية', 'جبل سيناء', 'جبل الكرمل'
+            ]
+        };
         
         // Load logo image
         this.logoImage.onload = () => {
@@ -43,7 +78,9 @@ class BibleQuoteGenerator {
         this.setupColorCombinations();
         this.setupFontSelection();
         this.setupViewSwitcher();
+        this.setupGameModeSwitcher();
         this.loadGamePreferences();
+        this.loadReverseGamePreferences();
         this.initializeCanvas();
     }
 
@@ -127,9 +164,18 @@ class BibleQuoteGenerator {
         const gameNextBtn = document.getElementById('game-next-btn');
         const gameVerseDisplay = document.getElementById('game-verse-display');
         const gameDifficultySelect = document.getElementById('game-difficulty-select');
+        const memorizeModeBtn = document.getElementById('memorize-mode-btn');
+        const reverseModeBtn = document.getElementById('reverse-mode-btn');
+        const reverseStartBtn = document.getElementById('reverse-start-btn');
+        const reverseNextBtn = document.getElementById('reverse-next-btn');
+        const reverseCheckBtn = document.getElementById('reverse-check-btn');
+        const reverseRevealBtn = document.getElementById('reverse-reveal-btn');
+        const reverseAnswer = document.getElementById('reverse-game-answer');
+        const reverseCategorySelect = document.getElementById('reverse-category-select');
 
         gameSpecificBtn.disabled = true;
         gameNextBtn.disabled = true;
+        reverseNextBtn.disabled = true;
 
         generateBtn.addEventListener('click', () => this.generateImage());
         downloadBtn.addEventListener('click', () => this.downloadImage());
@@ -152,6 +198,19 @@ class BibleQuoteGenerator {
         gameBookSelect.addEventListener('change', () => this.onGameBookChange());
         gameChapterSelect.addEventListener('change', () => this.onGameChapterChange());
         gameVerseSelect.addEventListener('change', () => this.onGameVerseChange());
+        memorizeModeBtn.addEventListener('click', () => this.setGameMode('memorize'));
+        reverseModeBtn.addEventListener('click', () => this.setGameMode('reverse'));
+        reverseStartBtn.addEventListener('click', () => this.startReverseGame());
+        reverseNextBtn.addEventListener('click', () => this.startReverseGame());
+        reverseCheckBtn.addEventListener('click', () => this.checkReverseGameAnswer());
+        reverseRevealBtn.addEventListener('click', () => this.revealReverseGameAnswer());
+        reverseAnswer.addEventListener('input', () => {
+            reverseCheckBtn.disabled = !this.reverseGameState.term || reverseAnswer.value.trim().length === 0;
+        });
+        reverseCategorySelect.addEventListener('change', () => {
+            this.reverseGameState.category = reverseCategorySelect.value;
+            this.persistReverseGamePreferences();
+        });
         
         bookSelect.addEventListener('change', () => this.onBookChange());
         chapterSelect.addEventListener('change', () => this.onChapterChange());
@@ -171,6 +230,188 @@ class BibleQuoteGenerator {
         searchInput.value = '';
         document.getElementById('search-results').innerHTML = '';
         document.getElementById('search-results').style.display = 'none';
+    }
+
+    setupGameModeSwitcher() {
+        const savedMode = localStorage.getItem(this.reverseGameModeKey) || 'memorize';
+        this.setGameMode(savedMode);
+    }
+
+    setGameMode(mode) {
+        this.gameMode = mode;
+        const memorizeModeBtn = document.getElementById('memorize-mode-btn');
+        const reverseModeBtn = document.getElementById('reverse-mode-btn');
+        const memorizePanel = document.getElementById('memorize-game-panel');
+        const reversePanel = document.getElementById('reverse-game-panel');
+
+        const isMemorize = mode === 'memorize';
+        memorizeModeBtn.classList.toggle('active', isMemorize);
+        reverseModeBtn.classList.toggle('active', !isMemorize);
+        memorizePanel.classList.toggle('hidden', !isMemorize);
+        reversePanel.classList.toggle('hidden', isMemorize);
+        localStorage.setItem(this.reverseGameModeKey, mode);
+    }
+
+    persistReverseGamePreferences() {
+        const categorySelect = document.getElementById('reverse-category-select');
+        localStorage.setItem(this.reverseGameCategoryKey, categorySelect.value);
+    }
+
+    loadReverseGamePreferences() {
+        const savedCategory = localStorage.getItem(this.reverseGameCategoryKey) || 'random';
+        const categorySelect = document.getElementById('reverse-category-select');
+        if (categorySelect) {
+            categorySelect.value = savedCategory;
+        }
+        this.reverseGameState.category = savedCategory;
+
+        const savedScore = parseInt(localStorage.getItem(this.reverseGameHighScoreKey) || '0', 10) || 0;
+        const highScoreEl = document.getElementById('reverse-game-high-score');
+        if (highScoreEl) {
+            highScoreEl.textContent = `${savedScore}%`;
+        }
+
+        const savedStateRaw = localStorage.getItem(this.reverseGameStateKey);
+        if (savedStateRaw) {
+            try {
+                const savedState = JSON.parse(savedStateRaw);
+                if (savedState && savedState.term) {
+                    this.reverseGameState = { ...this.reverseGameState, ...savedState };
+                }
+            } catch (error) {
+                console.warn('Failed to restore reverse game state', error);
+            }
+        }
+    }
+
+    persistReverseGameState() {
+        if (!this.reverseGameState.term) {
+            return;
+        }
+
+        localStorage.setItem(this.reverseGameStateKey, JSON.stringify(this.reverseGameState));
+    }
+
+    normalizeReverseGameText(text) {
+        return this.normalizeArabicForMatch(text).replace(/\s+/g, ' ').trim();
+    }
+
+    reverseCharacters(text) {
+        return Array.from(String(text || '').replace(/\s+/g, ' ').trim()).reverse().join('');
+    }
+
+    pickReverseGameTerm() {
+        const category = document.getElementById('reverse-category-select').value || 'random';
+        const pool = this.buildReverseGamePool(category);
+        if (!pool.length) {
+            return null;
+        }
+
+        return pool[Math.floor(Math.random() * pool.length)];
+    }
+
+    buildReverseGamePool(category) {
+        const terms = [];
+
+        if (category === 'book' || category === 'random') {
+            terms.push(...this.reverseGamePool.books.map(term => ({ term, category: 'اسم سفر' })));
+        }
+
+        if (category === 'name' || category === 'random') {
+            terms.push(...this.reverseGamePool.names.map(term => ({ term, category: 'اسم' })));
+        }
+
+        if (category === 'place' || category === 'random') {
+            terms.push(...this.reverseGamePool.places.map(term => ({ term, category: 'مكان' })));
+        }
+
+        return terms;
+    }
+
+    startReverseGame() {
+        const selected = this.pickReverseGameTerm();
+        if (!selected) {
+            document.getElementById('reverse-game-status').textContent = 'لا توجد كلمات متاحة لهذه الفئة.';
+            return;
+        }
+
+        const reversed = this.reverseCharacters(selected.term);
+        this.reverseGameState = {
+            term: selected.term,
+            clue: reversed,
+            category: selected.category,
+            lastScore: 0
+        };
+
+        document.getElementById('reverse-game-clue').textContent = reversed;
+        document.getElementById('reverse-game-category').textContent = selected.category;
+        document.getElementById('reverse-game-answer').value = '';
+        document.getElementById('reverse-game-answer').disabled = false;
+        document.getElementById('reverse-check-btn').disabled = true;
+        document.getElementById('reverse-reveal-btn').disabled = false;
+        document.getElementById('reverse-next-btn').disabled = true;
+        document.getElementById('reverse-game-status').textContent = 'اقرأ الكلمة المعكوسة واكتب الإجابة الصحيحة.';
+        this.startReverseGameTimer();
+        this.persistReverseGameState();
+    }
+
+    startReverseGameTimer() {
+        const timerEl = document.getElementById('reverse-game-timer');
+        this.stopReverseGameTimer();
+        this.reverseGameStartTime = Date.now();
+        this.reverseGameTimer = setInterval(() => {
+            const elapsed = Math.floor((Date.now() - this.reverseGameStartTime) / 1000);
+            const minutes = String(Math.floor(elapsed / 60)).padStart(2, '0');
+            const seconds = String(elapsed % 60).padStart(2, '0');
+            timerEl.textContent = `${minutes}:${seconds}`;
+        }, 1000);
+    }
+
+    stopReverseGameTimer() {
+        if (this.reverseGameTimer) {
+            clearInterval(this.reverseGameTimer);
+            this.reverseGameTimer = null;
+        }
+    }
+
+    updateReverseHighScore(score) {
+        const currentBest = parseInt(localStorage.getItem(this.reverseGameHighScoreKey) || '0', 10) || 0;
+        if (score > currentBest) {
+            localStorage.setItem(this.reverseGameHighScoreKey, String(score));
+            document.getElementById('reverse-game-high-score').textContent = `${score}%`;
+        }
+    }
+
+    checkReverseGameAnswer() {
+        if (!this.reverseGameState.term) {
+            this.showValidationMessage('ابدأ لعبة الكلمات المعكوسة أولاً.', 'error');
+            return;
+        }
+
+        const userAnswer = this.normalizeReverseGameText(document.getElementById('reverse-game-answer').value);
+        const expectedAnswer = this.normalizeReverseGameText(this.reverseGameState.term);
+
+        const score = userAnswer === expectedAnswer ? 100 : 0;
+        this.reverseGameState.lastScore = score;
+        document.getElementById('reverse-game-status').textContent = score === 100
+            ? 'إجابة صحيحة. أحسنت.'
+            : 'إجابة غير صحيحة. جرّب مرة أخرى.';
+        this.updateReverseHighScore(score);
+        this.persistReverseGameState();
+        this.stopReverseGameTimer();
+        document.getElementById('reverse-check-btn').disabled = true;
+        document.getElementById('reverse-next-btn').disabled = false;
+    }
+
+    revealReverseGameAnswer() {
+        if (!this.reverseGameState.term) {
+            return;
+        }
+
+        document.getElementById('reverse-game-answer').value = this.reverseGameState.term;
+        document.getElementById('reverse-game-status').textContent = 'تم إظهار الإجابة الصحيحة.';
+        document.getElementById('reverse-reveal-btn').disabled = true;
+        this.stopReverseGameTimer();
     }
 
     loadGamePreferences() {
