@@ -24,25 +24,25 @@
         <main>
             <div class="view-panel quote-workspace" id="quote-view-panel">
             <section class="verse-selection-section">
-                <h2>اختر الآية</h2>
+                <h2 style="color: #182d4a;">اختر الآية</h2>
                 <div class="selection-controls">
                     <div class="book-chapter-controls">
                         <div class="input-group">
-                            <label for="book-select">اختر السفر:</label>
+                            <label for="book-select" style="color: #182d4a;">اختر السفر:</label>
                             <select id="book-select">
                                 <option value="">-- اختر سفر --</option>
                             </select>
                         </div>
 
                         <div class="input-group">
-                            <label for="chapter-select">الإصحاح:</label>
+                            <label for="chapter-select" style="color: #182d4a;">الإصحاح:</label>
                             <select id="chapter-select" disabled>
                                 <option value="">-- اختر إصحاح --</option>
                             </select>
                         </div>
 
                         <div class="input-group">
-                            <label for="verse-select">الآية:</label>
+                            <label for="verse-select" style="color: #182d4a;">الآية:</label>
                             <select id="verse-select" disabled>
                                 <option value="">-- اختر آية --</option>
                             </select>
@@ -53,8 +53,12 @@
 
                     <div class="search-control">
                         <div class="input-group">
-                            <label for="verse-search">البحث في الآيات:</label>
-                            <input type="text" id="verse-search" placeholder="ابحث في النص العربي...">
+                            <label for="verse-search" style="color: #182d4a;">البحث في الآيات:</label>
+                            <input type="text" id="verse-search" placeholder="ابحث في النص أو المرجع مثل يوحنا 3:16">
+                            <div id="search-loading" class="loading-indicator search-loading hidden" aria-live="polite" aria-busy="true">
+                                <div class="spinner"></div>
+                                <p>جاري البحث...</p>
+                            </div>
                             <div id="search-results" class="search-results"></div>
                         </div>
                     </div>
