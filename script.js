@@ -37,11 +37,13 @@ class BibleQuoteGenerator {
             term: null,
             clue: '',
             category: '',
+            difficulty: 'medium',
             lastScore: 0
         };
         this.reverseGameHighScoreKey = 'bible-reverse-game-high-score';
         this.reverseGameStateKey = 'bible-reverse-game-state';
         this.reverseGameCategoryKey = 'bible-reverse-game-category';
+        this.reverseGameDifficultyKey = 'bible-reverse-game-difficulty';
         this.reverseGamePool = this.createReverseGamePool();
         
         // Load logo image
@@ -146,6 +148,7 @@ class BibleQuoteGenerator {
         const reverseRevealBtn = document.getElementById('reverse-reveal-btn');
         const reverseAnswer = document.getElementById('reverse-game-answer');
         const reverseCategorySelect = document.getElementById('reverse-category-select');
+        const reverseDifficultySelect = document.getElementById('reverse-difficulty-select');
 
         gameSpecificBtn.disabled = true;
         gameNextBtn.disabled = true;
@@ -183,6 +186,10 @@ class BibleQuoteGenerator {
             this.reverseGameState.category = reverseCategorySelect.value;
             this.persistReverseGamePreferences();
         });
+        reverseDifficultySelect.addEventListener('change', () => {
+            this.reverseGameState.difficulty = reverseDifficultySelect.value;
+            this.persistReverseGamePreferences();
+        });
         
         bookSelect.addEventListener('change', () => this.onBookChange());
         chapterSelect.addEventListener('change', () => this.onChapterChange());
@@ -206,16 +213,24 @@ class BibleQuoteGenerator {
 
     persistReverseGamePreferences() {
         const categorySelect = document.getElementById('reverse-category-select');
+        const difficultySelect = document.getElementById('reverse-difficulty-select');
         localStorage.setItem(this.reverseGameCategoryKey, categorySelect.value);
+        localStorage.setItem(this.reverseGameDifficultyKey, difficultySelect.value);
     }
 
     loadReverseGamePreferences() {
         const savedCategory = localStorage.getItem(this.reverseGameCategoryKey) || 'random';
+        const savedDifficulty = localStorage.getItem(this.reverseGameDifficultyKey) || 'medium';
         const categorySelect = document.getElementById('reverse-category-select');
+        const difficultySelect = document.getElementById('reverse-difficulty-select');
         if (categorySelect) {
             categorySelect.value = savedCategory;
         }
+        if (difficultySelect) {
+            difficultySelect.value = savedDifficulty;
+        }
         this.reverseGameState.category = savedCategory;
+        this.reverseGameState.difficulty = savedDifficulty;
 
         const savedScore = parseInt(localStorage.getItem(this.reverseGameHighScoreKey) || '0', 10) || 0;
         const highScoreEl = document.getElementById('reverse-game-high-score');
@@ -245,50 +260,116 @@ class BibleQuoteGenerator {
     }
 
     createReverseGamePool() {
-        const bookNames = (typeof bibleDatabase !== 'undefined' && Array.isArray(bibleDatabase.books))
-            ? bibleDatabase.books.map(book => book.name)
-            : [
-                'التكوين', 'الخروج', 'اللاويين', 'العدد', 'التثنية', 'يشوع', 'القضاة', 'راعوث',
-                'صموئيل الأول', 'صموئيل الثاني', 'الملوك الأول', 'الملوك الثاني', 'أخبار الأيام الأول',
-                'أخبار الأيام الثاني', 'عزرا', 'نحميا', 'أستير', 'أيوب', 'المزامير', 'الأمثال', 'جامعة',
-                'نشيد الأنشاد', 'إشعياء', 'إرميا', 'مراثي إرميا', 'حزقيال', 'دانيال', 'هوشع', 'يوئيل',
-                'عاموس', 'عوبديا', 'يونان', 'ميخا', 'ناحوم', 'حبقوق', 'صفنيا', 'حجي', 'زكريا', 'ملاخي',
-                'متى', 'مرقس', 'لوقا', 'يوحنا', 'أعمال الرسل', 'رومية', 'كورنثوس الأولى', 'كورنثوس الثانية',
-                'غلاطية', 'أفسس', 'فيلبي', 'كولوسي', 'تسالونيكي الأولى', 'تسالونيكي الثانية', 'تيموثاوس الأولى',
-                'تيموثاوس الثانية', 'تيطس', 'فليمون', 'العبرانيين', 'يعقوب', 'بطرس الأولى', 'بطرس الثانية',
-                'يوحنا الأولى', 'يوحنا الثانية', 'يوحنا الثالثة', 'يهوذا', 'رؤيا يوحنا'
-            ];
+        const books = [
+            { term: 'التكوين', aliases: ['سفر التكوين', 'تكوين'], difficulty: 'easy' },
+            { term: 'الخروج', aliases: ['سفر الخروج', 'خروج'], difficulty: 'easy' },
+            { term: 'اللاويين', aliases: ['سفر اللاويين', 'لاويين'], difficulty: 'easy' },
+            { term: 'العدد', aliases: ['سفر العدد', 'عدد'], difficulty: 'easy' },
+            { term: 'التثنية', aliases: ['سفر التثنية', 'تثنية'], difficulty: 'easy' },
+            { term: 'يشوع', aliases: ['سفر يشوع'], difficulty: 'easy' },
+            { term: 'القضاة', aliases: ['سفر القضاة'], difficulty: 'easy' },
+            { term: 'راعوث', aliases: ['سفر راعوث'], difficulty: 'easy' },
+            { term: 'صموئيل الأول', aliases: ['صموئيل 1', '1 صموئيل', 'صموئيل الاول'], difficulty: 'medium' },
+            { term: 'صموئيل الثاني', aliases: ['صموئيل 2', '2 صموئيل', 'صموئيل الثاني'], difficulty: 'medium' },
+            { term: 'الملوك الأول', aliases: ['ملوك 1', '1 ملوك', 'الملوك الاول'], difficulty: 'medium' },
+            { term: 'الملوك الثاني', aliases: ['ملوك 2', '2 ملوك', 'الملوك الثاني'], difficulty: 'medium' },
+            { term: 'أخبار الأيام الأول', aliases: ['أخبار الأيام 1', '1 أخبار الأيام', 'أخبار الأيام الاول'], difficulty: 'hard' },
+            { term: 'أخبار الأيام الثاني', aliases: ['أخبار الأيام 2', '2 أخبار الأيام', 'أخبار الأيام الثاني'], difficulty: 'hard' },
+            { term: 'مراثي إرميا', aliases: ['مراثي', 'مراثي النبي إرميا'], difficulty: 'hard' },
+            { term: 'كورنثوس الأولى', aliases: ['1 كورنثوس', 'كورنثوس 1', 'كورنثوس الاولى'], difficulty: 'medium' },
+            { term: 'كورنثوس الثانية', aliases: ['2 كورنثوس', 'كورنثوس 2', 'كورنثوس الثانية'], difficulty: 'medium' },
+            { term: 'تسالونيكي الأولى', aliases: ['1 تسالونيكي', 'تسالونيكي 1', 'تسالونيكي الاولى'], difficulty: 'hard' },
+            { term: 'تسالونيكي الثانية', aliases: ['2 تسالونيكي', 'تسالونيكي 2', 'تسالونيكي الثانية'], difficulty: 'hard' },
+            { term: 'تيموثاوس الأولى', aliases: ['1 تيموثاوس', 'تيموثاوس 1', 'تيموثاوس الاولى'], difficulty: 'hard' },
+            { term: 'تيموثاوس الثانية', aliases: ['2 تيموثاوس', 'تيموثاوس 2', 'تيموثاوس الثانية'], difficulty: 'hard' },
+            { term: 'رؤيا يوحنا', aliases: ['الرؤيا', 'سفر الرؤيا', 'سفر رؤيا يوحنا'], difficulty: 'medium' }
+        ];
 
-        return {
-            books: Array.from(new Set(bookNames)),
-            names: [
-                'إبراهيم', 'إسحاق', 'يعقوب', 'يوسف', 'موسى', 'هارون', 'يوشع', 'داود', 'سليمان', 'شاول',
-                'صموئيل', 'إيليا', 'إليشع', 'إشعياء', 'إرميا', 'حزقيال', 'دانيال', 'عزرا', 'نحميا', 'أستير',
-                'أيوب', 'يوئيل', 'عاموس', 'يونان', 'ميخا', 'مريم', 'مرثا', 'يوحنا المعمدان', 'يوحنا', 'بطرس',
-                'بولس', 'برنابا', 'تيموثاوس', 'تيطس', 'فليمون', 'يعقوب', 'يهوذا', 'متى', 'مرقس', 'لوقا',
-                'آدم', 'نوح', 'إبراهيم الخليل', 'إسحاق بن إبراهيم', 'راحيل', 'ليئة', 'دبورة', 'راعوث', 'أبيجايل',
-                'مردخاي', 'أورشليمية', 'مجدلية'
-            ],
-            places: [
-                'أورشليم', 'بيت لحم', 'الناصرة', 'الجليل', 'أريحا', 'السامرة', 'بيت إيل', 'بيت عنيا', 'بيت صيدا',
-                'كفرناحوم', 'أورشليم الجديدة', 'بيت فاجي', 'قانا الجليل', 'الناصرة الجليليّة', 'النهر الأردن',
-                'بحر الجليل', 'بحر الميت', 'جبل سيناء', 'جبل حوريب', 'جبل الكرمل', 'جبل الزيتون', 'البرية',
-                'أدوم', 'مصر', 'بابل', 'نينوى', 'أور', 'حبرون', 'شكيم', 'دور', 'رامة', 'أفرايم', 'جلعاد',
-                'أشقلون', 'غزة', 'صيدا', 'صور', 'دمشق', 'أنطاكية', 'أفسس', 'فيلبي', 'كورنثوس', 'رومية'
-            ]
-        };
+        const names = [
+            { term: 'إبراهيم', aliases: ['أبرام', 'إبراهام'], difficulty: 'easy' },
+            { term: 'إسحاق', aliases: ['اسحق'], difficulty: 'easy' },
+            { term: 'يعقوب', aliases: ['إسرائيل'], difficulty: 'easy' },
+            { term: 'يوسف', aliases: ['يوسف الصديق'], difficulty: 'easy' },
+            { term: 'موسى', aliases: ['موسى النبي'], difficulty: 'easy' },
+            { term: 'هارون', aliases: ['هارون الكاهن'], difficulty: 'easy' },
+            { term: 'داود', aliases: ['داود الملك'], difficulty: 'easy' },
+            { term: 'سليمان', aliases: ['سليمان الحكيم'], difficulty: 'easy' },
+            { term: 'يوشع', aliases: ['يشوع بن نون'], difficulty: 'medium' },
+            { term: 'صموئيل', aliases: ['صموئيل النبي'], difficulty: 'medium' },
+            { term: 'إيليا', aliases: ['إيليا التشبي'], difficulty: 'medium' },
+            { term: 'إليشع', aliases: ['أليشع'], difficulty: 'medium' },
+            { term: 'إشعياء', aliases: ['النبي إشعياء'], difficulty: 'medium' },
+            { term: 'إرميا', aliases: ['النبي إرميا'], difficulty: 'medium' },
+            { term: 'حزقيال', aliases: ['النبي حزقيال'], difficulty: 'medium' },
+            { term: 'دانيال', aliases: ['النبي دانيال'], difficulty: 'medium' },
+            { term: 'عزرا', aliases: ['الكاتب عزرا'], difficulty: 'medium' },
+            { term: 'نحميا', aliases: ['القائد نحميا'], difficulty: 'medium' },
+            { term: 'أستير', aliases: ['الملكة أستير'], difficulty: 'medium' },
+            { term: 'مريم المجدلية', aliases: ['مجدلية', 'مريم من المجدل'], difficulty: 'hard' },
+            { term: 'مريم العذراء', aliases: ['العذراء مريم', 'مريم أم يسوع'], difficulty: 'hard' },
+            { term: 'يوحنا المعمدان', aliases: ['يوحنا المعمداني', 'يحيى'], difficulty: 'hard' },
+            { term: 'برنابا', aliases: ['يوسف برنابا'], difficulty: 'hard' },
+            { term: 'تيموثاوس', aliases: ['الابن تيموثاوس'], difficulty: 'hard' },
+            { term: 'مردخاي', aliases: ['مردخاي اليهودي'], difficulty: 'hard' },
+            { term: 'أبيجايل', aliases: ['أبيجايل الحكيمة'], difficulty: 'hard' },
+            { term: 'راحيل', aliases: ['راحيل زوجة يعقوب'], difficulty: 'hard' },
+            { term: 'ليئة', aliases: ['ليئة زوجة يعقوب'], difficulty: 'hard' },
+            { term: 'دبورة', aliases: ['دبورة النبية'], difficulty: 'hard' },
+            { term: 'إبراهيم الخليل', aliases: ['خليل الله'], difficulty: 'expert' },
+            { term: 'إسحاق بن إبراهيم', aliases: ['ابن الموعد'], difficulty: 'expert' }
+        ];
+
+        const places = [
+            { term: 'أورشليم', aliases: ['القدس'], difficulty: 'easy' },
+            { term: 'بيت لحم', aliases: ['بيت لحم اليهودية'], difficulty: 'easy' },
+            { term: 'الناصرة', aliases: ['ناصرة الجليل'], difficulty: 'easy' },
+            { term: 'الجليل', aliases: ['الجليل الأعلى'], difficulty: 'easy' },
+            { term: 'أريحا', aliases: ['مدينة أريحا'], difficulty: 'easy' },
+            { term: 'السامرة', aliases: ['أرض السامرة'], difficulty: 'easy' },
+            { term: 'بيت إيل', aliases: ['بيت ايل'], difficulty: 'medium' },
+            { term: 'بيت عنيا', aliases: ['بيت عنيا قرب أورشليم'], difficulty: 'medium' },
+            { term: 'بيت صيدا', aliases: ['بيت صيدا الجليل'], difficulty: 'medium' },
+            { term: 'كفرناحوم', aliases: ['كفر ناحوم'], difficulty: 'medium' },
+            { term: 'أورشليم الجديدة', aliases: ['المدينة المقدسة', 'المدينة الجديدة'], difficulty: 'hard' },
+            { term: 'بيت فاجي', aliases: ['بيت فاجي وبيت عنيا'], difficulty: 'hard' },
+            { term: 'قانا الجليل', aliases: ['قانا'], difficulty: 'hard' },
+            { term: 'النهر الأردن', aliases: ['الأردن', 'نهر الأردن'], difficulty: 'hard' },
+            { term: 'بحر الجليل', aliases: ['بحيرة الجليل'], difficulty: 'hard' },
+            { term: 'بحر الميت', aliases: ['البحر الميت'], difficulty: 'hard' },
+            { term: 'جبل الزيتون', aliases: ['جبل الزيتون الشرقي'], difficulty: 'hard' },
+            { term: 'جبل الكرمل', aliases: ['الكرمل'], difficulty: 'hard' },
+            { term: 'جبل سيناء', aliases: ['سيناء'], difficulty: 'expert' },
+            { term: 'جبل حوريب', aliases: ['حوريب'], difficulty: 'expert' },
+            { term: 'أنطاكية', aliases: ['أنطاكية السورية'], difficulty: 'expert' },
+            { term: 'أفسس', aliases: ['مدينة أفسس'], difficulty: 'expert' },
+            { term: 'كورنثوس', aliases: ['كورنثوس اليونانية'], difficulty: 'expert' }
+        ];
+
+        return { books, names, places };
     }
 
     normalizeReverseGameText(text) {
         return this.normalizeArabicForMatch(text).replace(/\s+/g, ' ').trim();
     }
 
+    normalizeReverseGameDigits(text) {
+        return String(text || '').replace(/[٠-٩]/g, digit => '٠١٢٣٤٥٦٧٨٩'.indexOf(digit).toString());
+    }
+
     getReverseAnswerVariants(text) {
-        const normalized = this.normalizeReverseGameText(text);
+        const normalized = this.normalizeReverseGameText(this.normalizeReverseGameDigits(text));
         const variants = new Set([normalized]);
 
         if (normalized.startsWith('ال') && normalized.length > 2) {
             variants.add(normalized.slice(2));
+        }
+
+        if (normalized.startsWith('سفر ')) {
+            variants.add(normalized.replace(/^سفر\s+/, ''));
+        }
+
+        if (normalized.startsWith('كتاب ')) {
+            variants.add(normalized.replace(/^كتاب\s+/, ''));
         }
 
         const words = normalized.split(' ');
@@ -303,9 +384,43 @@ class BibleQuoteGenerator {
         return Array.from(String(text || '').replace(/\s+/g, ' ').trim()).reverse().join('');
     }
 
+    getReverseDifficultyRank(difficulty) {
+        switch (difficulty) {
+            case 'easy':
+                return 0;
+            case 'hard':
+                return 2;
+            case 'expert':
+                return 3;
+            case 'medium':
+            default:
+                return 1;
+        }
+    }
+
+    matchesReverseDifficulty(entry, difficulty) {
+        const rank = this.getReverseDifficultyRank(difficulty);
+        const wordCount = entry.term.split(/\s+/).filter(Boolean).length;
+
+        if (difficulty === 'easy') {
+            return entry.difficulty === 'easy' || wordCount === 1;
+        }
+
+        if (difficulty === 'medium') {
+            return this.getReverseDifficultyRank(entry.difficulty) <= 1;
+        }
+
+        if (difficulty === 'hard') {
+            return this.getReverseDifficultyRank(entry.difficulty) >= 1 && wordCount >= 2;
+        }
+
+        return entry.difficulty === 'expert' || wordCount >= 3 || entry.term.length >= 10;
+    }
+
     pickReverseGameTerm() {
         const category = document.getElementById('reverse-category-select').value || 'random';
-        const pool = this.buildReverseGamePool(category);
+        const difficulty = document.getElementById('reverse-difficulty-select').value || 'medium';
+        const pool = this.buildReverseGamePool(category, difficulty);
         if (!pool.length) {
             return null;
         }
@@ -313,31 +428,38 @@ class BibleQuoteGenerator {
         return pool[Math.floor(Math.random() * pool.length)];
     }
 
-    buildReverseGamePool(category) {
+    buildReverseGamePool(category, difficulty = 'medium') {
         const terms = [];
+        const sourcePool = this.reverseGamePool || this.createReverseGamePool();
+
+        const pushEntries = (entries, label) => {
+            entries
+                .filter(entry => this.matchesReverseDifficulty(entry, difficulty))
+                .forEach(entry => {
+                    const answers = new Set([
+                        ...this.getReverseAnswerVariants(entry.term),
+                        ...(entry.aliases || []).flatMap(alias => this.getReverseAnswerVariants(alias))
+                    ]);
+
+                    terms.push({
+                        term: entry.term,
+                        category: label,
+                        difficulty: entry.difficulty || difficulty,
+                        answers: Array.from(answers)
+                    });
+                });
+        };
 
         if (category === 'book' || category === 'random') {
-            terms.push(...this.reverseGamePool.books.map(term => ({
-                term,
-                category: 'اسم سفر',
-                answers: this.getReverseAnswerVariants(term)
-            })));
+            pushEntries(sourcePool.books, 'اسم سفر');
         }
 
         if (category === 'name' || category === 'random') {
-            terms.push(...this.reverseGamePool.names.map(term => ({
-                term,
-                category: 'اسم',
-                answers: this.getReverseAnswerVariants(term)
-            })));
+            pushEntries(sourcePool.names, 'اسم');
         }
 
         if (category === 'place' || category === 'random') {
-            terms.push(...this.reverseGamePool.places.map(term => ({
-                term,
-                category: 'مكان',
-                answers: this.getReverseAnswerVariants(term)
-            })));
+            pushEntries(sourcePool.places, 'مكان');
         }
 
         return terms;
@@ -355,6 +477,7 @@ class BibleQuoteGenerator {
             term: selected.term,
             clue: reversed,
             category: selected.category,
+            difficulty: document.getElementById('reverse-difficulty-select').value || 'medium',
             lastScore: 0,
             answers: selected.answers || this.getReverseAnswerVariants(selected.term)
         };
