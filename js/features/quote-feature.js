@@ -1,4 +1,25 @@
+const FONT_MAP = {
+    'thuluth-deco': 'Thuluth Deco, serif',
+    'amiri': 'Amiri, serif',
+    'aref-ruqaa': 'Aref Ruqaa, serif',
+    'reem-kufi': 'Reem Kufi, sans-serif',
+    'lateef': 'Lateef, serif',
+    'scheherazade': 'Scheherazade, serif',
+    'noto-naskh': 'Noto Naskh Arabic, serif',
+    'markazi-text': 'Markazi Text, serif',
+    'katibeh': 'Katibeh, sans-serif',
+    'mirza': 'Mirza, cursive',
+    'harmattan': 'Harmattan, sans-serif',
+    'diwan-kufi': 'Diwan Kufi, cursive'
+};
+
+const DECORATIVE_FONTS = new Set(['mirza', 'katibeh', 'diwan-kufi']);
+
 export const quoteFeatureMixin = {
+    getFontFamily(key) {
+        return FONT_MAP[key] ?? FONT_MAP['thuluth-deco'];
+    },
+
     setupColorCombinations() {
         const colorOptions = document.querySelectorAll('.color-option');
 
@@ -18,15 +39,13 @@ export const quoteFeatureMixin = {
     },
 
     updatePreview() {
-        const verseText = document.getElementById('verse-text').value.trim();
-        if (verseText) {
+        if (document.getElementById('verse-text').value.trim()) {
             this.generateImage();
         }
     },
 
     setupFontSelection() {
         const fontSelect = document.getElementById('font-style');
-
         fontSelect.addEventListener('change', () => {
             this.selectedFont = fontSelect.value;
             this.updatePreview();
@@ -176,7 +195,8 @@ export const quoteFeatureMixin = {
         const loadVerseBtn = document.getElementById('load-verse-btn');
 
         const targetBookName = verseData.book_ar || verseData.bookName || verseData.book || verseData.bookId || '';
-        const resolvedBook = bibleAPI.getBookByName(this.bibleData, targetBookName) || bibleAPI.getBookByName(this.bibleData, verseData.book || '');
+        const resolvedBook = bibleAPI.getBookByName(this.bibleData, targetBookName)
+            || bibleAPI.getBookByName(this.bibleData, verseData.book || '');
 
         if (!resolvedBook) {
             this.showValidationMessage('تعذر تحديد السفر المرتبط بهذه النتيجة.', 'error');
@@ -208,9 +228,7 @@ export const quoteFeatureMixin = {
 
     showValidationMessage(message, type) {
         const existingMessage = document.querySelector('.validation-message');
-        if (existingMessage) {
-            existingMessage.remove();
-        }
+        if (existingMessage) existingMessage.remove();
 
         const messageDiv = document.createElement('div');
         messageDiv.className = `validation-message ${type}`;
@@ -219,111 +237,89 @@ export const quoteFeatureMixin = {
         const verseTextGroup = document.getElementById('verse-text').closest('.input-group');
         verseTextGroup.appendChild(messageDiv);
 
-        setTimeout(() => {
-            messageDiv.remove();
-        }, 5000);
-    },
-
-    setupCanvas() {
-        this.canvas.width = 1080;
-        this.canvas.height = 1080;
-        this.drawPlaceholder();
+        setTimeout(() => messageDiv.remove(), 5000);
     },
 
     drawPlaceholder() {
-        const ctx = this.ctx;
-        const width = this.canvas.width;
-        const height = this.canvas.height;
-
-        ctx.clearRect(0, 0, width, height);
-        const gradient = ctx.createLinearGradient(0, 0, width, height);
+        const { ctx, canvas } = this;
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+        const gradient = ctx.createLinearGradient(0, 0, canvas.width, canvas.height);
         gradient.addColorStop(0, '#0f1c2e');
         gradient.addColorStop(1, '#1b3557');
         ctx.fillStyle = gradient;
-        ctx.fillRect(0, 0, width, height);
-
+        ctx.fillRect(0, 0, canvas.width, canvas.height);
         ctx.fillStyle = 'rgba(232, 238, 247, 0.38)';
         ctx.font = '24px Tajawal';
         ctx.textAlign = 'center';
         ctx.textBaseline = 'middle';
-        ctx.fillText('معاينة الصورة ستظهر هنا', width / 2, height / 2);
+        ctx.fillText('معاينة الصورة ستظهر هنا', canvas.width / 2, canvas.height / 2);
     },
 
     getBackgroundStyle(style) {
-        const ctx = this.ctx;
-        const width = this.canvas.width;
-        const height = this.canvas.height;
+        const { ctx, canvas } = this;
+        const { width, height } = canvas;
 
         switch (style) {
             case 'gradient1': {
-                const gradient1 = ctx.createLinearGradient(0, 0, width, height);
-                gradient1.addColorStop(0, '#13253c');
-                gradient1.addColorStop(0.5, '#1f3653');
-                gradient1.addColorStop(1, '#2a4d78');
-                return gradient1;
+                const g = ctx.createLinearGradient(0, 0, width, height);
+                g.addColorStop(0, '#13253c');
+                g.addColorStop(0.5, '#1f3653');
+                g.addColorStop(1, '#2a4d78');
+                return g;
             }
             case 'gradient2': {
-                const gradient2 = ctx.createLinearGradient(0, 0, width, height);
-                gradient2.addColorStop(0, '#5b8cff');
-                gradient2.addColorStop(1, '#7f5af0');
-                return gradient2;
+                const g = ctx.createLinearGradient(0, 0, width, height);
+                g.addColorStop(0, '#5b8cff');
+                g.addColorStop(1, '#7f5af0');
+                return g;
             }
             case 'gradient3': {
-                const gradient3 = ctx.createRadialGradient(width / 2, height / 2, 0, width / 2, height / 2, width / 2);
-                gradient3.addColorStop(0, '#f1d7a1');
-                gradient3.addColorStop(1, '#d4a855');
-                return gradient3;
+                const g = ctx.createRadialGradient(width / 2, height / 2, 0, width / 2, height / 2, width / 2);
+                g.addColorStop(0, '#f1d7a1');
+                g.addColorStop(1, '#d4a855');
+                return g;
             }
             case 'gradient4': {
-                const gradient4 = ctx.createLinearGradient(width, 0, 0, height);
-                gradient4.addColorStop(0, '#24c4b2');
-                gradient4.addColorStop(1, '#1aa67a');
-                return gradient4;
+                const g = ctx.createLinearGradient(width, 0, 0, height);
+                g.addColorStop(0, '#24c4b2');
+                g.addColorStop(1, '#1aa67a');
+                return g;
             }
             case 'gradient5': {
-                const gradient5 = ctx.createLinearGradient(width, 0, 0, height);
-                gradient5.addColorStop(0, '#9b59b6');
-                gradient5.addColorStop(0.5, '#8e44ad');
-                gradient5.addColorStop(1, '#663399');
-                return gradient5;
+                const g = ctx.createLinearGradient(width, 0, 0, height);
+                g.addColorStop(0, '#9b59b6');
+                g.addColorStop(0.5, '#8e44ad');
+                g.addColorStop(1, '#663399');
+                return g;
             }
-            case 'solid-white':
-                return '#ffffff';
-            case 'solid-cream':
-                return '#fffdd0';
-            case 'solid-lightblue':
-                return '#add8e6';
+            case 'solid-white': return '#ffffff';
+            case 'solid-cream': return '#fffdd0';
+            case 'solid-lightblue': return '#add8e6';
             case 'decorative': {
-                const decorativeGradient = ctx.createLinearGradient(0, 0, width, height);
-                decorativeGradient.addColorStop(0, '#08111f');
-                decorativeGradient.addColorStop(1, '#152640');
-                return decorativeGradient;
+                const g = ctx.createLinearGradient(0, 0, width, height);
+                g.addColorStop(0, '#08111f');
+                g.addColorStop(1, '#152640');
+                return g;
             }
             default: {
-                const defaultGradient = ctx.createLinearGradient(0, 0, width, height);
-                defaultGradient.addColorStop(0, '#13253c');
-                defaultGradient.addColorStop(0.5, '#1f3653');
-                defaultGradient.addColorStop(1, '#2a4d78');
-                return defaultGradient;
+                const g = ctx.createLinearGradient(0, 0, width, height);
+                g.addColorStop(0, '#13253c');
+                g.addColorStop(0.5, '#1f3653');
+                g.addColorStop(1, '#2a4d78');
+                return g;
             }
         }
     },
 
     getTextColor(color) {
-        switch (color) {
-            case 'white':
-                return '#ffffff';
-            case 'gold':
-                return '#ffd700';
-            case 'cream':
-                return '#f5f5dc';
-            case 'black':
-                return '#000000';
-            case 'darkblue':
-                return '#1e3a8a';
-            default:
-                return '#ffffff';
-        }
+        const colors = {
+            white: '#ffffff',
+            gold: '#ffd700',
+            cream: '#f5f5dc',
+            black: '#000000',
+            darkblue: '#1e3a8a'
+        };
+        return colors[color] ?? '#ffffff';
     },
 
     wrapText(text, maxWidth, fontSize) {
@@ -331,13 +327,11 @@ export const quoteFeatureMixin = {
         const lines = [];
         let currentLine = '';
 
-        this.ctx.font = `${fontSize}px Amiri`;
+        this.ctx.font = `${fontSize}px ${this.getFontFamily(this.selectedFont)}`;
 
-        for (let word of words) {
+        for (const word of words) {
             const testLine = currentLine + (currentLine ? ' ' : '') + word;
-            const metrics = this.ctx.measureText(testLine);
-
-            if (metrics.width > maxWidth && currentLine) {
+            if (this.ctx.measureText(testLine).width > maxWidth && currentLine) {
                 lines.push(currentLine);
                 currentLine = word;
             } else {
@@ -345,10 +339,7 @@ export const quoteFeatureMixin = {
             }
         }
 
-        if (currentLine) {
-            lines.push(currentLine);
-        }
-
+        if (currentLine) lines.push(currentLine);
         return lines;
     },
 
@@ -366,17 +357,15 @@ export const quoteFeatureMixin = {
 
         const backgroundStyle = this.getBackgroundStyle(this.selectedBg);
         const textColor = this.getTextColor(this.selectedText);
+        const fontFamily = this.getFontFamily(this.selectedFont);
 
         this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
-
         this.ctx.fillStyle = backgroundStyle;
         this.ctx.fillRect(0, 0, this.canvas.width, this.canvas.height);
 
         this.ctx.strokeStyle = textColor;
         this.ctx.lineWidth = 4;
         this.ctx.strokeRect(40, 40, this.canvas.width - 80, this.canvas.height - 80);
-
-        this.ctx.strokeStyle = textColor;
         this.ctx.lineWidth = 2;
         this.ctx.strokeRect(60, 60, this.canvas.width - 120, this.canvas.height - 120);
 
@@ -399,53 +388,9 @@ export const quoteFeatureMixin = {
         this.ctx.shadowOffsetX = 2;
         this.ctx.shadowOffsetY = 2;
 
+        this.ctx.font = `bold ${fontSize}px ${fontFamily}`;
         lines.forEach((line, index) => {
-            const y = startY + (index * lineHeight);
-            let fontFamily;
-            switch (this.selectedFont) {
-                case 'thuluth-deco':
-                    fontFamily = 'Thuluth Deco, serif';
-                    break;
-                case 'amiri':
-                    fontFamily = 'Amiri, serif';
-                    break;
-                case 'aref-ruqaa':
-                    fontFamily = 'Aref Ruqaa, serif';
-                    break;
-                case 'reem-kufi':
-                    fontFamily = 'Reem Kufi, sans-serif';
-                    break;
-                case 'lateef':
-                    fontFamily = 'Lateef, serif';
-                    break;
-                case 'scheherazade':
-                    fontFamily = 'Scheherazade, serif';
-                    break;
-                case 'noto-naskh':
-                    fontFamily = 'Noto Naskh Arabic, serif';
-                    break;
-                case 'markazi-text':
-                    fontFamily = 'Markazi Text, serif';
-                    break;
-                case 'katibeh':
-                    fontFamily = 'Katibeh, sans-serif';
-                    break;
-                case 'mirza':
-                    fontFamily = 'Mirza, cursive';
-                    break;
-                case 'harmattan':
-                    fontFamily = 'Harmattan, sans-serif';
-                    break;
-                case 'diwan-kufi':
-                    fontFamily = 'Diwan Kufi, cursive';
-                    break;
-                default:
-                    fontFamily = 'Thuluth Deco, serif';
-                    break;
-            }
-
-            this.ctx.font = `bold ${fontSize}px ${fontFamily}`;
-            this.ctx.fillText(line, this.canvas.width / 2, y);
+            this.ctx.fillText(line, this.canvas.width / 2, startY + (index * lineHeight));
         });
 
         this.ctx.shadowColor = 'transparent';
@@ -454,49 +399,6 @@ export const quoteFeatureMixin = {
         this.ctx.shadowOffsetY = 0;
 
         if (verseReference) {
-            let fontFamily;
-            switch (this.selectedFont) {
-                case 'thuluth-deco':
-                    fontFamily = 'Thuluth Deco, serif';
-                    break;
-                case 'amiri':
-                    fontFamily = 'Amiri, serif';
-                    break;
-                case 'aref-ruqaa':
-                    fontFamily = 'Aref Ruqaa, serif';
-                    break;
-                case 'reem-kufi':
-                    fontFamily = 'Reem Kufi, sans-serif';
-                    break;
-                case 'lateef':
-                    fontFamily = 'Lateef, serif';
-                    break;
-                case 'scheherazade':
-                    fontFamily = 'Scheherazade, serif';
-                    break;
-                case 'noto-naskh':
-                    fontFamily = 'Noto Naskh Arabic, serif';
-                    break;
-                case 'markazi-text':
-                    fontFamily = 'Markazi Text, serif';
-                    break;
-                case 'katibeh':
-                    fontFamily = 'Katibeh, sans-serif';
-                    break;
-                case 'mirza':
-                    fontFamily = 'Mirza, cursive';
-                    break;
-                case 'harmattan':
-                    fontFamily = 'Harmattan, sans-serif';
-                    break;
-                case 'diwan-kufi':
-                    fontFamily = 'Diwan Kufi, cursive';
-                    break;
-                default:
-                    fontFamily = 'Thuluth Deco, serif';
-                    break;
-            }
-
             this.ctx.font = `bold 60px ${fontFamily}`;
             this.ctx.fillText(verseReference, this.canvas.width / 2, this.canvas.height - 100);
         }
@@ -515,72 +417,21 @@ export const quoteFeatureMixin = {
         if (!logoToggle.checked || !this.logoLoaded) return;
 
         ctx.save();
-        const isLightBackground = this.isLightBackground(this.selectedBg);
         const logoSize = 120;
-        const logoX = width - logoSize - 60;
-        const logoY = 20;
-
-        ctx.filter = isLightBackground ? 'invert(1) brightness(0.5)' : 'none';
-        ctx.drawImage(this.logoImage, logoX, logoY, logoSize, logoSize);
+        ctx.filter = this.isLightBackground(this.selectedBg) ? 'invert(1) brightness(0.5)' : 'none';
+        ctx.drawImage(this.logoImage, width - logoSize - 60, 20, logoSize, logoSize);
         ctx.filter = 'none';
         ctx.restore();
     },
 
     isLightBackground(bgStyle) {
-        const lightBackgrounds = ['solid-white', 'solid-cream', 'solid-lightblue'];
-        return lightBackgrounds.includes(bgStyle);
+        return ['solid-white', 'solid-cream', 'solid-lightblue'].includes(bgStyle);
     },
 
     calculateFontSize(text, maxWidth) {
+        const fontFamily = this.getFontFamily(this.selectedFont);
+        const safetyMargin = DECORATIVE_FONTS.has(this.selectedFont) ? 0.75 : 0.8;
         let fontSize = 140;
-        let fontFamily;
-
-        switch (this.selectedFont) {
-            case 'thuluth-deco':
-                fontFamily = 'Thuluth Deco, serif';
-                break;
-            case 'amiri':
-                fontFamily = 'Amiri, serif';
-                break;
-            case 'aref-ruqaa':
-                fontFamily = 'Aref Ruqaa, serif';
-                break;
-            case 'reem-kufi':
-                fontFamily = 'Reem Kufi, sans-serif';
-                break;
-            case 'lateef':
-                fontFamily = 'Lateef, serif';
-                break;
-            case 'scheherazade':
-                fontFamily = 'Scheherazade, serif';
-                break;
-            case 'noto-naskh':
-                fontFamily = 'Noto Naskh Arabic, serif';
-                break;
-            case 'markazi-text':
-                fontFamily = 'Markazi Text, serif';
-                break;
-            case 'katibeh':
-                fontFamily = 'Katibeh, sans-serif';
-                break;
-            case 'mirza':
-                fontFamily = 'Mirza, cursive';
-                break;
-            case 'harmattan':
-                fontFamily = 'Harmattan, sans-serif';
-                break;
-            case 'diwan-kufi':
-                fontFamily = 'Diwan Kufi, cursive';
-                break;
-            default:
-                fontFamily = 'Thuluth Deco, serif';
-                break;
-        }
-
-        let safetyMargin = 0.8;
-        if (['mirza', 'katibeh', 'diwan-kufi'].includes(this.selectedFont)) {
-            safetyMargin = 0.75;
-        }
 
         this.ctx.font = `${fontSize}px ${fontFamily}`;
         while (this.ctx.measureText(text).width > maxWidth * safetyMargin && fontSize > 50) {
@@ -588,27 +439,19 @@ export const quoteFeatureMixin = {
             this.ctx.font = `${fontSize}px ${fontFamily}`;
         }
 
-        if (fontSize < 50) {
-            fontSize = 50;
-        }
-
-        return fontSize;
+        return Math.max(fontSize, 50);
     },
 
     showSuccessMessage() {
         const successMessage = document.getElementById('success-message');
         successMessage.style.display = 'block';
-
-        setTimeout(() => {
-            successMessage.style.display = 'none';
-        }, 3000);
+        setTimeout(() => { successMessage.style.display = 'none'; }, 3000);
     },
 
     downloadImage() {
         const link = document.createElement('a');
         const verseReference = document.getElementById('verse-reference').value.trim() || 'bible-verse';
         const timestamp = new Date().toISOString().slice(0, 19).replace(/:/g, '-');
-
         link.download = `${verseReference}-${timestamp}.png`;
         link.href = this.canvas.toDataURL();
         link.click();

@@ -1,6 +1,7 @@
 import {
     buildTermPool,
     createBibleTermPools,
+    getAnswerVariants,
     normalizeAnswerText,
     scrambleText
 } from '../game-utils.js';
@@ -19,21 +20,15 @@ export const scrambleGameMixin = {
         const categorySelect = document.getElementById('scramble-category-select');
         const difficultySelect = document.getElementById('scramble-difficulty-select');
 
-        if (categorySelect) {
-            categorySelect.value = savedCategory;
-        }
-        if (difficultySelect) {
-            difficultySelect.value = savedDifficulty;
-        }
+        if (categorySelect) categorySelect.value = savedCategory;
+        if (difficultySelect) difficultySelect.value = savedDifficulty;
 
         this.scrambleGameState.category = savedCategory;
         this.scrambleGameState.difficulty = savedDifficulty;
 
         const savedScore = parseInt(localStorage.getItem(this.scrambleGameHighScoreKey) || '0', 10) || 0;
         const highScoreEl = document.getElementById('scramble-game-high-score');
-        if (highScoreEl) {
-            highScoreEl.textContent = `${savedScore}%`;
-        }
+        if (highScoreEl) highScoreEl.textContent = `${savedScore}%`;
 
         const savedStateRaw = localStorage.getItem(this.scrambleGameStateKey);
         if (savedStateRaw) {
@@ -49,10 +44,7 @@ export const scrambleGameMixin = {
     },
 
     persistScrambleGameState() {
-        if (!this.scrambleGameState.term) {
-            return;
-        }
-
+        if (!this.scrambleGameState.term) return;
         localStorage.setItem(this.scrambleGameStateKey, JSON.stringify(this.scrambleGameState));
     },
 
@@ -73,10 +65,7 @@ export const scrambleGameMixin = {
         const category = document.getElementById('scramble-category-select').value || 'random';
         const difficulty = document.getElementById('scramble-difficulty-select').value || 'medium';
         const pool = this.buildScrambleGamePool(category, difficulty);
-        if (!pool.length) {
-            return null;
-        }
-
+        if (!pool.length) return null;
         return pool[Math.floor(Math.random() * pool.length)];
     },
 
@@ -94,7 +83,7 @@ export const scrambleGameMixin = {
             category: selected.category,
             difficulty: document.getElementById('scramble-difficulty-select').value || 'medium',
             lastScore: 0,
-            answers: selected.answers || this.getReverseAnswerVariants(selected.term)
+            answers: selected.answers || getAnswerVariants(selected.term)
         };
 
         document.getElementById('scramble-game-clue').textContent = scrambled;
@@ -129,6 +118,11 @@ export const scrambleGameMixin = {
         }
     },
 
+    calcScrambleScore() {
+        const elapsed = Math.floor((Date.now() - this.scrambleGameStartTime) / 1000);
+        return Math.max(10, 100 - elapsed);
+    },
+
     checkScrambleGameAnswer() {
         if (!this.scrambleGameState.term) {
             this.showValidationMessage('ابدأ لعبة الكلمات المبعثرة أولاً.', 'error');
@@ -136,13 +130,15 @@ export const scrambleGameMixin = {
         }
 
         const userAnswer = normalizeAnswerText(document.getElementById('scramble-game-answer').value);
-        const expectedAnswers = this.scrambleGameState.answers && this.scrambleGameState.answers.length
+        const expectedAnswers = this.scrambleGameState.answers?.length
             ? this.scrambleGameState.answers
-            : this.getReverseAnswerVariants(this.scrambleGameState.term);
+            : getAnswerVariants(this.scrambleGameState.term);
 
-        const score = expectedAnswers.some(answer => userAnswer === answer) ? 100 : 0;
+        const isCorrect = expectedAnswers.some(answer => userAnswer === answer);
+        const score = isCorrect ? this.calcScrambleScore() : 0;
+
         this.scrambleGameState.lastScore = score;
-        document.getElementById('scramble-game-status').textContent = score === 100
+        document.getElementById('scramble-game-status').textContent = isCorrect
             ? 'إجابة صحيحة. أحسنت.'
             : 'إجابة غير صحيحة. جرّب مرة أخرى.';
         document.getElementById('scramble-game-score').textContent = `${score}%`;
@@ -154,9 +150,7 @@ export const scrambleGameMixin = {
     },
 
     revealScrambleGameAnswer() {
-        if (!this.scrambleGameState.term) {
-            return;
-        }
+        if (!this.scrambleGameState.term) return;
 
         document.getElementById('scramble-game-answer').value = this.scrambleGameState.term;
         document.getElementById('scramble-game-status').textContent = 'تم إظهار الإجابة الصحيحة.';

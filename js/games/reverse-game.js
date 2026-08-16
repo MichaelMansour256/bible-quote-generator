@@ -2,7 +2,7 @@ import {
     buildTermPool,
     createBibleTermPools,
     getAnswerVariants,
-    getDifficultyRank,
+    matchesDifficulty,
     normalizeAnswerText,
     reverseCharacters
 } from '../game-utils.js';
@@ -16,38 +16,12 @@ export const reverseGameMixin = {
         return normalizeAnswerText(text);
     },
 
-    normalizeReverseGameDigits(text) {
-        return String(text || '').replace(/[٠-٩]/g, digit => '٠١٢٣٤٥٦٧٨٩'.indexOf(digit).toString());
-    },
-
     getReverseAnswerVariants(text) {
         return getAnswerVariants(text);
     },
 
     reverseCharacters(text) {
         return reverseCharacters(text);
-    },
-
-    getReverseDifficultyRank(difficulty) {
-        return getDifficultyRank(difficulty);
-    },
-
-    matchesReverseDifficulty(entry, difficulty) {
-        const wordCount = entry.term.split(/\s+/).filter(Boolean).length;
-
-        if (difficulty === 'easy') {
-            return entry.difficulty === 'easy' || wordCount === 1;
-        }
-
-        if (difficulty === 'medium') {
-            return getDifficultyRank(entry.difficulty) <= 1;
-        }
-
-        if (difficulty === 'hard') {
-            return getDifficultyRank(entry.difficulty) >= 1 && wordCount >= 2;
-        }
-
-        return entry.difficulty === 'expert' || wordCount >= 3 || entry.term.length >= 10;
     },
 
     persistReverseGamePreferences() {
@@ -62,20 +36,16 @@ export const reverseGameMixin = {
         const savedDifficulty = localStorage.getItem(this.reverseGameDifficultyKey) || 'medium';
         const categorySelect = document.getElementById('reverse-category-select');
         const difficultySelect = document.getElementById('reverse-difficulty-select');
-        if (categorySelect) {
-            categorySelect.value = savedCategory;
-        }
-        if (difficultySelect) {
-            difficultySelect.value = savedDifficulty;
-        }
+
+        if (categorySelect) categorySelect.value = savedCategory;
+        if (difficultySelect) difficultySelect.value = savedDifficulty;
+
         this.reverseGameState.category = savedCategory;
         this.reverseGameState.difficulty = savedDifficulty;
 
         const savedScore = parseInt(localStorage.getItem(this.reverseGameHighScoreKey) || '0', 10) || 0;
         const highScoreEl = document.getElementById('reverse-game-high-score');
-        if (highScoreEl) {
-            highScoreEl.textContent = `${savedScore}%`;
-        }
+        if (highScoreEl) highScoreEl.textContent = `${savedScore}%`;
 
         const savedStateRaw = localStorage.getItem(this.reverseGameStateKey);
         if (savedStateRaw) {
@@ -91,10 +61,7 @@ export const reverseGameMixin = {
     },
 
     persistReverseGameState() {
-        if (!this.reverseGameState.term) {
-            return;
-        }
-
+        if (!this.reverseGameState.term) return;
         localStorage.setItem(this.reverseGameStateKey, JSON.stringify(this.reverseGameState));
     },
 
@@ -107,10 +74,7 @@ export const reverseGameMixin = {
         const category = document.getElementById('reverse-category-select').value || 'random';
         const difficulty = document.getElementById('reverse-difficulty-select').value || 'medium';
         const pool = this.buildReverseGamePool(category, difficulty);
-        if (!pool.length) {
-            return null;
-        }
-
+        if (!pool.length) return null;
         return pool[Math.floor(Math.random() * pool.length)];
     },
 
@@ -163,6 +127,11 @@ export const reverseGameMixin = {
         }
     },
 
+    calcReverseScore() {
+        const elapsed = Math.floor((Date.now() - this.reverseGameStartTime) / 1000);
+        return Math.max(10, 100 - elapsed);
+    },
+
     updateReverseHighScore(score) {
         const currentBest = parseInt(localStorage.getItem(this.reverseGameHighScoreKey) || '0', 10) || 0;
         if (score > currentBest) {
@@ -178,14 +147,16 @@ export const reverseGameMixin = {
         }
 
         const userAnswer = this.normalizeReverseGameText(document.getElementById('reverse-game-answer').value);
-        const expectedAnswers = this.reverseGameState.answers && this.reverseGameState.answers.length
+        const expectedAnswers = this.reverseGameState.answers?.length
             ? this.reverseGameState.answers
             : this.getReverseAnswerVariants(this.reverseGameState.term);
 
-        const score = expectedAnswers.some(answer => userAnswer === answer) ? 100 : 0;
+        const isCorrect = expectedAnswers.some(answer => userAnswer === answer);
+        const score = isCorrect ? this.calcReverseScore() : 0;
+
         this.reverseGameState.lastScore = score;
-        document.getElementById('reverse-game-status').textContent = score === 100
-            ? 'إجابة صحيحة. أحسنت.'
+        document.getElementById('reverse-game-status').textContent = isCorrect
+            ? `إجابة صحيحة. أحسنت.`
             : 'إجابة غير صحيحة. جرّب مرة أخرى.';
         document.getElementById('reverse-game-score').textContent = `${score}%`;
         this.updateReverseHighScore(score);
@@ -196,9 +167,7 @@ export const reverseGameMixin = {
     },
 
     revealReverseGameAnswer() {
-        if (!this.reverseGameState.term) {
-            return;
-        }
+        if (!this.reverseGameState.term) return;
 
         document.getElementById('reverse-game-answer').value = this.reverseGameState.term;
         document.getElementById('reverse-game-status').textContent = 'تم إظهار الإجابة الصحيحة.';
