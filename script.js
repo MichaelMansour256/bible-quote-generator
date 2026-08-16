@@ -74,6 +74,7 @@ class BibleQuoteGenerator {
         this.loadBibleData();
         this.setupColorCombinations();
         this.setupFontSelection();
+        this.setupVerseTextSelection();
         this.setupViewSwitcher();
         this.loadGamePreferences();
         this.loadReverseGamePreferences();

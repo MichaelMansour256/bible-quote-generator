@@ -1261,8 +1261,42 @@ main {
     direction: rtl;
 }
 
-.input-group textarea[readonly],
-.input-group input[readonly] {
+.verse-text-actions {
+    display: flex;
+    gap: 8px;
+    margin-top: 6px;
+}
+
+.verse-action-btn {
+    flex: 1;
+    padding: 7px 12px;
+    border-radius: 8px;
+    border: 1px solid #d0d8e4;
+    background: #f4f7fb;
+    color: #1f3a5f;
+    font-size: 0.88rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background 0.15s, border-color 0.15s;
+}
+
+.verse-action-btn:hover:not(:disabled) {
+    background: #e6eef8;
+    border-color: var(--accent-2);
+}
+
+.verse-action-btn:disabled {
+    opacity: 0.4;
+    cursor: not-allowed;
+}
+
+#use-selection-btn:not(:disabled) {
+    border-color: var(--accent-2);
+    background: #eef3ff;
+    color: #1a4db5;
+}
+
+
     background-color: #f8f9fa;
     color: #495057;
     cursor: not-allowed;

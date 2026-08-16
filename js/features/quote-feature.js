@@ -52,6 +52,51 @@ export const quoteFeatureMixin = {
         });
     },
 
+    setupVerseTextSelection() {
+        const textarea = document.getElementById('verse-text');
+        const useSelBtn = document.getElementById('use-selection-btn');
+        const restoreBtn = document.getElementById('restore-verse-btn');
+
+        // Show "use selection" button whenever there is a non-empty selection
+        textarea.addEventListener('mouseup', () => this._updateSelectionBtn());
+        textarea.addEventListener('keyup', () => this._updateSelectionBtn());
+        textarea.addEventListener('select', () => this._updateSelectionBtn());
+
+        useSelBtn.addEventListener('click', () => {
+            const start = textarea.selectionStart;
+            const end = textarea.selectionEnd;
+            const selected = textarea.value.substring(start, end).trim();
+            if (!selected) return;
+
+            // Save full text for restoration if not already saved
+            if (!this._fullVerseText) {
+                this._fullVerseText = textarea.value;
+            }
+
+            textarea.value = selected;
+            restoreBtn.disabled = false;
+            useSelBtn.disabled = true;
+            this.generateImage();
+        });
+
+        restoreBtn.addEventListener('click', () => {
+            if (this._fullVerseText) {
+                textarea.value = this._fullVerseText;
+                this._fullVerseText = null;
+            }
+            restoreBtn.disabled = true;
+            this.generateImage();
+        });
+    },
+
+    _updateSelectionBtn() {
+        const textarea = document.getElementById('verse-text');
+        const useSelBtn = document.getElementById('use-selection-btn');
+        const hasSelection = textarea.selectionStart !== textarea.selectionEnd
+            && textarea.value.substring(textarea.selectionStart, textarea.selectionEnd).trim().length > 0;
+        useSelBtn.disabled = !hasSelection;
+    },
+
     initializeCanvas() {
         this.canvas.width = 1080;
         this.canvas.height = 1080;
@@ -298,6 +343,8 @@ export const quoteFeatureMixin = {
 
         document.getElementById('verse-text').value = verseText;
         document.getElementById('verse-reference').value = reference;
+        this._fullVerseText = null;
+        document.getElementById('restore-verse-btn').disabled = true;
 
         // Sync the dropdowns
         const bookSelect = document.getElementById('book-select');
