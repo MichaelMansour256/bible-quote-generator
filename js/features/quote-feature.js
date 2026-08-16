@@ -155,9 +155,14 @@ export const quoteFeatureMixin = {
             item.setAttribute('role', 'option');
             item.setAttribute('aria-selected', index === this.searchActiveIndex ? 'true' : 'false');
             item.tabIndex = -1;
+
+            const preview = result.text.length > 80 ? result.text.substring(0, 80) + '...' : result.text;
             item.innerHTML = `
-                <div class="reference">${result.reference}</div>
-                <div class="text">${result.text.substring(0, 100)}${result.text.length > 100 ? '...' : ''}</div>
+                <div class="search-result-header">
+                    <span class="search-result-reference">${result.reference}</span>
+                    <span class="search-result-icon">📖</span>
+                </div>
+                <div class="search-result-text">${preview}</div>
             `;
             item.addEventListener('mouseenter', () => {
                 this.searchActiveIndex = index;

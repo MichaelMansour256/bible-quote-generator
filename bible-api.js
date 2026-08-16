@@ -91,73 +91,129 @@ class BibleAPI {
         return verseObj ? verseObj.text : null;
     }
 
-    // Search verses by text
+    // Search verses by text, book name, or book+chapter reference
     searchVerses(bibleData, query) {
         if (!bibleData || !bibleData.books || !query) return [];
-        
-        const results = [];
-        const normalizedQuery = this.normalizeSearchText(query);
-        const referenceQuery = this.parseReferenceQuery(query);
 
-        if (referenceQuery) {
-            const exactVerse = this.findVerseByReference(bibleData, referenceQuery);
-            if (exactVerse) {
-                return [exactVerse];
-            }
+        const normalizedQuery = this.normalizeSearchText(query);
+
+        // 1. Exact verse reference: "يوحنا 3:16" or "يوحنا 3-16"
+        const exactRef = this.parseExactReference(query);
+        if (exactRef) {
+            const verse = this.findVerseByReference(bibleData, exactRef);
+            return verse ? [verse] : [];
         }
-        
+
+        // 2. Book + chapter prefix: "يوحنا 1" → all chapters starting with "1"
+        const chapterRef = this.parseChapterQuery(query);
+        if (chapterRef) {
+            return this.findChaptersByPrefix(bibleData, chapterRef);
+        }
+
+        // 3. Book name only: "يوحنا" → all chapters of that book
+        const bookOnly = this.findBookByQuery(bibleData, normalizedQuery);
+        if (bookOnly) {
+            return this.getAllChaptersAsResults(bibleData, bookOnly);
+        }
+
+        // 4. Full-text search across all verses
+        const results = [];
         for (const book of bibleData.books) {
             if (!book.chapters || !Array.isArray(book.chapters)) continue;
-            
             for (const chapterObj of book.chapters) {
                 if (!chapterObj || !chapterObj.verses || !Array.isArray(chapterObj.verses)) continue;
-                
                 for (const verseObj of chapterObj.verses) {
                     if (verseObj && verseObj.text) {
-                        const cleanVerseText = this.normalizeSearchText(verseObj.text);
-                        const cleanReference = this.normalizeSearchText(this.formatArabicReference(book.name_ar || book.name, chapterObj.chapter, verseObj.verse));
-                        if (cleanVerseText.includes(normalizedQuery) || cleanReference.includes(normalizedQuery)) {
-                            // Clean text to remove repeated words
-                            let cleanText = verseObj.text;
-                            cleanText = cleanText.replace(/\b(أو|او)\b(?:\s+\1)+/g, '$1'); // Remove repeated "أو"
-                            cleanText = cleanText.replace(/\s+/g, ' ').trim(); // Remove extra spaces
-                            
-                            results.push({
-                                book: book.name,
-                                book_ar: book.name_ar || book.name,
-                                chapter: chapterObj.chapter,
-                                verse: verseObj.verse,
-                                text: cleanText,
-                                reference: this.formatArabicReference(book.name_ar || book.name, chapterObj.chapter, verseObj.verse)
-                            });
+                        if (this.normalizeSearchText(verseObj.text).includes(normalizedQuery)) {
+                            results.push(this.buildVerseResult(book, chapterObj.chapter, verseObj));
+                            if (results.length >= 50) return results;
                         }
                     }
                 }
             }
         }
-        
-        return results.slice(0, 50); // Limit results to prevent overwhelming
+        return results;
     }
 
-    parseReferenceQuery(query) {
-        if (!query) return null;
-
-        const normalizedQuery = this.normalizeSearchText(query).replace(/\s+/g, ' ').trim();
-        const referenceMatch = normalizedQuery.match(/^(.*?)(\d+)\s*[:\-]\s*(\d+)$/);
-
-        if (!referenceMatch) {
-            return null;
-        }
-
-        const bookName = referenceMatch[1].trim();
-        const chapter = parseInt(referenceMatch[2], 10);
-        const verse = parseInt(referenceMatch[3], 10);
-
-        if (!bookName || Number.isNaN(chapter) || Number.isNaN(verse)) {
-            return null;
-        }
-
+    // Parse "bookName chapter:verse" or "bookName chapter-verse"
+    parseExactReference(query) {
+        const normalized = this.normalizeSearchText(query).replace(/\s+/g, ' ').trim();
+        const m = normalized.match(/^(.+?)\s+(\d+)\s*[:\-]\s*(\d+)$/);
+        if (!m) return null;
+        const bookName = m[1].trim();
+        const chapter = parseInt(m[2], 10);
+        const verse = parseInt(m[3], 10);
+        if (!bookName || isNaN(chapter) || isNaN(verse)) return null;
         return { bookName, chapter, verse };
+    }
+
+    // Parse "bookName chapterPrefix" e.g. "يوحنا 1" or "يوحنا 11"
+    parseChapterQuery(query) {
+        const normalized = this.normalizeSearchText(query).replace(/\s+/g, ' ').trim();
+        const m = normalized.match(/^(.+?)\s+(\d+)$/);
+        if (!m) return null;
+        return { bookName: m[1].trim(), chapterPrefix: m[2] };
+    }
+
+    findBookByQuery(bibleData, normalizedQuery) {
+        return bibleData.books.find(book =>
+            this.normalizeSearchText(book.name) === normalizedQuery ||
+            this.normalizeSearchText(book.name_ar || book.name) === normalizedQuery
+        ) || null;
+    }
+
+    // Return one result per chapter whose number starts with chapterPrefix
+    findChaptersByPrefix(bibleData, { bookName, chapterPrefix }) {
+        const book = this.getBookByName(bibleData, bookName);
+        if (!book || !book.chapters) return [];
+
+        return book.chapters
+            .filter(ch => ch && String(ch.chapter).startsWith(chapterPrefix))
+            .sort((a, b) => a.chapter - b.chapter)
+            .map(ch => this.buildChapterResult(book, ch))
+            .filter(Boolean);
+    }
+
+    // Return one result per chapter (first verse as preview)
+    getAllChaptersAsResults(bibleData, book) {
+        if (!book.chapters) return [];
+        return book.chapters
+            .sort((a, b) => a.chapter - b.chapter)
+            .map(ch => this.buildChapterResult(book, ch))
+            .filter(Boolean);
+    }
+
+    // Build a result representing a whole chapter (verse 1 as preview)
+    buildChapterResult(book, chapterObj) {
+        if (!chapterObj || !chapterObj.verses || !Array.isArray(chapterObj.verses)) return null;
+        const firstVerse = chapterObj.verses.find(v => v && v.text);
+        if (!firstVerse) return null;
+        const bookName = book.name_ar || book.name;
+        return {
+            book: book.name,
+            book_ar: bookName,
+            bookId: book.abbreviation || book.name,
+            bookName,
+            chapter: chapterObj.chapter,
+            verse: firstVerse.verse,
+            text: firstVerse.text.replace(/\s+/g, ' ').trim(),
+            reference: `${bookName} ${chapterObj.chapter}`,
+            isChapterResult: true
+        };
+    }
+
+    buildVerseResult(book, chapter, verseObj) {
+        const bookName = book.name_ar || book.name;
+        return {
+            book: book.name,
+            book_ar: bookName,
+            bookId: book.abbreviation || book.name,
+            bookName,
+            chapter,
+            verse: verseObj.verse,
+            text: verseObj.text.replace(/\s+/g, ' ').trim(),
+            reference: this.formatArabicReference(bookName, chapter, verseObj.verse)
+        };
     }
 
     findVerseByReference(bibleData, referenceQuery) {
@@ -170,14 +226,7 @@ class BibleAPI {
         const verseObj = chapterObj.verses.find(v => v && v.verse == referenceQuery.verse);
         if (!verseObj || !verseObj.text) return null;
 
-        return {
-            book: book.name,
-            book_ar: book.name_ar || book.name,
-            chapter: chapterObj.chapter,
-            verse: verseObj.verse,
-            text: verseObj.text,
-            reference: this.formatArabicReference(book.name_ar || book.name, chapterObj.chapter, verseObj.verse)
-        };
+        return this.buildVerseResult(book, chapterObj.chapter, verseObj);
     }
 
     // Remove Arabic diacritics (tashkeel) for better search matching
