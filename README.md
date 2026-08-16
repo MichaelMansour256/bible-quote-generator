@@ -1,4 +1,4 @@
-# VerseUp
+# VerseUp Arena
 
 A modular Arabic Bible web app — verse image generator and three Bible games in one place.
 
