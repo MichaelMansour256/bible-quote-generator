@@ -695,6 +695,69 @@ main {
     display: flex;
     flex-direction: column;
     gap: 20px;
+    background: linear-gradient(135deg, #0e1e33 0%, #162d4a 100%);
+    padding: 28px;
+    border-radius: 15px;
+    border: 1px solid rgba(255,255,255,0.08);
+    box-shadow: 0 14px 30px rgba(4, 15, 28, 0.28);
+}
+
+.controls-panel h3 {
+    color: var(--text);
+}
+
+.controls-panel .input-group label {
+    color: var(--text-muted);
+}
+
+.controls-panel .input-group textarea,
+.controls-panel .input-group input,
+.controls-panel .input-group select {
+    background: rgba(255,255,255,0.06);
+    border-color: rgba(255,255,255,0.14);
+    color: var(--text);
+}
+
+.controls-panel .input-group textarea::placeholder,
+.controls-panel .input-group input::placeholder {
+    color: rgba(170,192,218,0.55);
+}
+
+.controls-panel .input-group textarea:focus,
+.controls-panel .input-group input:focus,
+.controls-panel .input-group select:focus {
+    border-color: var(--accent-2);
+    background: rgba(255,255,255,0.09);
+}
+
+.controls-panel .input-group select option {
+    background: #162d4a;
+    color: var(--text);
+}
+
+.controls-panel .input-group textarea[readonly],
+.controls-panel .input-group input[readonly] {
+    background: rgba(255,255,255,0.05);
+    color: var(--text);
+    cursor: text;
+    user-select: text;
+}
+
+.controls-panel .verse-action-btn {
+    background: rgba(255,255,255,0.07);
+    border-color: rgba(255,255,255,0.15);
+    color: var(--text);
+}
+
+.controls-panel .verse-action-btn:hover:not(:disabled) {
+    background: rgba(255,255,255,0.13);
+    border-color: var(--accent-2);
+}
+
+.controls-panel #use-selection-btn:not(:disabled) {
+    border-color: var(--accent-2);
+    background: rgba(91,140,255,0.15);
+    color: #a8c4ff;
 }
 
 .verse-preview {
