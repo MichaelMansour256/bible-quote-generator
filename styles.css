@@ -1,7 +1,21 @@
- :root {
+:root {
+    /* ── Dark mode (default) ── */
     --bg-0: #07111f;
     --bg-1: #0d1b2e;
     --bg-2: #14263d;
+    --body-bg-radial-1: rgba(91, 140, 255, 0.24);
+    --body-bg-radial-2: rgba(212, 168, 85, 0.16);
+    --container-bg: rgba(10, 18, 31, 0.84);
+    --container-border: rgba(255, 255, 255, 0.06);
+    --header-bg-0: #09111d;
+    --header-bg-1: #13253c;
+    --header-bg-2: #1b3557;
+    --section-bg-0: #0e1e33;
+    --section-bg-1: #162d4a;
+    --game-section-bg-0: #0c1728;
+    --game-section-bg-1: #152640;
+    --reverse-section-bg-0: #0b192c;
+    --reverse-section-bg-1: #162946;
     --surface-0: rgba(11, 22, 38, 0.92);
     --surface-1: rgba(19, 31, 52, 0.94);
     --surface-2: rgba(29, 44, 69, 0.96);
@@ -17,6 +31,181 @@
     --accent-2: #5b8cff;
     --accent-3: #24c4b2;
     --shadow: 0 24px 50px rgba(1, 8, 18, 0.35);
+    /* inputs */
+    --input-bg: rgba(255,255,255,0.06);
+    --input-border: rgba(255,255,255,0.14);
+    --input-bg-focus: rgba(255,255,255,0.09);
+    --input-color: var(--text);
+    --input-placeholder: rgba(170,192,218,0.55);
+    --input-readonly-bg: rgba(255,255,255,0.05);
+    --select-option-bg: #162d4a;
+    /* switcher */
+    --switcher-btn-bg: rgba(255,255,255,0.08);
+    /* game elements */
+    --game-el-bg: rgba(255,255,255,0.08);
+    --game-el-border: rgba(255,255,255,0.12);
+    --game-btn-color: #eff6ff;
+    --game-text: #edf4ff;
+    --game-label: #f4f7fb;
+    --game-strong: #ffffff;
+    /* clue box */
+    --clue-bg: rgba(248,250,255,0.98);
+    --clue-color: #102033;
+    /* verse display */
+    --verse-display-bg: rgba(248,250,255,0.98);
+    --verse-display-color: #102033;
+    --blank-color: #1e3a8a;
+    /* search */
+    --search-bg: #ffffff;
+    --search-border: #dde3ec;
+    --search-item-border: #f0f2f5;
+    --search-item-hover: #f5f0eb;
+    --search-ref-color: #1a2a3a;
+    --search-text-color: #6b7a8d;
+    --search-verse-list-bg: #faf8f5;
+    --search-verse-list-border: #ede8e0;
+    --search-verse-item-border: #f0ece4;
+    --search-verse-item-hover: #f0ebe0;
+    /* action btns */
+    --action-btn-bg: #f4f7fb;
+    --action-btn-border: #d0d8e4;
+    --action-btn-color: #1f3a5f;
+    --action-btn-hover-bg: #e6eef8;
+    --use-sel-bg: #eef3ff;
+    --use-sel-color: #1a4db5;
+    /* misc */
+    --loading-bg: #f8f9fa;
+    --loading-border: #e9ecef;
+    --loading-text: #6c757d;
+    --canvas-container-bg: #f8f9fa;
+    --label-color: #1f2f40;
+    --base-input-bg: #ffffff;
+    --base-input-border: #d8e1ec;
+    --color-option-bg: rgba(255,255,255,0.96);
+    --color-option-selected-bg: #f8fbff;
+    --color-option-span: #344e68;
+    --color-option-selected-span: #244a91;
+    /* theme toggle */
+    --toggle-bg: rgba(255,255,255,0.1);
+    --toggle-border: rgba(255,255,255,0.2);
+    --toggle-color: #e8eef7;
+}
+
+.theme-toggle {
+    background: var(--toggle-bg);
+    border: 1px solid var(--toggle-border);
+    color: var(--toggle-color);
+    padding: 8px 14px;
+    border-radius: 999px;
+    cursor: pointer;
+    font-size: 1.2rem;
+    transition: all 0.25s ease;
+    margin-top: 12px;
+}
+
+.theme-toggle:hover {
+    background: var(--toggle-bg);
+    transform: scale(1.05);
+}
+
+[data-theme="light"] {
+    --bg-0: #e8f0fb;
+    --bg-1: #dce8f8;
+    --bg-2: #cfddf4;
+    --body-bg-radial-1: rgba(91, 140, 255, 0.12);
+    --body-bg-radial-2: rgba(212, 168, 85, 0.10);
+    --container-bg: rgba(255,255,255,0.95);
+    --container-border: rgba(0,0,0,0.08);
+    --header-bg-0: #1a3a6b;
+    --header-bg-1: #1e4d8c;
+    --header-bg-2: #2563b0;
+    --section-bg-0: #f0f5ff;
+    --section-bg-1: #e4eeff;
+    --game-section-bg-0: #eef4ff;
+    --game-section-bg-1: #e0ecff;
+    --reverse-section-bg-0: #edf3ff;
+    --reverse-section-bg-1: #ddeaff;
+    --text: #1a2a3a;
+    --text-strong: #0d1b2e;
+    --text-muted: #3a5a7a;
+    --line: rgba(0,0,0,0.08);
+    --line-strong: rgba(0,0,0,0.14);
+    --shadow: 0 24px 50px rgba(0,0,0,0.10);
+    /* inputs */
+    --input-bg: #ffffff;
+    --input-border: #b8cce4;
+    --input-bg-focus: #f0f6ff;
+    --input-color: #1a2a3a;
+    --input-placeholder: rgba(60,90,120,0.5);
+    --input-readonly-bg: #f4f8ff;
+    --select-option-bg: #ffffff;
+    /* switcher */
+    --switcher-btn-bg: rgba(0,0,0,0.05);
+    /* game elements */
+    --game-el-bg: rgba(0,0,0,0.04);
+    --game-el-border: rgba(0,0,0,0.10);
+    --game-btn-color: #1a2a3a;
+    --game-text: #1a2a3a;
+    --game-label: #1a2a3a;
+    --game-strong: #0d1b2e;
+    /* clue box */
+    --clue-bg: #ffffff;
+    --clue-color: #102033;
+    /* verse display */
+    --verse-display-bg: #ffffff;
+    --verse-display-color: #102033;
+    --blank-color: #1e3a8a;
+    /* search */
+    --search-bg: #ffffff;
+    --search-border: #b8cce4;
+    --search-item-border: #e8eef8;
+    --search-item-hover: #eef4ff;
+    --search-ref-color: #1a2a3a;
+    --search-text-color: #4a6080;
+    --search-verse-list-bg: #f5f8ff;
+    --search-verse-list-border: #d0ddf0;
+    --search-verse-item-border: #dde8f8;
+    --search-verse-item-hover: #e4eeff;
+    /* action btns */
+    --action-btn-bg: #f0f5ff;
+    --action-btn-border: #b8cce4;
+    --action-btn-color: #1f3a5f;
+    --action-btn-hover-bg: #ddeaff;
+    --use-sel-bg: #e4eeff;
+    --use-sel-color: #1a4db5;
+    /* misc */
+    --loading-bg: #f0f5ff;
+    --loading-border: #b8cce4;
+    --loading-text: #3a5a7a;
+    --canvas-container-bg: #f0f5ff;
+    --label-color: #1a2a3a;
+    --base-input-bg: #ffffff;
+    --base-input-border: #b8cce4;
+    --color-option-bg: #ffffff;
+    --color-option-selected-bg: #f0f6ff;
+    --color-option-span: #2a4060;
+    --color-option-selected-span: #1a4db5;
+    /* theme toggle */
+    --toggle-bg: rgba(0,0,0,0.08);
+    --toggle-border: rgba(0,0,0,0.15);
+    --toggle-color: #1a2a3a;
+}
+
+.theme-toggle {
+    background: var(--toggle-bg);
+    border: 1px solid var(--toggle-border);
+    color: var(--toggle-color);
+    padding: 8px 14px;
+    border-radius: 999px;
+    cursor: pointer;
+    font-size: 1.2rem;
+    transition: all 0.25s ease;
+    margin-top: 12px;
+}
+
+.theme-toggle:hover {
+    background: var(--toggle-bg);
+    transform: scale(1.05);
 }
 
 * {

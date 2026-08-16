@@ -80,6 +80,7 @@ class BibleQuoteGenerator {
         this.loadReverseGamePreferences();
         this.loadScrambleGamePreferences();
         this.initializeCanvas();
+        this.setupThemeToggle();
     }
 
     async loadBibleData() {
@@ -196,6 +197,30 @@ class BibleQuoteGenerator {
         document.getElementById('verse-search').value = '';
         document.getElementById('search-results').innerHTML = '';
         document.getElementById('search-results').style.display = 'none';
+    }
+
+    setupThemeToggle() {
+        const themeToggle = document.getElementById('theme-toggle');
+        if (!themeToggle) return;
+
+        // Load saved theme preference
+        const savedTheme = localStorage.getItem('verseup-theme') || 'dark';
+        this.setTheme(savedTheme);
+
+        themeToggle.addEventListener('click', () => {
+            const currentTheme = document.documentElement.getAttribute('data-theme') || 'dark';
+            const newTheme = currentTheme === 'dark' ? 'light' : 'dark';
+            this.setTheme(newTheme);
+        });
+    }
+
+    setTheme(theme) {
+        document.documentElement.setAttribute('data-theme', theme);
+        localStorage.setItem('verseup-theme', theme);
+        const themeToggle = document.getElementById('theme-toggle');
+        if (themeToggle) {
+            themeToggle.textContent = theme === 'dark' ? '🌙' : '☀️';
+        }
     }
 
     getGameVersePool() {
