@@ -57,23 +57,33 @@ export const quoteFeatureMixin = {
         const useSelBtn = document.getElementById('use-selection-btn');
         const restoreBtn = document.getElementById('restore-verse-btn');
 
-        // Show "use selection" button whenever there is a non-empty selection
-        textarea.addEventListener('mouseup', () => this._updateSelectionBtn());
-        textarea.addEventListener('keyup', () => this._updateSelectionBtn());
-        textarea.addEventListener('select', () => this._updateSelectionBtn());
+        // readonly textareas support mouse selection but not keyboard editing.
+        // Poll selection on mouseup and keyup (arrow keys still work for navigation).
+        const checkSelection = () => {
+            const selected = textarea.value
+                .substring(textarea.selectionStart, textarea.selectionEnd)
+                .trim();
+            useSelBtn.disabled = selected.length === 0;
+        };
+
+        textarea.addEventListener('mouseup', checkSelection);
+        textarea.addEventListener('keyup', checkSelection);
 
         useSelBtn.addEventListener('click', () => {
-            const start = textarea.selectionStart;
-            const end = textarea.selectionEnd;
-            const selected = textarea.value.substring(start, end).trim();
+            const selected = textarea.value
+                .substring(textarea.selectionStart, textarea.selectionEnd)
+                .trim();
             if (!selected) return;
 
-            // Save full text for restoration if not already saved
             if (!this._fullVerseText) {
                 this._fullVerseText = textarea.value;
             }
 
+            // Temporarily remove readonly to allow value assignment, then restore
+            textarea.removeAttribute('readonly');
             textarea.value = selected;
+            textarea.setAttribute('readonly', '');
+
             restoreBtn.disabled = false;
             useSelBtn.disabled = true;
             this.generateImage();
@@ -81,21 +91,18 @@ export const quoteFeatureMixin = {
 
         restoreBtn.addEventListener('click', () => {
             if (this._fullVerseText) {
+                textarea.removeAttribute('readonly');
                 textarea.value = this._fullVerseText;
+                textarea.setAttribute('readonly', '');
                 this._fullVerseText = null;
             }
             restoreBtn.disabled = true;
+            useSelBtn.disabled = true;
             this.generateImage();
         });
     },
 
-    _updateSelectionBtn() {
-        const textarea = document.getElementById('verse-text');
-        const useSelBtn = document.getElementById('use-selection-btn');
-        const hasSelection = textarea.selectionStart !== textarea.selectionEnd
-            && textarea.value.substring(textarea.selectionStart, textarea.selectionEnd).trim().length > 0;
-        useSelBtn.disabled = !hasSelection;
-    },
+    _updateSelectionBtn() {},
 
     initializeCanvas() {
         this.canvas.width = 1080;
@@ -345,6 +352,7 @@ export const quoteFeatureMixin = {
         document.getElementById('verse-reference').value = reference;
         this._fullVerseText = null;
         document.getElementById('restore-verse-btn').disabled = true;
+        document.getElementById('use-selection-btn').disabled = true;
 
         // Sync the dropdowns
         const bookSelect = document.getElementById('book-select');

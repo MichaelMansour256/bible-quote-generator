@@ -354,6 +354,9 @@ class BibleQuoteGenerator {
 
             document.getElementById('verse-text').value = verseText;
             document.getElementById('verse-reference').value = reference;
+            this._fullVerseText = null;
+            document.getElementById('restore-verse-btn').disabled = true;
+            document.getElementById('use-selection-btn').disabled = true;
             this.showValidationMessage('تم تحميل الآية بنجاح', 'success');
         } else {
             this.showValidationMessage('الآية غير موجودة', 'error');

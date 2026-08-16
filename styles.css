@@ -1296,10 +1296,12 @@ main {
     color: #1a4db5;
 }
 
-
+.input-group textarea[readonly],
+.input-group input[readonly] {
     background-color: #f8f9fa;
     color: #495057;
-    cursor: not-allowed;
+    cursor: text;
+    user-select: text;
 }
 
 .validation-message {
