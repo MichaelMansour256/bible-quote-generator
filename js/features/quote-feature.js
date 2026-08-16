@@ -99,27 +99,28 @@ export const quoteFeatureMixin = {
             if (e.key === 'ArrowDown') {
                 e.preventDefault();
                 this.searchActiveIndex = (this.searchActiveIndex + 1) % this.searchResults.length;
-                this.renderSearchResults();
+                this.updateActiveHighlight();
             } else if (e.key === 'ArrowUp') {
                 e.preventDefault();
                 this.searchActiveIndex = this.searchActiveIndex <= 0
                     ? this.searchResults.length - 1
                     : this.searchActiveIndex - 1;
-                this.renderSearchResults();
+                this.updateActiveHighlight();
             } else if (e.key === 'Enter') {
                 e.preventDefault();
                 const activeResult = this.searchResults[this.searchActiveIndex] || this.searchResults[0];
                 if (activeResult && !activeResult.isChapterResult) {
                     this.selectAndLoadVerse(activeResult);
-                    closeSearchResults();
                 }
             } else if (e.key === 'Escape') {
                 closeSearchResults();
             }
         });
 
-        document.addEventListener('click', (e) => {
-            if (!e.target.closest('.search-control')) {
+        // Use mousedown instead of click so it fires before the input's blur event,
+        // and use closest check so clicks inside the results panel don't close it.
+        document.addEventListener('mousedown', (e) => {
+            if (!searchResults.contains(e.target) && e.target !== searchInput) {
                 closeSearchResults();
             }
         });
@@ -145,6 +146,13 @@ export const quoteFeatureMixin = {
         searchResults.style.display = 'block';
     },
 
+    updateActiveHighlight() {
+        const searchResults = document.getElementById('search-results');
+        searchResults.querySelectorAll('.search-result-item').forEach((el, i) => {
+            el.classList.toggle('active', i === this.searchActiveIndex);
+        });
+    },
+
     renderSearchResults() {
         const searchResults = document.getElementById('search-results');
         searchResults.innerHTML = '';
@@ -162,7 +170,6 @@ export const quoteFeatureMixin = {
         const item = document.createElement('div');
         item.className = `search-result-item${index === this.searchActiveIndex ? ' active' : ''}`;
         item.setAttribute('role', 'option');
-        item.setAttribute('aria-selected', index === this.searchActiveIndex ? 'true' : 'false');
         item.tabIndex = -1;
 
         const preview = result.text.length > 80 ? result.text.substring(0, 80) + '...' : result.text;
@@ -173,39 +180,38 @@ export const quoteFeatureMixin = {
             </div>
             <div class="search-result-text">${preview}</div>
         `;
-        item.addEventListener('mouseenter', () => {
-            this.searchActiveIndex = index;
-            this.renderSearchResults();
-        });
-        item.addEventListener('click', () => {
+        // mousedown so it fires before the document mousedown close handler
+        item.addEventListener('mousedown', (e) => {
+            e.preventDefault();
             this.selectAndLoadVerse(result);
         });
         container.appendChild(item);
     },
 
     renderChapterResult(container, result, index) {
-        // Chapter header row — clicking expands to show verses
         const header = document.createElement('div');
         header.className = `search-result-item search-result-chapter${index === this.searchActiveIndex ? ' active' : ''}`;
-        header.setAttribute('role', 'option');
         header.tabIndex = -1;
 
         const preview = result.text.length > 80 ? result.text.substring(0, 80) + '...' : result.text;
+        const expandSpan = document.createElement('span');
+        expandSpan.className = 'search-result-expand';
+        expandSpan.textContent = '▼';
+
         header.innerHTML = `
             <div class="search-result-header">
                 <span class="search-result-reference">${result.reference}</span>
-                <span class="search-result-expand">▼</span>
             </div>
             <div class="search-result-text">${preview}</div>
         `;
+        header.querySelector('.search-result-header').appendChild(expandSpan);
 
-        // Verse sub-list (hidden until expanded)
         const verseList = document.createElement('div');
         verseList.className = 'search-result-verse-list hidden';
 
         const book = bibleAPI.getBookByName(this.bibleData, result.book_ar || result.bookName || result.book);
-        if (book) {
-            const chapterObj = book.chapters && book.chapters.find(ch => ch && ch.chapter == result.chapter);
+        if (book && book.chapters) {
+            const chapterObj = book.chapters.find(ch => ch && ch.chapter == result.chapter);
             if (chapterObj && chapterObj.verses) {
                 chapterObj.verses.forEach(v => {
                     if (!v || !v.text) return;
@@ -218,7 +224,8 @@ export const quoteFeatureMixin = {
                         <span class="search-result-verse-num">${ref}</span>
                         <span class="search-result-verse-text">${vPreview}</span>
                     `;
-                    verseItem.addEventListener('click', (e) => {
+                    verseItem.addEventListener('mousedown', (e) => {
+                        e.preventDefault();
                         e.stopPropagation();
                         this.selectAndLoadVerse({
                             book: result.book,
@@ -230,24 +237,16 @@ export const quoteFeatureMixin = {
                             text: v.text,
                             reference: ref
                         });
-                        document.getElementById('search-results').style.display = 'none';
-                        this.searchResults = [];
-                        this.searchActiveIndex = -1;
                     });
                     verseList.appendChild(verseItem);
                 });
             }
         }
 
-        let expanded = false;
-        header.addEventListener('click', () => {
-            expanded = !expanded;
-            verseList.classList.toggle('hidden', !expanded);
-            header.querySelector('.search-result-expand').textContent = expanded ? '▲' : '▼';
-        });
-        header.addEventListener('mouseenter', () => {
-            this.searchActiveIndex = index;
-            this.renderSearchResults();
+        header.addEventListener('mousedown', (e) => {
+            e.preventDefault();
+            const isHidden = verseList.classList.toggle('hidden');
+            expandSpan.textContent = isHidden ? '▼' : '▲';
         });
 
         container.appendChild(header);
@@ -256,8 +255,11 @@ export const quoteFeatureMixin = {
 
     // Called when a verse result is clicked — loads it and generates the image immediately
     selectAndLoadVerse(verseData) {
+        // Close dropdown first
+        const searchResults = document.getElementById('search-results');
+        searchResults.style.display = 'none';
+        searchResults.innerHTML = '';
         document.getElementById('verse-search').value = '';
-        document.getElementById('search-results').style.display = 'none';
         this.searchResults = [];
         this.searchActiveIndex = -1;
 
