@@ -1210,6 +1210,57 @@ main {
     direction: rtl;
 }
 
+.search-result-chapter {
+    cursor: pointer;
+}
+
+.search-result-expand {
+    font-size: 0.75rem;
+    opacity: 0.5;
+    margin-right: 4px;
+}
+
+.search-result-verse-list {
+    background: #faf8f5;
+    border-top: 1px solid #ede8e0;
+}
+
+.search-result-verse-list.hidden {
+    display: none;
+}
+
+.search-result-verse-item {
+    display: flex;
+    flex-direction: column;
+    gap: 3px;
+    padding: 10px 20px;
+    border-bottom: 1px solid #f0ece4;
+    cursor: pointer;
+    transition: background 0.15s;
+}
+
+.search-result-verse-item:last-child {
+    border-bottom: none;
+}
+
+.search-result-verse-item:hover {
+    background: #f0ebe0;
+}
+
+.search-result-verse-num {
+    font-weight: 700;
+    font-size: 0.9rem;
+    color: #1a2a3a;
+    font-family: 'Amiri', serif;
+}
+
+.search-result-verse-text {
+    font-size: 0.83rem;
+    color: #6b7a8d;
+    line-height: 1.5;
+    direction: rtl;
+}
+
 .input-group textarea[readonly],
 .input-group input[readonly] {
     background-color: #f8f9fa;

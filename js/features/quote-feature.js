@@ -109,8 +109,8 @@ export const quoteFeatureMixin = {
             } else if (e.key === 'Enter') {
                 e.preventDefault();
                 const activeResult = this.searchResults[this.searchActiveIndex] || this.searchResults[0];
-                if (activeResult) {
-                    this.selectVerse(activeResult);
+                if (activeResult && !activeResult.isChapterResult) {
+                    this.selectAndLoadVerse(activeResult);
                     closeSearchResults();
                 }
             } else if (e.key === 'Escape') {
@@ -150,57 +150,123 @@ export const quoteFeatureMixin = {
         searchResults.innerHTML = '';
 
         this.searchResults.forEach((result, index) => {
-            const item = document.createElement('div');
-            item.className = `search-result-item${index === this.searchActiveIndex ? ' active' : ''}`;
-            item.setAttribute('role', 'option');
-            item.setAttribute('aria-selected', index === this.searchActiveIndex ? 'true' : 'false');
-            item.tabIndex = -1;
-
-            const preview = result.text.length > 80 ? result.text.substring(0, 80) + '...' : result.text;
-            item.innerHTML = `
-                <div class="search-result-header">
-                    <span class="search-result-reference">${result.reference}</span>
-                    <span class="search-result-icon">📖</span>
-                </div>
-                <div class="search-result-text">${preview}</div>
-            `;
-            item.addEventListener('mouseenter', () => {
-                this.searchActiveIndex = index;
-                this.renderSearchResults();
-            });
-            item.addEventListener('click', () => {
-                this.selectVerse(result);
-                searchResults.style.display = 'none';
-                this.searchResults = [];
-                this.searchActiveIndex = -1;
-            });
-            searchResults.appendChild(item);
+            if (result.isChapterResult) {
+                this.renderChapterResult(searchResults, result, index);
+            } else {
+                this.renderVerseResult(searchResults, result, index);
+            }
         });
     },
 
-    selectVerse(verseData) {
+    renderVerseResult(container, result, index) {
+        const item = document.createElement('div');
+        item.className = `search-result-item${index === this.searchActiveIndex ? ' active' : ''}`;
+        item.setAttribute('role', 'option');
+        item.setAttribute('aria-selected', index === this.searchActiveIndex ? 'true' : 'false');
+        item.tabIndex = -1;
+
+        const preview = result.text.length > 80 ? result.text.substring(0, 80) + '...' : result.text;
+        item.innerHTML = `
+            <div class="search-result-header">
+                <span class="search-result-reference">${result.reference}</span>
+                <span class="search-result-icon">📖</span>
+            </div>
+            <div class="search-result-text">${preview}</div>
+        `;
+        item.addEventListener('mouseenter', () => {
+            this.searchActiveIndex = index;
+            this.renderSearchResults();
+        });
+        item.addEventListener('click', () => {
+            this.selectAndLoadVerse(result);
+        });
+        container.appendChild(item);
+    },
+
+    renderChapterResult(container, result, index) {
+        // Chapter header row — clicking expands to show verses
+        const header = document.createElement('div');
+        header.className = `search-result-item search-result-chapter${index === this.searchActiveIndex ? ' active' : ''}`;
+        header.setAttribute('role', 'option');
+        header.tabIndex = -1;
+
+        const preview = result.text.length > 80 ? result.text.substring(0, 80) + '...' : result.text;
+        header.innerHTML = `
+            <div class="search-result-header">
+                <span class="search-result-reference">${result.reference}</span>
+                <span class="search-result-expand">▼</span>
+            </div>
+            <div class="search-result-text">${preview}</div>
+        `;
+
+        // Verse sub-list (hidden until expanded)
+        const verseList = document.createElement('div');
+        verseList.className = 'search-result-verse-list hidden';
+
+        const book = bibleAPI.getBookByName(this.bibleData, result.book_ar || result.bookName || result.book);
+        if (book) {
+            const chapterObj = book.chapters && book.chapters.find(ch => ch && ch.chapter == result.chapter);
+            if (chapterObj && chapterObj.verses) {
+                chapterObj.verses.forEach(v => {
+                    if (!v || !v.text) return;
+                    const verseItem = document.createElement('div');
+                    verseItem.className = 'search-result-verse-item';
+                    const bookName = result.book_ar || result.bookName || result.book;
+                    const ref = bibleAPI.formatArabicReference(bookName, result.chapter, v.verse);
+                    const vPreview = v.text.length > 70 ? v.text.substring(0, 70) + '...' : v.text;
+                    verseItem.innerHTML = `
+                        <span class="search-result-verse-num">${ref}</span>
+                        <span class="search-result-verse-text">${vPreview}</span>
+                    `;
+                    verseItem.addEventListener('click', (e) => {
+                        e.stopPropagation();
+                        this.selectAndLoadVerse({
+                            book: result.book,
+                            book_ar: result.book_ar,
+                            bookId: result.bookId,
+                            bookName: result.bookName,
+                            chapter: result.chapter,
+                            verse: v.verse,
+                            text: v.text,
+                            reference: ref
+                        });
+                        document.getElementById('search-results').style.display = 'none';
+                        this.searchResults = [];
+                        this.searchActiveIndex = -1;
+                    });
+                    verseList.appendChild(verseItem);
+                });
+            }
+        }
+
+        let expanded = false;
+        header.addEventListener('click', () => {
+            expanded = !expanded;
+            verseList.classList.toggle('hidden', !expanded);
+            header.querySelector('.search-result-expand').textContent = expanded ? '▲' : '▼';
+        });
+        header.addEventListener('mouseenter', () => {
+            this.searchActiveIndex = index;
+            this.renderSearchResults();
+        });
+
+        container.appendChild(header);
+        container.appendChild(verseList);
+    },
+
+    // Called when a verse result is clicked — loads it and generates the image immediately
+    selectAndLoadVerse(verseData) {
         document.getElementById('verse-search').value = '';
+        document.getElementById('search-results').style.display = 'none';
+        this.searchResults = [];
+        this.searchActiveIndex = -1;
 
         if (this.activeView !== 'quote') {
             this.setActiveView('quote');
         }
 
-        this.currentVerse = {
-            ...verseData,
-            bookId: verseData.bookId || verseData.book || verseData.book_ar || verseData.bookName || '',
-            bookName: verseData.bookName || verseData.book_ar || verseData.book || verseData.bookId || ''
-        };
-
-        document.getElementById('verse-text').value = verseData.text || '';
-        document.getElementById('verse-reference').value = verseData.reference || '';
-
-        const bookSelect = document.getElementById('book-select');
-        const chapterSelect = document.getElementById('chapter-select');
-        const verseSelect = document.getElementById('verse-select');
-        const loadVerseBtn = document.getElementById('load-verse-btn');
-
-        const targetBookName = verseData.book_ar || verseData.bookName || verseData.book || verseData.bookId || '';
-        const resolvedBook = bibleAPI.getBookByName(this.bibleData, targetBookName)
+        const bookName = verseData.book_ar || verseData.bookName || verseData.book || '';
+        const resolvedBook = bibleAPI.getBookByName(this.bibleData, bookName)
             || bibleAPI.getBookByName(this.bibleData, verseData.book || '');
 
         if (!resolvedBook) {
@@ -208,27 +274,56 @@ export const quoteFeatureMixin = {
             return;
         }
 
-        const resolvedBookId = resolvedBook.abbreviation || resolvedBook.name;
-        bookSelect.value = resolvedBookId;
-        this.onBookChange();
+        // Fetch the actual verse text from the API (source of truth)
+        const verseText = bibleAPI.getVerse(
+            this.bibleData,
+            resolvedBook.abbreviation || resolvedBook.name,
+            verseData.chapter,
+            verseData.verse
+        ) || verseData.text || '';
 
+        const resolvedBookName = resolvedBook.name_ar || resolvedBook.name;
+        const reference = bibleAPI.formatArabicReference(resolvedBookName, verseData.chapter, verseData.verse);
+
+        this.currentVerse = {
+            bookId: resolvedBook.abbreviation || resolvedBook.name,
+            bookName: resolvedBookName,
+            chapter: verseData.chapter,
+            verse: verseData.verse,
+            text: verseText,
+            reference
+        };
+
+        document.getElementById('verse-text').value = verseText;
+        document.getElementById('verse-reference').value = reference;
+
+        // Sync the dropdowns
+        const bookSelect = document.getElementById('book-select');
+        const chapterSelect = document.getElementById('chapter-select');
+        const verseSelect = document.getElementById('verse-select');
+        bookSelect.value = this.currentVerse.bookId;
+        this.onBookChange();
         chapterSelect.value = String(verseData.chapter);
         this.onChapterChange();
-
         verseSelect.value = String(verseData.verse);
         this.onVerseChange();
+        document.getElementById('load-verse-btn').disabled = false;
 
-        loadVerseBtn.disabled = false;
-        this.showValidationMessage('تم اختيار الآية بنجاح', 'success');
+        // Generate the image immediately
+        this.generateImage();
 
         const verseSelectionSection = document.querySelector('.verse-selection-section');
         if (verseSelectionSection) {
             verseSelectionSection.classList.add('search-selection-flash');
             verseSelectionSection.scrollIntoView({ behavior: 'smooth', block: 'start' });
-            window.setTimeout(() => {
-                verseSelectionSection.classList.remove('search-selection-flash');
-            }, 1200);
+            window.setTimeout(() => verseSelectionSection.classList.remove('search-selection-flash'), 1200);
         }
+    },
+
+    // Legacy alias kept for keyboard Enter handler
+    selectVerse(verseData) {
+        if (verseData.isChapterResult) return; // chapter results need expansion, not direct selection
+        this.selectAndLoadVerse(verseData);
     },
 
     showValidationMessage(message, type) {
