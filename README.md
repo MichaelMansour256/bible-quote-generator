@@ -1,76 +1,89 @@
-# منصة ألعاب الكتاب المقدس
+# VerseUp
 
-A modular Arabic Bible web app with a verse image generator and three Bible games in one place.
+A modular Arabic Bible web app — verse image generator and three Bible games in one place.
 
 ## What It Does
 
-- Quote generator for Bible verses with Arabic typography and downloadable images
-- Memory game to hide words in a verse and let the player fill them in
-- Reverse-words game for books, names, and places
-- Scrambled-words game using the same curated Bible term pool
-- Searchable Bible verse picker with Arabic-friendly matching
+- Generate shareable 1080×1080 verse images with Arabic typography
+- Memory game: hide words in a verse and fill them in from memory
+- Reverse-words game: guess the original word from its reversed characters
+- Scrambled-words game: unscramble shuffled characters to find the word
+- Smart verse search: by book name, book + chapter, exact reference, or free text
 - Saved preferences and score tracking with `localStorage`
 
 ## Architecture
 
-The app is now split into a small core controller plus feature modules:
-
 ```text
 bible-quote-generator/
 ├── index.html
-├── script.js
-├── bible-api.js
-├── bible-database.js
+├── script.js              ← thin shell: constructor + event wiring only
+├── bible-api.js           ← API client + smart search logic
+├── bible-database.js      ← offline book metadata (aligned to API names)
 ├── styles.css
 ├── js/
-│   ├── game-utils.js
+│   ├── game-utils.js      ← shared Arabic normalization, scramble, reverse, term pools
+│   ├── features/
+│   │   ├── quote-feature.js   ← image generator, search UI, font map
+│   │   └── memory-game.js     ← memory game logic
 │   └── games/
-│       ├── reverse-game.js
-│       └── scramble-game.js
+│       ├── reverse-game.js    ← reverse-words game
+│       └── scramble-game.js   ← scrambled-words game
 └── README.md
 ```
 
-`script.js` remains the main application shell and imports the game modules as mixins. Shared Arabic normalization, scrambling, reversing, and curated Bible term helpers live in `js/game-utils.js`.
+`script.js` is a thin shell that wires the constructor and event listeners. All feature logic lives in the mixin modules, composed via `Object.assign`.
 
 ## Features
 
 ### Quote Generator
 
-- Browse verses by book, chapter, and verse
-- Search Arabic verse text in real time
-- Generate 1080x1080 verse images
-- Choose from multiple backgrounds and Arabic fonts
-- Optional logo overlay with automatic contrast handling
+- Browse verses by book → chapter → verse dropdowns
+- Smart search bar (see Search section below)
+- Clicking a search result immediately generates the image — no extra button press needed
+- 1080×1080 canvas output with decorative border and cross symbols
+- 12 Arabic font choices (Thuluth Deco, Amiri, Aref Ruqaa, Reem Kufi, Lateef, Scheherazade, Noto Naskh, Markazi Text, Katibeh, Mirza, Harmattan, Diwan Kufi)
+- 7 background styles (gradients + solid colors)
+- Optional logo overlay with automatic light/dark contrast handling
+- Download as PNG with Arabic reference in filename
+
+### Smart Search
+
+Four search modes, resolved in priority order:
+
+| Input example | Behaviour |
+|---|---|
+| `يوحنا 3:16` | Returns that exact verse |
+| `يوحنا 3` | Returns all chapters whose number starts with `3` (ch 3, 13, 21…), each expandable |
+| `يوحنا` | Returns all chapters of John, each expandable |
+| `الرب راعي` | Full-text search across all ~31 000 verses |
+
+Chapter results show a **▼ expand arrow** — clicking opens an inline verse list for that chapter. Clicking any verse loads it and generates the image immediately. Keyboard: `↑ ↓` to navigate, `Enter` to select a verse result, `Escape` to close.
 
 ### Memory Game
 
-- Pick a specific verse or random verse
-- Hide words by difficulty level
-- Type the missing words inside locked blanks
-- Get score, timer, high score, and next-verse progression
-- Save the last selected verse and continue later
+- Pick a specific verse or a random one
+- Words hidden by difficulty ratio (easy 20 % → expert 60 %)
+- Type missing words into inline blanks
+- Score, timer, high score, next-verse progression
+- Last selected verse and difficulty saved and restored on reload
 
 ### Reverse Game
 
-- Choose between books, names, places, or random selection
-- Reverse the chosen term and guess the original
-- Supports curated aliases and Arabic normalization
-- Tracks score, timer, and high score
+- Choose books, names, places, or random
+- Read the reversed word, type the original
+- Time-bonus scoring: `max(10, 100 − seconds)` — faster answers score higher
+- `Enter` key submits the answer
+- Tracks score, timer, high score; state persisted in `localStorage`
 
 ### Scrambled Words Game
 
-- Uses the same curated Bible term pool
-- Scrambles the characters in the selected word or phrase
-- Supports category and difficulty filtering
-- Tracks score, timer, and high score
+- Same curated term pool as the reverse game
+- Characters shuffled; type the original word
+- Same time-bonus scoring model
+- `Enter` key submits the answer
+- Category and difficulty filtering; state persisted
 
 ## Getting Started
-
-1. Open the project folder in VS Code or your browser.
-2. Serve the folder with a local static server.
-3. Open `index.html`.
-
-If you want a quick local server, use something like:
 
 ```bash
 python -m http.server 8000
@@ -78,13 +91,29 @@ python -m http.server 8000
 
 Then open `http://localhost:8000`.
 
+The app is fully static — no build step, no dependencies to install.
+
+## Keyboard Shortcuts
+
+| Shortcut | Action |
+|---|---|
+| `Ctrl + Enter` | Generate image |
+| `Ctrl + S` | Download image (if generated) |
+| `Enter` (in reverse/scramble answer field) | Submit answer |
+| `↑ / ↓` (in search) | Navigate results |
+| `Enter` (in search, verse result) | Load verse + generate image |
+| `Escape` (in search) | Close results |
+
 ## Data Source
 
-- Bible text is loaded from the Arabic Smith & Van Dyck API used by `bible-api.js`
-- Canonical book metadata is stored in `bible-database.js`
+- Bible text: Arabic Smith & Van Dyck via `https://api.getbible.net/v2/arabicsv.json`
+- Book metadata: `bible-database.js` (used as offline fallback in `game-utils.js`)
+- Book names in `bible-database.js` are aligned to the API names (e.g. `تكوين`, `1 صموئيل`) so the fallback term pool matches live data
 
-## Notes
+## Code Notes
 
-- The app uses Arabic normalization so answers are more forgiving with diacritics and common letter variants.
-- The reverse and scrambled games share the same curated pool of books, names, and places.
-- The project is designed to stay fully static and run in the browser.
+- Font lookup uses a single `FONT_MAP` constant in `quote-feature.js` — no repeated switch-cases
+- Arabic normalization (diacritics, alef variants, taa marbuta) is centralised in `game-utils.js`
+- `matchesDifficulty` is defined once in `game-utils.js` and imported where needed
+- Search dropdown closes on `mousedown` (not `click`) so item handlers fire before the close handler
+- Chapter expand/collapse is DOM-local state — highlight changes never rebuild the list
