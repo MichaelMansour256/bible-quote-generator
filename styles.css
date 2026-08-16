@@ -787,6 +787,178 @@ main {
     text-align: center;
 }
 
+/* ── Mobile-first fixes ── */
+@media (max-width: 640px) {
+    body {
+        padding: 8px;
+    }
+
+    .container {
+        border-radius: 12px;
+    }
+
+    header {
+        padding: 20px 12px 16px;
+    }
+
+    header h1 {
+        font-size: 1.5rem;
+    }
+
+    header p {
+        font-size: 0.9rem;
+    }
+
+    .view-switcher {
+        gap: 6px;
+        padding: 12px 10px 0;
+    }
+
+    .view-switch-btn {
+        padding: 10px 12px;
+        font-size: 0.82rem;
+        flex: 1 1 auto;
+        text-align: center;
+    }
+
+    main {
+        padding: 12px;
+        gap: 14px;
+    }
+
+    .verse-selection-section,
+    .memorize-game-section,
+    .reverse-game-section,
+    .scramble-game-section {
+        padding: 16px 12px;
+    }
+
+    /* Quote page: stack book/chapter/verse + search vertically */
+    .selection-controls {
+        grid-template-columns: 1fr;
+        gap: 16px;
+    }
+
+    /* Controls + preview: stack vertically */
+    .main-content-section {
+        grid-template-columns: 1fr;
+        gap: 16px;
+    }
+
+    /* Color swatches: 3 per row on small screens */
+    .color-combinations {
+        grid-template-columns: repeat(3, 1fr);
+    }
+
+    /* Canvas scales to fit */
+    .canvas-container {
+        padding: 8px;
+    }
+
+    #quote-canvas {
+        max-width: 100%;
+        height: auto;
+    }
+
+    /* Action buttons stack */
+    .action-buttons {
+        flex-direction: column;
+        gap: 10px;
+    }
+
+    .action-buttons .generate-btn,
+    .action-buttons .download-btn {
+        width: 100%;
+    }
+
+    /* Game header: score card below title */
+    .game-header {
+        flex-direction: column;
+        gap: 12px;
+    }
+
+    .game-score-card {
+        width: 100%;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        padding: 12px 16px;
+    }
+
+    .game-score-card strong {
+        font-size: 1.5rem;
+    }
+
+    /* Stats bar: 3 cols → 1 col */
+    .game-stats-bar,
+    .reverse-stats-bar,
+    .scramble-stats-bar {
+        grid-template-columns: repeat(3, 1fr);
+        font-size: 0.8rem;
+    }
+
+    .game-stat strong {
+        font-size: 0.95rem;
+    }
+
+    /* Settings: 2 cols → 1 col */
+    .game-settings-grid {
+        grid-template-columns: 1fr;
+    }
+
+    /* Picker: 3 cols → 1 col */
+    .game-picker-grid {
+        grid-template-columns: 1fr;
+    }
+
+    /* Buttons: full width */
+    .game-buttons {
+        flex-direction: column;
+    }
+
+    .game-btn {
+        width: 100%;
+        min-height: 44px;
+    }
+
+    /* Reverse / scramble board: stack */
+    .reverse-board,
+    .scramble-board {
+        grid-template-columns: 1fr;
+    }
+
+    .reverse-prompt,
+    .reverse-inputs,
+    .scramble-prompt,
+    .scramble-inputs {
+        min-height: unset;
+    }
+
+    /* Game meta: 2 cols → 1 col */
+    .game-meta {
+        grid-template-columns: 1fr;
+    }
+
+    /* Ensure all inputs are touch-friendly */
+    .input-group input,
+    .input-group select,
+    .input-group textarea {
+        min-height: 44px;
+        font-size: 1rem;
+    }
+
+    .load-verse-btn,
+    .generate-btn,
+    .download-btn {
+        min-height: 44px;
+    }
+
+    /* Search results don't overflow viewport */
+    .search-results {
+        max-height: 240px;
+    }
+}
+
 /* Responsive Design */
 @media (max-width: 1200px) {
     .container {
