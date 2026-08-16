@@ -19,7 +19,7 @@ class BibleQuoteGenerator {
 
         this.selectedBg = 'gradient1';
         this.selectedText = 'white';
-        this.selectedFont = 'thuluth-deco';
+        this.selectedFont = 'aref-ruqaa';
         this.gameState = {
             verse: null,
             maskedText: '',
