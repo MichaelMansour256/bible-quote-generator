@@ -37,7 +37,7 @@
     --input-bg-focus: rgba(255,255,255,0.09);
     --input-color: var(--text);
     --input-placeholder: rgba(170,192,218,0.55);
-    --input-readonly-bg: rgba(255,255,255,0.05);
+    --input-readonly-bg: rgba(255,255,255,0.04);
     --select-option-bg: #162d4a;
     /* switcher */
     --switcher-btn-bg: rgba(255,255,255,0.08);
@@ -78,9 +78,9 @@
     --loading-border: #e9ecef;
     --loading-text: #6c757d;
     --canvas-container-bg: #f8f9fa;
-    --label-color: #1f2f40;
-    --base-input-bg: #ffffff;
-    --base-input-border: #d8e1ec;
+    --label-color: var(--text-muted);
+    --base-input-bg: rgba(255,255,255,0.06);
+    --base-input-border: rgba(255,255,255,0.14);
     --color-option-bg: rgba(255,255,255,0.96);
     --color-option-selected-bg: #f8fbff;
     --color-option-span: #344e68;
@@ -181,7 +181,6 @@
     --label-color: #1a2a3a;
     --base-input-bg: #ffffff;
     --base-input-border: #b8cce4;
-    --color-option-bg: #ffffff;
     --color-option-selected-bg: #f0f6ff;
     --color-option-span: #2a4060;
     --color-option-selected-span: #1a4db5;
@@ -228,11 +227,11 @@ body {
 .container {
     max-width: 1200px;
     margin: 0 auto;
-    background: rgba(10, 18, 31, 0.84);
+    background: var(--container-bg);
     border-radius: 20px;
     box-shadow: var(--shadow);
     overflow: hidden;
-    border: 1px solid rgba(255, 255, 255, 0.06);
+    border: 1px solid var(--container-border);
 }
 
 header {
@@ -265,7 +264,7 @@ header p {
 
 .view-switch-btn {
     border: 1px solid var(--line-strong);
-    background: rgba(255, 255, 255, 0.08);
+    background: var(--switcher-btn-bg);
     color: var(--text);
     padding: 12px 18px;
     border-radius: 999px;
@@ -472,7 +471,7 @@ main {
 }
 
 .quote-workspace .input-group label {
-    color: #ffffff;
+    color: var(--text-muted);
 }
 
 .memorize-game-section .input-group label,
@@ -1854,7 +1853,13 @@ main {
 .input-group select:focus {
     outline: none;
     border-color: var(--accent-2);
+    background: var(--input-bg-focus);
     box-shadow: 0 0 0 3px rgba(91, 140, 255, 0.12);
+}
+
+.input-group select option {
+    background: var(--select-option-bg);
+    color: var(--input-color);
 }
 
 .input-group textarea {
