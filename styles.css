@@ -32,12 +32,12 @@
     --accent-3: #24c4b2;
     --shadow: 0 24px 50px rgba(1, 8, 18, 0.35);
     /* inputs */
-    --input-bg: rgba(255,255,255,0.06);
-    --input-border: rgba(255,255,255,0.14);
-    --input-bg-focus: rgba(255,255,255,0.09);
-    --input-color: var(--text);
-    --input-placeholder: rgba(170,192,218,0.55);
-    --input-readonly-bg: rgba(255,255,255,0.04);
+    --input-bg: rgba(255,255,255,0.11);
+    --input-border: rgba(255,255,255,0.28);
+    --input-bg-focus: rgba(255,255,255,0.16);
+    --input-color: #e8eef7;
+    --input-placeholder: rgba(170,192,218,0.70);
+    --input-readonly-bg: rgba(255,255,255,0.08);
     --select-option-bg: #162d4a;
     /* switcher */
     --switcher-btn-bg: rgba(255,255,255,0.08);
@@ -78,9 +78,9 @@
     --loading-border: #e9ecef;
     --loading-text: #6c757d;
     --canvas-container-bg: #f8f9fa;
-    --label-color: var(--text-muted);
-    --base-input-bg: rgba(255,255,255,0.06);
-    --base-input-border: rgba(255,255,255,0.14);
+    --label-color: #aac0da;
+    --base-input-bg: rgba(255,255,255,0.11);
+    --base-input-border: rgba(255,255,255,0.28);
     --color-option-bg: rgba(255,255,255,0.96);
     --color-option-selected-bg: #f8fbff;
     --color-option-span: #344e68;
@@ -235,7 +235,7 @@ body {
 }
 
 header {
-    background: linear-gradient(135deg, #09111d 0%, #13253c 55%, #1b3557 100%);
+    background: linear-gradient(135deg, var(--header-bg-0) 0%, var(--header-bg-1) 55%, var(--header-bg-2) 100%);
     color: var(--text-strong);
     text-align: center;
     padding: 40px 20px;
@@ -393,12 +393,12 @@ main {
 }
 
 .verse-selection-section {
-    background: linear-gradient(135deg, #0e1e33 0%, #162d4a 100%);
+    background: linear-gradient(135deg, var(--section-bg-0) 0%, var(--section-bg-1) 100%);
     padding: 30px;
     border-radius: 15px;
     box-shadow: 0 14px 30px rgba(4, 15, 28, 0.28);
     color: var(--text);
-    border: 1px solid rgba(255,255,255,0.08);
+    border: 1px solid var(--line-strong);
 }
 
 .verse-selection-section.search-selection-flash {
@@ -423,20 +423,22 @@ main {
 }
 
 .memorize-game-section {
-    background: linear-gradient(135deg, #0c1728 0%, #152640 100%);
-    color: #edf4ff;
+    background: linear-gradient(135deg, var(--game-section-bg-0) 0%, var(--game-section-bg-1) 100%);
+    color: var(--text);
     padding: 30px;
     border-radius: 18px;
     box-shadow: 0 18px 40px rgba(4, 11, 24, 0.28);
+    border: 1px solid var(--line-strong);
 }
 
 .reverse-game-section,
 .scramble-game-section {
-    background: linear-gradient(135deg, #0b192c 0%, #162946 100%);
-    color: #edf4ff;
+    background: linear-gradient(135deg, var(--reverse-section-bg-0) 0%, var(--reverse-section-bg-1) 100%);
+    color: var(--text);
     padding: 30px;
     border-radius: 18px;
     box-shadow: 0 18px 40px rgba(4, 11, 24, 0.28);
+    border: 1px solid var(--line-strong);
 }
 
 .memorize-game-section h2,
@@ -444,7 +446,7 @@ main {
 .memorize-game-section span,
 .memorize-game-section p,
 .memorize-game-section strong {
-    color: inherit;
+    color: var(--text);
 }
 
 .reverse-game-section h2,
@@ -457,7 +459,7 @@ main {
 .scramble-game-section span,
 .scramble-game-section p,
 .scramble-game-section strong {
-    color: inherit;
+    color: var(--text);
 }
 
 .quote-workspace h2,
@@ -478,7 +480,7 @@ main {
 .memorize-game-section .game-stat span,
 .memorize-game-section .game-status,
 .memorize-game-section .game-score-card span {
-    color: #f4f7fb;
+    color: var(--text-muted);
 }
 
 .reverse-game-section .input-group label,
@@ -489,13 +491,13 @@ main {
 .scramble-game-section .game-stat span,
 .scramble-game-section .game-status,
 .scramble-game-section .game-score-card span {
-    color: #f4f7fb;
+    color: var(--text-muted);
 }
 
 .memorize-game-section .game-status,
 .memorize-game-section .game-score-card strong,
 .memorize-game-section .game-stat strong {
-    color: #ffffff;
+    color: var(--text-strong);
 }
 
 .reverse-game-section .game-status,
@@ -504,7 +506,7 @@ main {
 .scramble-game-section .game-status,
 .scramble-game-section .game-score-card strong,
 .scramble-game-section .game-stat strong {
-    color: #ffffff;
+    color: var(--text-strong);
 }
 
 .verse-selection-section .input-group label {
@@ -514,21 +516,21 @@ main {
 .verse-selection-section .input-group textarea,
 .verse-selection-section .input-group input,
 .verse-selection-section .input-group select {
-    background: rgba(255,255,255,0.06);
-    border-color: rgba(255,255,255,0.14);
-    color: var(--text);
+    background: var(--input-bg);
+    border-color: var(--input-border);
+    color: var(--input-color);
 }
 
 .verse-selection-section .input-group textarea:focus,
 .verse-selection-section .input-group input:focus,
 .verse-selection-section .input-group select:focus {
     border-color: var(--accent-2);
-    background: rgba(255,255,255,0.09);
+    background: var(--input-bg-focus);
 }
 
 .verse-selection-section .input-group select option {
-    background: #162d4a;
-    color: var(--text);
+    background: var(--select-option-bg);
+    color: var(--input-color);
 }
 
 .game-header {
@@ -883,10 +885,10 @@ main {
     display: flex;
     flex-direction: column;
     gap: 20px;
-    background: linear-gradient(135deg, #0e1e33 0%, #162d4a 100%);
+    background: linear-gradient(135deg, var(--section-bg-0) 0%, var(--section-bg-1) 100%);
     padding: 28px;
     border-radius: 15px;
-    border: 1px solid rgba(255,255,255,0.08);
+    border: 1px solid var(--line-strong);
     box-shadow: 0 14px 30px rgba(4, 15, 28, 0.28);
 }
 
@@ -901,32 +903,32 @@ main {
 .controls-panel .input-group textarea,
 .controls-panel .input-group input,
 .controls-panel .input-group select {
-    background: rgba(255,255,255,0.06);
-    border-color: rgba(255,255,255,0.14);
-    color: var(--text);
+    background: var(--input-bg);
+    border-color: var(--input-border);
+    color: var(--input-color);
 }
 
 .controls-panel .input-group textarea::placeholder,
 .controls-panel .input-group input::placeholder {
-    color: rgba(170,192,218,0.55);
+    color: var(--input-placeholder);
 }
 
 .controls-panel .input-group textarea:focus,
 .controls-panel .input-group input:focus,
 .controls-panel .input-group select:focus {
     border-color: var(--accent-2);
-    background: rgba(255,255,255,0.09);
+    background: var(--input-bg-focus);
 }
 
 .controls-panel .input-group select option {
-    background: #162d4a;
-    color: var(--text);
+    background: var(--select-option-bg);
+    color: var(--input-color);
 }
 
 .controls-panel .input-group textarea[readonly],
 .controls-panel .input-group input[readonly] {
-    background: rgba(255,255,255,0.05);
-    color: var(--text);
+    background: var(--input-readonly-bg);
+    color: var(--input-color);
     cursor: text;
     user-select: text;
 }
