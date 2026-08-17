@@ -1,0 +1,232 @@
+const TRANSLATIONS = {
+    ar: {
+        'page-title':           'VerseUp Arena',
+        'header-desc':          'اقتباسات، حفظ الآيات، الكلمات المعكوسة، والكلمات المبعثرة في مكان واحد',
+        'lang-toggle':          'EN',
+        'nav-quote':            'صفحة إنشاء الاقتباس',
+        'nav-memory':           'لعبة الحفظ',
+        'nav-reverse':          'الكلمات المعكوسة',
+        'nav-scramble':         'الكلمات المبعثرة',
+        'select-verse-title':   'اختر الآية',
+        'label-book':           'اختر السفر:',
+        'opt-book':             '-- اختر سفر --',
+        'label-chapter':        'الإصحاح:',
+        'opt-chapter':          '-- اختر إصحاح --',
+        'label-verse':          'الآية:',
+        'opt-verse':            '-- اختر آية --',
+        'load-verse-btn':       'تحميل الآية',
+        'label-search':         'البحث في الآيات:',
+        'search-placeholder':   'ابحث في النص أو المرجع مثل يوحنا 3:16',
+        'searching':            'جاري البحث...',
+        'controls-title':       'تصميم التحكم',
+        'label-verse-text':     'نص الآية:',
+        'verse-placeholder':    'سيتم ملؤه تلقائياً عند اختيار آية',
+        'use-selection-btn':    '✂ استخدم المحدد',
+        'restore-verse-btn':    '↺ استعادة الكاملة',
+        'label-reference':      'المرجع:',
+        'ref-placeholder':      'سيتم ملؤه تلقائياً',
+        'label-font':           'نوع الخط:',
+        'font-thuluth':         'ثلث',
+        'font-amiri':           'أميري',
+        'font-aref':            'عرف رقاع',
+        'font-reem':            'ريم كوفي',
+        'font-lateef':          'لطيف',
+        'font-scheherazade':    'شهرزاد',
+        'font-noto':            'نسخ',
+        'font-markazi':         'مرکزي',
+        'font-katibeh':         'کاتب',
+        'font-mirza':           'مرزا',
+        'font-harmattan':       'هرماتان',
+        'font-diwan':           'دواني',
+        'label-colors':         'مظهر الألوان:',
+        'color-blue-white':     'أزرق أبيض',
+        'color-purple-white':   'بنفسجي أبيض',
+        'color-pink-white':     'وردي أبيض',
+        'color-dark-gold':      'داكن ذهبي',
+        'color-white-black':    'أبيض أسود',
+        'color-cream-blue':     'كريمي أزرق',
+        'color-lb-black':       'أزرق فاتح أسود',
+        'label-logo':           'إظهار الشعار',
+        'generate-btn':         'إنشاء صورة',
+        'download-btn':         'تحميل الصورة',
+        'preview-title':        'معاينة مباشرة',
+        'success-msg':          'تم إنشاء الصورة بنجاح!',
+        'memory-title':         'لعبة حفظ الآيات',
+        'memory-desc':          'اخفِ بعض الكلمات، اكتب الآية من الذاكرة، واحصل على نتيجة فورية.',
+        'score-label':          'الدرجة',
+        'stat-time':            'الوقت',
+        'stat-highscore':       'أفضل درجة',
+        'stat-next':            'الآية التالية',
+        'label-difficulty':     'مستوى الصعوبة:',
+        'diff-easy':            'سهل',
+        'diff-medium':          'متوسط',
+        'diff-hard':            'صعب',
+        'diff-expert':          'خبير',
+        'label-pick-verse':     'اختر آية محددة:',
+        'btn-specific':         'ابدأ الآية المحددة',
+        'btn-random':           'آية عشوائية',
+        'btn-next':             'الآية التالية',
+        'btn-check':            'تحقق من الإجابة',
+        'btn-reveal':           'أظهر الإجابة',
+        'memory-status':        'اضغط على بدء آية جديدة لتبدأ الجولة.',
+        'label-hidden-verse':   'الآية المخفية - املأ الفراغات:',
+        'meta-reference':       'المرجع:',
+        'meta-hidden':          'الكلمات المخفية:',
+        'reverse-title':        'لعبة الكلمات المعكوسة',
+        'reverse-desc':         'اختر الفئة، واقرأ الكلمة المعكوسة، ثم اكتب الإجابة الصحيحة بسرعة.',
+        'stat-category':        'الفئة',
+        'label-category':       'نوع الكلمات:',
+        'cat-random':           'عشوائي',
+        'cat-book':             'اسم سفر',
+        'cat-name':             'اسم',
+        'cat-place':            'مكان',
+        'btn-reverse-start':    'ابدأ الكلمة المعكوسة',
+        'btn-new-word':         'كلمة جديدة',
+        'reverse-status':       'اضغط على البدء للحصول على كلمة معكوسة.',
+        'label-reverse-clue':   'الكلمة المعكوسة - أول من يكتشفها يفوز:',
+        'label-answer':         'اكتب الإجابة الصحيحة:',
+        'answer-placeholder':   'اكتب الاسم أو المكان أو السفر',
+        'scramble-title':       'لعبة الكلمات المبعثرة',
+        'scramble-desc':        'اختر الفئة، ثم فك الحروف المبعثرة واكتب الكلمة الأصلية بسرعة.',
+        'btn-scramble-start':   'ابدأ الكلمة المبعثرة',
+        'scramble-status':      'اضغط على البدء للحصول على كلمة مبعثرة.',
+        'label-scramble-clue':  'الكلمة المبعثرة - فك الحروف لتعرفها:',
+    },
+    en: {
+        'page-title':           'VerseUp Arena',
+        'header-desc':          'Quotes, verse memorization, reversed words, and scrambled words — all in one place.',
+        'lang-toggle':          'عربي',
+        'nav-quote':            'Quote Generator',
+        'nav-memory':           'Memory Game',
+        'nav-reverse':          'Reversed Words',
+        'nav-scramble':         'Scrambled Words',
+        'select-verse-title':   'Select a Verse',
+        'label-book':           'Choose Book:',
+        'opt-book':             '-- Choose Book --',
+        'label-chapter':        'Chapter:',
+        'opt-chapter':          '-- Choose Chapter --',
+        'label-verse':          'Verse:',
+        'opt-verse':            '-- Choose Verse --',
+        'load-verse-btn':       'Load Verse',
+        'label-search':         'Search Verses:',
+        'search-placeholder':   'Search text or reference e.g. John 3:16',
+        'searching':            'Searching...',
+        'controls-title':       'Design Controls',
+        'label-verse-text':     'Verse Text:',
+        'verse-placeholder':    'Will be filled automatically when a verse is selected',
+        'use-selection-btn':    '✂ Use Selection',
+        'restore-verse-btn':    '↺ Restore Full',
+        'label-reference':      'Reference:',
+        'ref-placeholder':      'Will be filled automatically',
+        'label-font':           'Font Style:',
+        'font-thuluth':         'Thuluth',
+        'font-amiri':           'Amiri',
+        'font-aref':            'Aref Ruqaa',
+        'font-reem':            'Reem Kufi',
+        'font-lateef':          'Lateef',
+        'font-scheherazade':    'Scheherazade',
+        'font-noto':            'Noto Naskh',
+        'font-markazi':         'Markazi',
+        'font-katibeh':         'Katibeh',
+        'font-mirza':           'Mirza',
+        'font-harmattan':       'Harmattan',
+        'font-diwan':           'Diwan Kufi',
+        'label-colors':         'Color Theme:',
+        'color-blue-white':     'Blue White',
+        'color-purple-white':   'Purple White',
+        'color-pink-white':     'Pink White',
+        'color-dark-gold':      'Dark Gold',
+        'color-white-black':    'White Black',
+        'color-cream-blue':     'Cream Blue',
+        'color-lb-black':       'Light Blue Black',
+        'label-logo':           'Show Logo',
+        'generate-btn':         'Generate Image',
+        'download-btn':         'Download Image',
+        'preview-title':        'Live Preview',
+        'success-msg':          'Image created successfully!',
+        'memory-title':         'Verse Memory Game',
+        'memory-desc':          'Hide some words, type the verse from memory, and get an instant score.',
+        'score-label':          'Score',
+        'stat-time':            'Time',
+        'stat-highscore':       'High Score',
+        'stat-next':            'Next Verse',
+        'label-difficulty':     'Difficulty:',
+        'diff-easy':            'Easy',
+        'diff-medium':          'Medium',
+        'diff-hard':            'Hard',
+        'diff-expert':          'Expert',
+        'label-pick-verse':     'Pick a specific verse:',
+        'btn-specific':         'Start Selected Verse',
+        'btn-random':           'Random Verse',
+        'btn-next':             'Next Verse',
+        'btn-check':            'Check Answer',
+        'btn-reveal':           'Reveal Answer',
+        'memory-status':        'Press start to begin a new round.',
+        'label-hidden-verse':   'Hidden Verse — fill in the blanks:',
+        'meta-reference':       'Reference:',
+        'meta-hidden':          'Hidden Words:',
+        'reverse-title':        'Reversed Words Game',
+        'reverse-desc':         'Choose a category, read the reversed word, then type the correct answer quickly.',
+        'stat-category':        'Category',
+        'label-category':       'Word Type:',
+        'cat-random':           'Random',
+        'cat-book':             'Book Name',
+        'cat-name':             'Name',
+        'cat-place':            'Place',
+        'btn-reverse-start':    'Start Reversed Word',
+        'btn-new-word':         'New Word',
+        'reverse-status':       'Press start to get a reversed word.',
+        'label-reverse-clue':   'Reversed Word — be the first to find it:',
+        'label-answer':         'Type the correct answer:',
+        'answer-placeholder':   'Type the name, place, or book',
+        'scramble-title':       'Scrambled Words Game',
+        'scramble-desc':        'Choose a category, unscramble the letters, and type the original word quickly.',
+        'btn-scramble-start':   'Start Scrambled Word',
+        'scramble-status':      'Press start to get a scrambled word.',
+        'label-scramble-clue':  'Scrambled Word — unscramble the letters:',
+    }
+};
+
+const I18N = {
+    current: localStorage.getItem('verseup-lang') || 'ar',
+
+    t(key) {
+        return TRANSLATIONS[this.current][key] ?? TRANSLATIONS['ar'][key] ?? key;
+    },
+
+    apply() {
+        const isAr = this.current === 'ar';
+        document.documentElement.lang = isAr ? 'ar' : 'en';
+        document.documentElement.dir  = isAr ? 'rtl' : 'ltr';
+        document.title = this.t('page-title');
+
+        document.querySelectorAll('[data-i18n]').forEach(el => {
+            const key = el.dataset.i18n;
+            const val = this.t(key);
+            if (el.tagName === 'INPUT' || el.tagName === 'TEXTAREA') {
+                el.placeholder = val;
+            } else if (el.tagName === 'OPTION') {
+                el.textContent = val;
+            } else {
+                el.textContent = val;
+            }
+        });
+
+        document.querySelectorAll('[data-i18n-placeholder]').forEach(el => {
+            el.placeholder = this.t(el.dataset.i18nPlaceholder);
+        });
+    },
+
+    toggle() {
+        this.current = this.current === 'ar' ? 'en' : 'ar';
+        localStorage.setItem('verseup-lang', this.current);
+        this.apply();
+    },
+
+    init() {
+        this.apply();
+        document.getElementById('lang-toggle').addEventListener('click', () => this.toggle());
+    }
+};
+
+document.addEventListener('DOMContentLoaded', () => I18N.init());

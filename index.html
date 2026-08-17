@@ -13,54 +13,57 @@
         <header>
             <img src="verseup_logo.png" alt="VerseUp Arena" style="height:90px;display:block;margin:0 auto 8px;">
             <h1>VerseUp Arena</h1>
-            <p>اقتباسات، حفظ الآيات، الكلمات المعكوسة، والكلمات المبعثرة في مكان واحد</p>
-            <button id="theme-toggle" class="theme-toggle" type="button" aria-label="تبديل المظهر">🌙</button>
+            <p data-i18n="header-desc">اقتباسات، حفظ الآيات، الكلمات المعكوسة، والكلمات المبعثرة في مكان واحد</p>
+            <div class="header-controls">
+                <button id="lang-toggle" class="theme-toggle" type="button" data-i18n="lang-toggle">EN</button>
+                <button id="theme-toggle" class="theme-toggle" type="button" aria-label="تبديل المظهر">🌙</button>
+            </div>
         </header>
 
         <div class="view-switcher" role="tablist" aria-label="التنقل بين الصفحات">
-            <button class="view-switch-btn active" id="quote-view-btn" type="button">صفحة إنشاء الاقتباس</button>
-            <button class="view-switch-btn" id="game-view-btn" type="button">لعبة الحفظ</button>
-            <button class="view-switch-btn" id="reverse-view-btn" type="button">الكلمات المعكوسة</button>
-            <button class="view-switch-btn" id="scramble-view-btn" type="button">الكلمات المبعثرة</button>
+            <button class="view-switch-btn active" id="quote-view-btn" type="button" data-i18n="nav-quote">صفحة إنشاء الاقتباس</button>
+            <button class="view-switch-btn" id="game-view-btn" type="button" data-i18n="nav-memory">لعبة الحفظ</button>
+            <button class="view-switch-btn" id="reverse-view-btn" type="button" data-i18n="nav-reverse">الكلمات المعكوسة</button>
+            <button class="view-switch-btn" id="scramble-view-btn" type="button" data-i18n="nav-scramble">الكلمات المبعثرة</button>
         </div>
 
         <main>
             <div class="view-panel quote-workspace" id="quote-view-panel">
             <section class="verse-selection-section">
-                <h2>اختر الآية</h2>
+                <h2 data-i18n="select-verse-title">اختر الآية</h2>
                 <div class="selection-controls">
                     <div class="book-chapter-controls">
                         <div class="input-group">
-                            <label for="book-select">اختر السفر:</label>
+                            <label for="book-select" data-i18n="label-book">اختر السفر:</label>
                             <select id="book-select">
-                                <option value="">-- اختر سفر --</option>
+                                <option value="" data-i18n="opt-book">-- اختر سفر --</option>
                             </select>
                         </div>
 
                         <div class="input-group">
-                            <label for="chapter-select">الإصحاح:</label>
+                            <label for="chapter-select" data-i18n="label-chapter">الإصحاح:</label>
                             <select id="chapter-select" disabled>
-                                <option value="">-- اختر إصحاح --</option>
+                                <option value="" data-i18n="opt-chapter">-- اختر إصحاح --</option>
                             </select>
                         </div>
 
                         <div class="input-group">
-                            <label for="verse-select">الآية:</label>
+                            <label for="verse-select" data-i18n="label-verse">الآية:</label>
                             <select id="verse-select" disabled>
-                                <option value="">-- اختر آية --</option>
+                                <option value="" data-i18n="opt-verse">-- اختر آية --</option>
                             </select>
                         </div>
 
-                        <button id="load-verse-btn" class="load-verse-btn" disabled>تحميل الآية</button>
+                        <button id="load-verse-btn" class="load-verse-btn" disabled data-i18n="load-verse-btn">تحميل الآية</button>
                     </div>
 
                     <div class="search-control">
                         <div class="input-group">
-                            <label for="verse-search">البحث في الآيات:</label>
-                            <input type="text" id="verse-search" placeholder="ابحث في النص أو المرجع مثل يوحنا 3:16">
+                            <label for="verse-search" data-i18n="label-search">البحث في الآيات:</label>
+                            <input type="text" id="verse-search" data-i18n-placeholder="search-placeholder" placeholder="ابحث في النص أو المرجع مثل يوحنا 3:16">
                             <div id="search-loading" class="loading-indicator search-loading hidden" aria-live="polite" aria-busy="true">
                                 <div class="spinner"></div>
-                                <p>جاري البحث...</p>
+                                <p data-i18n="searching">جاري البحث...</p>
                             </div>
                             <div id="search-results" class="search-results"></div>
                         </div>
@@ -70,73 +73,73 @@
 
             <section class="main-content-section">
                 <div class="controls-panel">
-                    <h3>تصميم التحكم</h3>
+                    <h3 data-i18n="controls-title">تصميم التحكم</h3>
                     
                     <div class="verse-preview">
                         <div class="input-group">
-                            <label for="verse-text">نص الآية:</label>
-                            <textarea id="verse-text" placeholder="سيتم ملؤه تلقائياً عند اختيار آية" rows="4" readonly></textarea>
+                            <label for="verse-text" data-i18n="label-verse-text">نص الآية:</label>
+                            <textarea id="verse-text" data-i18n-placeholder="verse-placeholder" placeholder="سيتم ملؤه تلقائياً عند اختيار آية" rows="4" readonly></textarea>
                             <div class="verse-text-actions">
-                                <button id="use-selection-btn" class="verse-action-btn" disabled title="استخدم النص المحدد فقط في الصورة">✂ استخدم المحدد</button>
-                                <button id="restore-verse-btn" class="verse-action-btn" disabled title="استعادة نص الآية الكاملة">↺ استعادة الكاملة</button>
+                                <button id="use-selection-btn" class="verse-action-btn" disabled data-i18n="use-selection-btn">✂ استخدم المحدد</button>
+                                <button id="restore-verse-btn" class="verse-action-btn" disabled data-i18n="restore-verse-btn">↺ استعادة الكاملة</button>
                             </div>
                         </div>
                         
                         <div class="input-group">
-                            <label for="verse-reference">المرجع:</label>
-                            <input type="text" id="verse-reference" placeholder="سيتم ملؤه تلقائياً" readonly>
+                            <label for="verse-reference" data-i18n="label-reference">المرجع:</label>
+                            <input type="text" id="verse-reference" data-i18n-placeholder="ref-placeholder" placeholder="سيتم ملؤه تلقائياً" readonly>
                         </div>
                     </div>
 
                     <div class="design-controls">
                         <div class="input-group">
-                            <label >نوع الخط:</label>
+                            <label data-i18n="label-font">نوع الخط:</label>
                             <select id="font-style">
-                                <option value="thuluth-deco">ثلث</option>
-                                <option value="amiri">أميري</option>
-                                <option value="aref-ruqaa" selected>عرف رقاع</option>
-                                <option value="reem-kufi">ريم كوفي</option>
-                                <option value="lateef">لطيف</option>
-                                <option value="scheherazade">شهرزاد</option>
-                                <option value="noto-naskh">نسخ</option>
-                                <option value="markazi-text">مرکزي</option>
-                                <option value="katibeh">کاتب</option>
-                                <option value="mirza">مرزا</option>
-                                <option value="harmattan">هرماتان</option>
-                                <option value="diwan-kufi">دواني</option>
+                                <option value="thuluth-deco" data-i18n="font-thuluth">ثلث</option>
+                                <option value="amiri" data-i18n="font-amiri">أميري</option>
+                                <option value="aref-ruqaa" selected data-i18n="font-aref">عرف رقاع</option>
+                                <option value="reem-kufi" data-i18n="font-reem">ريم كوفي</option>
+                                <option value="lateef" data-i18n="font-lateef">لطيف</option>
+                                <option value="scheherazade" data-i18n="font-scheherazade">شهرزاد</option>
+                                <option value="noto-naskh" data-i18n="font-noto">نسخ</option>
+                                <option value="markazi-text" data-i18n="font-markazi">مرکزي</option>
+                                <option value="katibeh" data-i18n="font-katibeh">کاتب</option>
+                                <option value="mirza" data-i18n="font-mirza">مرزا</option>
+                                <option value="harmattan" data-i18n="font-harmattan">هرماتان</option>
+                                <option value="diwan-kufi" data-i18n="font-diwan">دواني</option>
                             </select>
                         </div>
 
                         <div class="input-group">
-                            <label>مظهر الألوان:</label>
+                            <label data-i18n="label-colors">مظهر الألوان:</label>
                             <div class="color-combinations">
                                 <div class="color-option" data-bg="gradient1" data-text="white">
                                     <div class="color-preview bg-gradient1"></div>
-                                    <span>أزرق أبيض</span>
+                                    <span data-i18n="color-blue-white">أزرق أبيض</span>
                                 </div>
                                 <div class="color-option" data-bg="gradient5" data-text="white">
                                     <div class="color-preview bg-gradient5"></div>
-                                    <span>بنفسجي أبيض</span>
+                                    <span data-i18n="color-purple-white">بنفسجي أبيض</span>
                                 </div>
                                 <div class="color-option" data-bg="gradient3" data-text="white">
                                     <div class="color-preview bg-gradient3"></div>
-                                    <span>وردي أبيض</span>
+                                    <span data-i18n="color-pink-white">وردي أبيض</span>
                                 </div>
                                 <div class="color-option" data-bg="decorative" data-text="gold">
                                     <div class="color-preview bg-decorative"></div>
-                                    <span>داكن ذهبي</span>
+                                    <span data-i18n="color-dark-gold">داكن ذهبي</span>
                                 </div>
                                 <div class="color-option" data-bg="solid-white" data-text="black">
                                     <div class="color-preview bg-solid-white"></div>
-                                    <span>أبيض أسود</span>
+                                    <span data-i18n="color-white-black">أبيض أسود</span>
                                 </div>
                                 <div class="color-option" data-bg="solid-cream" data-text="darkblue">
                                     <div class="color-preview bg-solid-cream"></div>
-                                    <span>كريمي أزرق</span>
+                                    <span data-i18n="color-cream-blue">كريمي أزرق</span>
                                 </div>
                                 <div class="color-option" data-bg="solid-lightblue" data-text="black">
                                     <div class="color-preview bg-solid-lightblue"></div>
-                                    <span>أزرق فاتح أسود</span>
+                                    <span data-i18n="color-lb-black">أزرق فاتح أسود</span>
                                 </div>
                             </div>
                         </div>
@@ -144,23 +147,23 @@
                         <div class="input-group">
                             <label for="logo-toggle">
                                 <input type="checkbox" id="logo-toggle">
-                                إظهار الشعار
+                                <span data-i18n="label-logo">إظهار الشعار</span>
                             </label>
                         </div>
 
                         <div class="action-buttons">
-                            <button id="generate-btn" class="generate-btn">إنشاء صورة</button>
-                            <button id="download-btn" class="download-btn" disabled>تحميل الصورة</button>
+                            <button id="generate-btn" class="generate-btn" data-i18n="generate-btn">إنشاء صورة</button>
+                            <button id="download-btn" class="download-btn" disabled data-i18n="download-btn">تحميل الصورة</button>
                         </div>
                     </div>
                 </div>
 
                 <div class="preview-panel">
-                    <h3>معاينة مباشرة</h3>
+                    <h3 data-i18n="preview-title">معاينة مباشرة</h3>
                     <div class="canvas-container">
                         <canvas id="quote-canvas" width="1080" height="1080"></canvas>
                     </div>
-                    <div id="success-message" class="success-message">تم إنشاء الصورة بنجاح!</div>
+                    <div id="success-message" class="success-message" data-i18n="success-msg">تم إنشاء الصورة بنجاح!</div>
                 </div>
             </section>
             </div>
@@ -168,11 +171,11 @@
             <section class="memorize-game-section view-panel hidden" id="game-view-panel">
                 <div class="game-header">
                     <div>
-                        <h2>لعبة حفظ الآيات</h2>
-                        <p>اخفِ بعض الكلمات، اكتب الآية من الذاكرة، واحصل على نتيجة فورية.</p>
+                        <h2 data-i18n="memory-title">لعبة حفظ الآيات</h2>
+                        <p data-i18n="memory-desc">اخفِ بعض الكلمات، اكتب الآية من الذاكرة، واحصل على نتيجة فورية.</p>
                     </div>
                     <div class="game-score-card">
-                        <span>الدرجة</span>
+                        <span data-i18n="score-label">الدرجة</span>
                         <strong id="game-score">0%</strong>
                     </div>
                 </div>
@@ -180,57 +183,57 @@
                 <section class="game-mode-panel active" id="memorize-game-panel">
                     <div class="game-controls">
                         <div class="game-stats-bar">
-                            <div class="game-stat"><span>الوقت</span><strong id="game-timer">00:00</strong></div>
-                            <div class="game-stat"><span>أفضل درجة</span><strong id="game-high-score">0%</strong></div>
-                            <div class="game-stat"><span>الآية التالية</span><strong id="game-next-reference">-</strong></div>
+                            <div class="game-stat"><span data-i18n="stat-time">الوقت</span><strong id="game-timer">00:00</strong></div>
+                            <div class="game-stat"><span data-i18n="stat-highscore">أفضل درجة</span><strong id="game-high-score">0%</strong></div>
+                            <div class="game-stat"><span data-i18n="stat-next">الآية التالية</span><strong id="game-next-reference">-</strong></div>
                         </div>
 
                         <div class="game-settings-grid">
                             <div class="input-group">
-                                <label for="game-difficulty-select">مستوى الصعوبة:</label>
+                                <label for="game-difficulty-select" data-i18n="label-difficulty">مستوى الصعوبة:</label>
                                 <select id="game-difficulty-select">
-                                    <option value="easy">سهل</option>
-                                    <option value="medium" selected>متوسط</option>
-                                    <option value="hard">صعب</option>
-                                    <option value="expert">خبير</option>
+                                    <option value="easy" data-i18n="diff-easy">سهل</option>
+                                    <option value="medium" selected data-i18n="diff-medium">متوسط</option>
+                                    <option value="hard" data-i18n="diff-hard">صعب</option>
+                                    <option value="expert" data-i18n="diff-expert">خبير</option>
                                 </select>
                             </div>
                         </div>
 
                         <div class="input-group game-picker-group">
-                            <label>اختر آية محددة:</label>
+                            <label data-i18n="label-pick-verse">اختر آية محددة:</label>
                             <div class="game-picker-grid">
                                 <select id="game-book-select">
-                                    <option value="">-- اختر سفر --</option>
+                                    <option value="" data-i18n="opt-book">-- اختر سفر --</option>
                                 </select>
                                 <select id="game-chapter-select" disabled>
-                                    <option value="">-- اختر إصحاح --</option>
+                                    <option value="" data-i18n="opt-chapter">-- اختر إصحاح --</option>
                                 </select>
                                 <select id="game-verse-select" disabled>
-                                    <option value="">-- اختر آية --</option>
+                                    <option value="" data-i18n="opt-verse">-- اختر آية --</option>
                                 </select>
                             </div>
                         </div>
 
                         <div class="game-buttons">
-                            <button id="game-specific-btn" class="game-btn primary">ابدأ الآية المحددة</button>
-                            <button id="game-start-btn" class="game-btn">آية عشوائية</button>
-                            <button id="game-next-btn" class="game-btn" disabled>الآية التالية</button>
-                            <button id="game-check-btn" class="game-btn" disabled>تحقق من الإجابة</button>
-                            <button id="game-reveal-btn" class="game-btn secondary" disabled>أظهر الإجابة</button>
+                            <button id="game-specific-btn" class="game-btn primary" data-i18n="btn-specific">ابدأ الآية المحددة</button>
+                            <button id="game-start-btn" class="game-btn" data-i18n="btn-random">آية عشوائية</button>
+                            <button id="game-next-btn" class="game-btn" disabled data-i18n="btn-next">الآية التالية</button>
+                            <button id="game-check-btn" class="game-btn" disabled data-i18n="btn-check">تحقق من الإجابة</button>
+                            <button id="game-reveal-btn" class="game-btn secondary" disabled data-i18n="btn-reveal">أظهر الإجابة</button>
                         </div>
-                        <div class="game-status" id="game-status">اضغط على بدء آية جديدة لتبدأ الجولة.</div>
+                        <div class="game-status" id="game-status" data-i18n="memory-status">اضغط على بدء آية جديدة لتبدأ الجولة.</div>
                     </div>
 
                     <div class="game-board">
                         <div class="game-prompt">
-                            <label>الآية المخفية - املأ الفراغات:</label>
+                            <label data-i18n="label-hidden-verse">الآية المخفية - املأ الفراغات:</label>
                             <div id="game-verse-display" class="game-verse-display" aria-label="الآية المخفية"></div>
                         </div>
 
                         <div class="game-meta">
-                            <div><span>المرجع:</span> <strong id="game-reference">-</strong></div>
-                            <div><span>الكلمات المخفية:</span> <strong id="game-hidden-count">0</strong></div>
+                            <div><span data-i18n="meta-reference">المرجع:</span> <strong id="game-reference">-</strong></div>
+                            <div><span data-i18n="meta-hidden">الكلمات المخفية:</span> <strong id="game-hidden-count">0</strong></div>
                         </div>
                     </div>
                 </section>
@@ -239,11 +242,11 @@
             <section class="reverse-game-section view-panel hidden" id="reverse-view-panel">
                 <div class="game-header">
                     <div>
-                        <h2>لعبة الكلمات المعكوسة</h2>
-                        <p>اختر الفئة، واقرأ الكلمة المعكوسة، ثم اكتب الإجابة الصحيحة بسرعة.</p>
+                        <h2 data-i18n="reverse-title">لعبة الكلمات المعكوسة</h2>
+                        <p data-i18n="reverse-desc">اختر الفئة، واقرأ الكلمة المعكوسة، ثم اكتب الإجابة الصحيحة بسرعة.</p>
                     </div>
                     <div class="game-score-card">
-                        <span>الدرجة</span>
+                        <span data-i18n="score-label">الدرجة</span>
                         <strong id="reverse-game-score">0%</strong>
                     </div>
                 </div>
@@ -251,52 +254,52 @@
                 <div class="reverse-game-shell">
                     <div class="game-controls reverse-controls">
                         <div class="game-stats-bar reverse-stats-bar">
-                            <div class="game-stat"><span>الوقت</span><strong id="reverse-game-timer">00:00</strong></div>
-                            <div class="game-stat"><span>أفضل درجة</span><strong id="reverse-game-high-score">0%</strong></div>
-                            <div class="game-stat"><span>الفئة</span><strong id="reverse-game-category">-</strong></div>
+                            <div class="game-stat"><span data-i18n="stat-time">الوقت</span><strong id="reverse-game-timer">00:00</strong></div>
+                            <div class="game-stat"><span data-i18n="stat-highscore">أفضل درجة</span><strong id="reverse-game-high-score">0%</strong></div>
+                            <div class="game-stat"><span data-i18n="stat-category">الفئة</span><strong id="reverse-game-category">-</strong></div>
                         </div>
 
                         <div class="game-settings-grid reverse-settings-grid">
                             <div class="input-group">
-                                <label for="reverse-category-select">نوع الكلمات:</label>
+                                <label for="reverse-category-select" data-i18n="label-category">نوع الكلمات:</label>
                                 <select id="reverse-category-select">
-                                    <option value="random" selected>عشوائي</option>
-                                    <option value="book">اسم سفر</option>
-                                    <option value="name">اسم</option>
-                                    <option value="place">مكان</option>
+                                    <option value="random" selected data-i18n="cat-random">عشوائي</option>
+                                    <option value="book" data-i18n="cat-book">اسم سفر</option>
+                                    <option value="name" data-i18n="cat-name">اسم</option>
+                                    <option value="place" data-i18n="cat-place">مكان</option>
                                 </select>
                             </div>
                             <div class="input-group">
-                                <label for="reverse-difficulty-select">مستوى الصعوبة:</label>
+                                <label for="reverse-difficulty-select" data-i18n="label-difficulty">مستوى الصعوبة:</label>
                                 <select id="reverse-difficulty-select">
-                                    <option value="easy">سهل</option>
-                                    <option value="medium" selected>متوسط</option>
-                                    <option value="hard">صعب</option>
-                                    <option value="expert">خبير</option>
+                                    <option value="easy" data-i18n="diff-easy">سهل</option>
+                                    <option value="medium" selected data-i18n="diff-medium">متوسط</option>
+                                    <option value="hard" data-i18n="diff-hard">صعب</option>
+                                    <option value="expert" data-i18n="diff-expert">خبير</option>
                                 </select>
                             </div>
                         </div>
 
                         <div class="game-buttons">
-                            <button id="reverse-start-btn" class="game-btn primary">ابدأ الكلمة المعكوسة</button>
-                            <button id="reverse-next-btn" class="game-btn" disabled>كلمة جديدة</button>
-                            <button id="reverse-check-btn" class="game-btn" disabled>تحقق من الإجابة</button>
-                            <button id="reverse-reveal-btn" class="game-btn secondary" disabled>أظهر الإجابة</button>
+                            <button id="reverse-start-btn" class="game-btn primary" data-i18n="btn-reverse-start">ابدأ الكلمة المعكوسة</button>
+                            <button id="reverse-next-btn" class="game-btn" disabled data-i18n="btn-new-word">كلمة جديدة</button>
+                            <button id="reverse-check-btn" class="game-btn" disabled data-i18n="btn-check">تحقق من الإجابة</button>
+                            <button id="reverse-reveal-btn" class="game-btn secondary" disabled data-i18n="btn-reveal">أظهر الإجابة</button>
                         </div>
 
-                        <div class="game-status" id="reverse-game-status">اضغط على البدء للحصول على كلمة معكوسة.</div>
+                        <div class="game-status" id="reverse-game-status" data-i18n="reverse-status">اضغط على البدء للحصول على كلمة معكوسة.</div>
                     </div>
 
                     <div class="game-board reverse-board">
                         <div class="game-prompt reverse-prompt">
-                            <label>الكلمة المعكوسة - أول من يكتشفها يفوز:</label>
+                            <label data-i18n="label-reverse-clue">الكلمة المعكوسة - أول من يكتشفها يفوز:</label>
                             <div id="reverse-game-clue" class="reverse-game-clue" aria-label="التلميح المعكوس">---</div>
                         </div>
 
                         <div class="game-inputs reverse-inputs">
                             <div class="input-group">
-                                <label for="reverse-game-answer">اكتب الإجابة الصحيحة:</label>
-                                <input id="reverse-game-answer" type="text" placeholder="اكتب الاسم أو المكان أو السفر" autocomplete="off">
+                                <label for="reverse-game-answer" data-i18n="label-answer">اكتب الإجابة الصحيحة:</label>
+                                <input id="reverse-game-answer" type="text" data-i18n-placeholder="answer-placeholder" placeholder="اكتب الاسم أو المكان أو السفر" autocomplete="off">
                             </div>
                         </div>
                     </div>
@@ -306,11 +309,11 @@
             <section class="scramble-game-section view-panel hidden" id="scramble-view-panel">
                 <div class="game-header">
                     <div>
-                        <h2>لعبة الكلمات المبعثرة</h2>
-                        <p>اختر الفئة، ثم فك الحروف المبعثرة واكتب الكلمة الأصلية بسرعة.</p>
+                        <h2 data-i18n="scramble-title">لعبة الكلمات المبعثرة</h2>
+                        <p data-i18n="scramble-desc">اختر الفئة، ثم فك الحروف المبعثرة واكتب الكلمة الأصلية بسرعة.</p>
                     </div>
                     <div class="game-score-card">
-                        <span>الدرجة</span>
+                        <span data-i18n="score-label">الدرجة</span>
                         <strong id="scramble-game-score">0%</strong>
                     </div>
                 </div>
@@ -318,52 +321,52 @@
                 <div class="scramble-game-shell">
                     <div class="game-controls scramble-controls">
                         <div class="game-stats-bar scramble-stats-bar">
-                            <div class="game-stat"><span>الوقت</span><strong id="scramble-game-timer">00:00</strong></div>
-                            <div class="game-stat"><span>أفضل درجة</span><strong id="scramble-game-high-score">0%</strong></div>
-                            <div class="game-stat"><span>الفئة</span><strong id="scramble-game-category">-</strong></div>
+                            <div class="game-stat"><span data-i18n="stat-time">الوقت</span><strong id="scramble-game-timer">00:00</strong></div>
+                            <div class="game-stat"><span data-i18n="stat-highscore">أفضل درجة</span><strong id="scramble-game-high-score">0%</strong></div>
+                            <div class="game-stat"><span data-i18n="stat-category">الفئة</span><strong id="scramble-game-category">-</strong></div>
                         </div>
 
                         <div class="game-settings-grid scramble-settings-grid">
                             <div class="input-group">
-                                <label for="scramble-category-select">نوع الكلمات:</label>
+                                <label for="scramble-category-select" data-i18n="label-category">نوع الكلمات:</label>
                                 <select id="scramble-category-select">
-                                    <option value="random" selected>عشوائي</option>
-                                    <option value="book">اسم سفر</option>
-                                    <option value="name">اسم</option>
-                                    <option value="place">مكان</option>
+                                    <option value="random" selected data-i18n="cat-random">عشوائي</option>
+                                    <option value="book" data-i18n="cat-book">اسم سفر</option>
+                                    <option value="name" data-i18n="cat-name">اسم</option>
+                                    <option value="place" data-i18n="cat-place">مكان</option>
                                 </select>
                             </div>
                             <div class="input-group">
-                                <label for="scramble-difficulty-select">مستوى الصعوبة:</label>
+                                <label for="scramble-difficulty-select" data-i18n="label-difficulty">مستوى الصعوبة:</label>
                                 <select id="scramble-difficulty-select">
-                                    <option value="easy">سهل</option>
-                                    <option value="medium" selected>متوسط</option>
-                                    <option value="hard">صعب</option>
-                                    <option value="expert">خبير</option>
+                                    <option value="easy" data-i18n="diff-easy">سهل</option>
+                                    <option value="medium" selected data-i18n="diff-medium">متوسط</option>
+                                    <option value="hard" data-i18n="diff-hard">صعب</option>
+                                    <option value="expert" data-i18n="diff-expert">خبير</option>
                                 </select>
                             </div>
                         </div>
 
                         <div class="game-buttons">
-                            <button id="scramble-start-btn" class="game-btn primary">ابدأ الكلمة المبعثرة</button>
-                            <button id="scramble-next-btn" class="game-btn" disabled>كلمة جديدة</button>
-                            <button id="scramble-check-btn" class="game-btn" disabled>تحقق من الإجابة</button>
-                            <button id="scramble-reveal-btn" class="game-btn secondary" disabled>أظهر الإجابة</button>
+                            <button id="scramble-start-btn" class="game-btn primary" data-i18n="btn-scramble-start">ابدأ الكلمة المبعثرة</button>
+                            <button id="scramble-next-btn" class="game-btn" disabled data-i18n="btn-new-word">كلمة جديدة</button>
+                            <button id="scramble-check-btn" class="game-btn" disabled data-i18n="btn-check">تحقق من الإجابة</button>
+                            <button id="scramble-reveal-btn" class="game-btn secondary" disabled data-i18n="btn-reveal">أظهر الإجابة</button>
                         </div>
 
-                        <div class="game-status" id="scramble-game-status">اضغط على البدء للحصول على كلمة مبعثرة.</div>
+                        <div class="game-status" id="scramble-game-status" data-i18n="scramble-status">اضغط على البدء للحصول على كلمة مبعثرة.</div>
                     </div>
 
                     <div class="game-board scramble-board">
                         <div class="game-prompt scramble-prompt">
-                            <label>الكلمة المبعثرة - فك الحروف لتعرفها:</label>
+                            <label data-i18n="label-scramble-clue">الكلمة المبعثرة - فك الحروف لتعرفها:</label>
                             <div id="scramble-game-clue" class="scramble-game-clue" aria-label="التلميح المبعثر">---</div>
                         </div>
 
                         <div class="game-inputs scramble-inputs">
                             <div class="input-group">
-                                <label for="scramble-game-answer">اكتب الإجابة الصحيحة:</label>
-                                <input id="scramble-game-answer" type="text" placeholder="اكتب الاسم أو المكان أو السفر" autocomplete="off">
+                                <label for="scramble-game-answer" data-i18n="label-answer">اكتب الإجابة الصحيحة:</label>
+                                <input id="scramble-game-answer" type="text" data-i18n-placeholder="answer-placeholder" placeholder="اكتب الاسم أو المكان أو السفر" autocomplete="off">
                             </div>
                         </div>
                     </div>
@@ -374,6 +377,7 @@
 
     <script src="bible-database.js"></script>
     <script src="bible-api.js"></script>
+    <script src="i18n.js"></script>
     <script type="module" src="script.js"></script>
 </body>
 </html>

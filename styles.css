@@ -91,6 +91,13 @@
     --toggle-color: #e8eef7;
 }
 
+.header-controls {
+    display: flex;
+    justify-content: center;
+    gap: 10px;
+    margin-top: 12px;
+}
+
 .theme-toggle {
     background: var(--toggle-bg);
     border: 1px solid var(--toggle-border);
@@ -100,15 +107,12 @@
     cursor: pointer;
     font-size: 1.2rem;
     transition: all 0.25s ease;
-    margin-top: 12px;
 }
 
 .theme-toggle:hover {
     background: var(--toggle-bg);
     transform: scale(1.05);
 }
-
-[data-theme="light"] {
     --bg-0: #e8f0fb;
     --bg-1: #dce8f8;
     --bg-2: #cfddf4;
@@ -188,23 +192,6 @@
     --toggle-bg: rgba(0,0,0,0.08);
     --toggle-border: rgba(0,0,0,0.15);
     --toggle-color: #1a2a3a;
-}
-
-.theme-toggle {
-    background: var(--toggle-bg);
-    border: 1px solid var(--toggle-border);
-    color: var(--toggle-color);
-    padding: 8px 14px;
-    border-radius: 999px;
-    cursor: pointer;
-    font-size: 1.2rem;
-    transition: all 0.25s ease;
-    margin-top: 12px;
-}
-
-.theme-toggle:hover {
-    background: var(--toggle-bg);
-    transform: scale(1.05);
 }
 
 * {
