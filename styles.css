@@ -113,6 +113,8 @@
     background: var(--toggle-bg);
     transform: scale(1.05);
 }
+
+[data-theme="light"] {
     --bg-0: #e8f0fb;
     --bg-1: #dce8f8;
     --bg-2: #cfddf4;
