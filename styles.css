@@ -1748,10 +1748,16 @@ main {
     background: var(--input-readonly-bg);
     color: var(--input-color);
     cursor: text;
+    -webkit-user-select: text;
+    -ms-user-select: text;
     user-select: text;
+    -webkit-touch-callout: default;
+    touch-action: auto;
 }
 
 .validation-message {
+
+
     padding: 10px 15px;
     border-radius: 8px;
     margin-top: 10px;

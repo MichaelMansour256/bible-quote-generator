@@ -58,7 +58,10 @@ export const quoteFeatureMixin = {
         const restoreBtn = document.getElementById('restore-verse-btn');
 
         // readonly textareas support mouse selection but not keyboard editing.
-        // Poll selection on mouseup and keyup (arrow keys still work for navigation).
+        // Poll selection on mouseup, touchend, keyup, click, and select events.
+        // On mobile, selectionStart/selectionEnd may not be updated synchronously
+        // after touch/mouse events, so we add a small delay to allow the browser
+        // to finalize the selection before reading it.
         const checkSelection = () => {
             const selected = textarea.value
                 .substring(textarea.selectionStart, textarea.selectionEnd)
@@ -66,8 +69,16 @@ export const quoteFeatureMixin = {
             useSelBtn.disabled = selected.length === 0;
         };
 
-        textarea.addEventListener('mouseup', checkSelection);
+        // Delayed check to allow mobile browsers to update selectionStart/selectionEnd
+        const checkSelectionDelayed = () => {
+            setTimeout(checkSelection, 100);
+        };
+
+        textarea.addEventListener('mouseup', checkSelectionDelayed);
+        textarea.addEventListener('touchend', checkSelectionDelayed);
         textarea.addEventListener('keyup', checkSelection);
+        textarea.addEventListener('click', checkSelectionDelayed);
+        textarea.addEventListener('select', checkSelection);
 
         useSelBtn.addEventListener('click', () => {
             const selected = textarea.value
