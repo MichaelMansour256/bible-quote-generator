@@ -91,6 +91,7 @@ const TRANSLATIONS = {
         'btn-scramble-start':   'ابدأ الكلمة المبعثرة',
         'scramble-status':      'اضغط على البدء للحصول على كلمة مبعثرة.',
         'label-scramble-clue':  'الكلمة المبعثرة - فك الحروف لتعرفها:',
+        'footer-note':          'صمم وطور بواسطة مايكل منصور',
     },
     en: {
         'page-title':           'VerseUp Arena',
@@ -184,6 +185,7 @@ const TRANSLATIONS = {
         'btn-scramble-start':   'Start Scrambled Word',
         'scramble-status':      'Press start to get a scrambled word.',
         'label-scramble-clue':  'Scrambled Word — unscramble the letters:',
+        'footer-note':          'Designed and developed by Michael Mansour',
     }
 };
 

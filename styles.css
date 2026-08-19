@@ -1987,3 +1987,19 @@ main {
         left: 100%;
     }
 }
+
+/* Footer */
+.site-footer {
+    margin-top: 40px;
+    padding: 20px 16px 28px;
+    border-top: 1px solid var(--line);
+    text-align: center;
+}
+
+.footer-note {
+    margin: 0;
+    font-size: 0.9rem;
+    color: var(--text-muted);
+    letter-spacing: 0.3px;
+    line-height: 1.6;
+}
