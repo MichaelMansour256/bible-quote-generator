@@ -65,6 +65,7 @@ class BibleQuoteGenerator {
         this.scrambleGameCategoryKey = 'bible-scramble-game-category';
         this.scrambleGameDifficultyKey = 'bible-scramble-game-difficulty';
         this.scrambleGamePool = this.reverseGamePool;
+        this.termGameUsedTerms = new Set();
 
         this.logoImage.onload = () => { this.logoLoaded = true; };
         this.logoImage.src = 'assets/logo.svg';

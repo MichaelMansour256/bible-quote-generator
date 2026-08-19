@@ -66,7 +66,21 @@ export const scrambleGameMixin = {
         const difficulty = document.getElementById('scramble-difficulty-select').value || 'medium';
         const pool = this.buildScrambleGamePool(category, difficulty);
         if (!pool.length) return null;
-        return pool[Math.floor(Math.random() * pool.length)];
+
+        if (!this.termGameUsedTerms) this.termGameUsedTerms = new Set();
+
+        // Filter out terms already used in this session
+        const available = pool.filter(entry => !this.termGameUsedTerms.has(entry.term));
+        const eligiblePool = available.length > 0 ? available : pool;
+
+        // If we've exhausted all terms, reset the tracker for a new cycle
+        if (available.length === 0) {
+            this.termGameUsedTerms.clear();
+        }
+
+        const selected = eligiblePool[Math.floor(Math.random() * eligiblePool.length)];
+        this.termGameUsedTerms.add(selected.term);
+        return selected;
     },
 
     startScrambleGame() {
