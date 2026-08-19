@@ -164,7 +164,123 @@ export function createBibleTermPools() {
             { term: 'جبل حوريب', aliases: ['حوريب'], difficulty: 'expert' },
             { term: 'أنطاكية', aliases: ['أنطاكية السورية'], difficulty: 'expert' },
             { term: 'أفسس', aliases: ['مدينة أفسس'], difficulty: 'expert' },
-            { term: 'كورنثوس', aliases: ['كورنثوس اليونانية'], difficulty: 'expert' }
+            { term: 'كورنثوس', aliases: ['كورنثوس اليونانية'], difficulty: 'expert' },
+            { term: 'رومية', aliases: ['مدينة رومية'], difficulty: 'expert' },
+            { term: 'أثينا', aliases: ['أثينا اليونانية'], difficulty: 'expert' },
+            { term: 'فيليبي', aliases: ['مدينة فيليبي'], difficulty: 'hard' },
+            { term: 'تسالونيكي', aliases: ['تسالونيكي اليونانية'], difficulty: 'hard' },
+            { term: 'بابل', aliases: ['مدينة بابل'], difficulty: 'medium' },
+            { term: 'نينوى', aliases: ['نينوى العظيمة'], difficulty: 'medium' },
+            { term: 'مصر', aliases: ['أرض مصر'], difficulty: 'easy' },
+            { term: 'بئر سبع', aliases: ['بئر سبع الجنوبية'], difficulty: 'hard' },
+            { term: 'شكيم', aliases: ['مدينة شكيم'], difficulty: 'hard' },
+            { term: 'حبرون', aliases: ['مدينة حبرون'], difficulty: 'hard' },
+            { term: 'صهيون', aliases: ['جبل صهيون', 'جبل الهيكل'], difficulty: 'medium' },
+            { term: 'جلجثة', aliases: ['جلجثة الصليب'], difficulty: 'medium' },
+            { term: 'جثسيماني', aliases: ['بستان جثسيماني'], difficulty: 'medium' },
+            { term: 'فيلادلفيا', aliases: ['فيلادلفيا آسيا'], difficulty: 'hard' },
+            { term: 'لاودكية', aliases: ['لاوديكية'], difficulty: 'hard' },
+            { term: 'سميرنا', aliases: ['إزمير'], difficulty: 'hard' },
+            { term: 'برغامس', aliases: ['برغامس آسيا'], difficulty: 'hard' },
+            { term: 'ساردس', aliases: ['ساردس آسيا'], difficulty: 'hard' }
+        ],
+        prophets: [
+            { term: 'نوح', aliases: ['النبي نوح'], difficulty: 'easy' },
+            { term: 'أخنوخ', aliases: ['إدريس'], difficulty: 'medium' },
+            { term: 'هود', aliases: ['هود النبي'], difficulty: 'easy' },
+            { term: 'لوط', aliases: ['لوط النبي'], difficulty: 'easy' },
+            { term: 'إسماعيل', aliases: ['إسماعيل بن إبراهيم'], difficulty: 'medium' },
+            { term: 'أيوب', aliases: ['الصديق أيوب'], difficulty: 'easy' },
+            { term: 'هوشع', aliases: ['النبي هوشع'], difficulty: 'medium' },
+            { term: 'يوئيل', aliases: ['النبي يوئيل'], difficulty: 'medium' },
+            { term: 'عاموس', aliases: ['النبي عاموس'], difficulty: 'medium' },
+            { term: 'عوبديا', aliases: ['النبي عوبديا'], difficulty: 'medium' },
+            { term: 'يونان', aliases: ['النبي يونان'], difficulty: 'easy' },
+            { term: 'ميخا', aliases: ['النبي ميخا'], difficulty: 'medium' },
+            { term: 'ناحوم', aliases: ['النبي ناحوم'], difficulty: 'medium' },
+            { term: 'حبقوق', aliases: ['النبي حبقوق'], difficulty: 'medium' },
+            { term: 'صفنيا', aliases: ['النبي صفنيا'], difficulty: 'medium' },
+            { term: 'حجي', aliases: ['النبي حجي'], difficulty: 'medium' },
+            { term: 'زكريا', aliases: ['زكريا النبي'], difficulty: 'medium' },
+            { term: 'ملاخي', aliases: ['النبي ملاخي'], difficulty: 'medium' },
+            { term: 'يوحنا المعمدان', aliases: ['يوحنا المعمداني', 'يحيى'], difficulty: 'medium' }
+        ],
+        kings: [
+            { term: 'شاول', aliases: ['شاول الملك'], difficulty: 'easy' },
+            { term: 'رحبعام', aliases: ['رحبعام بن سليمان'], difficulty: 'hard' },
+            { term: 'آسا', aliases: ['آسا ملك يهوذا'], difficulty: 'medium' },
+            { term: 'يهوشافاط', aliases: ['يهوشافاط الملك'], difficulty: 'hard' },
+            { term: 'يوآش', aliases: ['يوآش الملك'], difficulty: 'hard' },
+            { term: 'عزيا', aliases: ['عزيا الملك'], difficulty: 'medium' },
+            { term: 'يوثام', aliases: ['يوثام الملك'], difficulty: 'hard' },
+            { term: 'آحاز', aliases: ['آحاز الملك'], difficulty: 'medium' },
+            { term: 'حزقيا', aliases: ['حزقيا الملك'], difficulty: 'medium' },
+            { term: 'منسى الملك', aliases: ['منسى ملك يهوذا'], difficulty: 'medium' },
+            { term: 'يوشيا', aliases: ['يوشيا الملك'], difficulty: 'medium' },
+            { term: 'يهوياقيم', aliases: ['يهوياقيم الملك'], difficulty: 'hard' },
+            { term: 'صدقيا', aliases: ['صدقيا الملك'], difficulty: 'hard' },
+            { term: 'يربععام', aliases: ['يربععام الأول'], difficulty: 'hard' },
+            { term: 'بعشا', aliases: ['بعشا ملك إسرائيل'], difficulty: 'hard' },
+            { term: 'عمري', aliases: ['عمري ملك إسرائيل'], difficulty: 'hard' },
+            { term: 'أهاب', aliases: ['أخاب الملك'], difficulty: 'hard' },
+            { term: 'ياهو', aliases: ['ياهو الملك'], difficulty: 'hard' },
+            { term: 'منحيم', aliases: ['منحيم ملك إسرائيل'], difficulty: 'expert' },
+            { term: 'فقح', aliases: ['فقح ملك إسرائيل'], difficulty: 'expert' },
+            { term: 'هوشع بن إيلة', aliases: ['هوشع ملك إسرائيل'], difficulty: 'expert' }
+        ],
+        women: [
+            { term: 'حواء', aliases: ['أم كل حي'], difficulty: 'easy' },
+            { term: 'سارة', aliases: ['سارة زوجة إبراهيم'], difficulty: 'easy' },
+            { term: 'هاجر', aliases: ['هاجر المصرية'], difficulty: 'easy' },
+            { term: 'رفقة', aliases: ['رفقة زوجة إسحاق'], difficulty: 'easy' },
+            { term: 'راعوث', aliases: ['راعوث الموآبية'], difficulty: 'easy' },
+            { term: 'نعمي', aliases: ['نعمي الحماة'], difficulty: 'medium' },
+            { term: 'حنة', aliases: ['حنة أم صموئيل'], difficulty: 'medium' },
+            { term: 'رحاب', aliases: ['راحاب الزانية'], difficulty: 'medium' },
+            { term: 'يائيل', aliases: ['يائيل زوجة حابر'], difficulty: 'hard' },
+            { term: 'يوكابد', aliases: ['يوكابد أم موسى'], difficulty: 'hard' },
+            { term: 'مريم أخت موسى', aliases: ['مريم النبية'], difficulty: 'hard' },
+            { term: 'مَرثا', aliases: ['مرثا أخت لعازر'], difficulty: 'easy' },
+            { term: 'ليديا', aliases: ['ليديا بائعة الأرجوان'], difficulty: 'hard' },
+            { term: 'بريسكلا', aliases: ['بريسكلا زوجة أكيلا'], difficulty: 'expert' },
+            { term: 'فبي', aliases: ['فبي الخادمة'], difficulty: 'expert' },
+            { term: 'أبيجايل', aliases: ['أبيجايل الحكيمة'], difficulty: 'hard' }
+        ],
+        tribes: [
+            { term: 'رأوبين', aliases: ['سبط رأوبين'], difficulty: 'easy' },
+            { term: 'شمعون', aliases: ['سبط شمعون'], difficulty: 'easy' },
+            { term: 'لاوي', aliases: ['سبط لاوي'], difficulty: 'easy' },
+            { term: 'يهوذا', aliases: ['سبط يهوذا'], difficulty: 'easy' },
+            { term: 'دان', aliases: ['سبط دان'], difficulty: 'easy' },
+            { term: 'نفتالي', aliases: ['سبط نفتالي'], difficulty: 'easy' },
+            { term: 'جاد', aliases: ['سبط جاد'], difficulty: 'easy' },
+            { term: 'أشير', aliases: ['سبط أشير'], difficulty: 'easy' },
+            { term: 'يساكر', aliases: ['سبط يساكر'], difficulty: 'easy' },
+            { term: 'زبولون', aliases: ['سبط زبولون'], difficulty: 'easy' },
+            { term: 'بنيامين', aliases: ['سبط بنيامين'], difficulty: 'easy' },
+            { term: 'أفرايم', aliases: ['سبط أفرايم'], difficulty: 'medium' },
+            { term: 'منسى', aliases: ['سبط منسى'], difficulty: 'medium' }
+        ],
+        feasts: [
+            { term: 'الفصح', aliases: ['عيد الفصح'], difficulty: 'easy' },
+            { term: 'الفطير', aliases: ['عيد الفطير'], difficulty: 'easy' },
+            { term: 'الخمسين', aliases: ['عيد الخمسين', 'عيد العنصرة'], difficulty: 'medium' },
+            { term: 'الأبواق', aliases: ['عيد الأبواق'], difficulty: 'hard' },
+            { term: 'الكفارة', aliases: ['يوم الكفارة', 'يوم الغفران'], difficulty: 'medium' },
+            { term: 'المظال', aliases: ['عيد المظال'], difficulty: 'hard' },
+            { term: 'السبت', aliases: ['يوم السبت'], difficulty: 'easy' },
+            { term: 'التقديس', aliases: ['عيد التقديس'], difficulty: 'expert' },
+            { term: 'البوريم', aliases: ['عيد البوريم', 'عيد المساخر'], difficulty: 'expert' }
+        ],
+        artifacts: [
+            { term: 'تابوت العهد', aliases: ['تابوت الرب', 'الصندوق المقدس'], difficulty: 'medium' },
+            { term: 'المنارة', aliases: ['منارة الهيكل'], difficulty: 'medium' },
+            { term: 'مذبح', aliases: ['مذبح المحرقة'], difficulty: 'medium' },
+            { term: 'مائدة الخبز', aliases: ['مائدة خبز الوجوه'], difficulty: 'hard' },
+            { term: 'مبخرة', aliases: ['مبخرة البخور'], difficulty: 'hard' },
+            { term: 'عصا هارون', aliases: ['عصا هارون المزهرة'], difficulty: 'medium' },
+            { term: 'لوحا الشهادة', aliases: ['لوحا الوصايا'], difficulty: 'hard' },
+            { term: 'قدس الأقداس', aliases: ['المكان الأقدس'], difficulty: 'medium' }
         ]
     };
 }
@@ -217,6 +333,30 @@ export function buildTermPool(pools, category, difficulty = 'medium') {
 
     if (category === 'place' || category === 'random') {
         pushEntries(pools.places, 'مكان');
+    }
+
+    if (category === 'prophet' || category === 'random') {
+        pushEntries(pools.prophets, 'نبي');
+    }
+
+    if (category === 'king' || category === 'random') {
+        pushEntries(pools.kings, 'ملك');
+    }
+
+    if (category === 'woman' || category === 'random') {
+        pushEntries(pools.women, 'امرأة');
+    }
+
+    if (category === 'tribe' || category === 'random') {
+        pushEntries(pools.tribes, 'سبط');
+    }
+
+    if (category === 'feast' || category === 'random') {
+        pushEntries(pools.feasts, 'عيد');
+    }
+
+    if (category === 'artifact' || category === 'random') {
+        pushEntries(pools.artifacts, 'أداة مقدسة');
     }
 
     return terms;
