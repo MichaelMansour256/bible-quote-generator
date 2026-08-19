@@ -1,4 +1,4 @@
-import { normalizeArabicForMatch, normalizeGameText } from '../game-utils.js';
+import { normalizeArabicForMatch, normalizeGameText } from './game-utils.js';
 
 export const memoryGameMixin = {
     buildMaskedVerse(text) {

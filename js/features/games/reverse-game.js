@@ -5,7 +5,7 @@ import {
     matchesDifficulty,
     normalizeAnswerText,
     reverseCharacters
-} from '../game-utils.js';
+} from './game-utils.js';
 
 export const reverseGameMixin = {
     createReverseGamePool() {

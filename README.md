@@ -16,22 +16,27 @@ A modular Arabic Bible web app — verse image generator and three Bible games i
 ```text
 bible-quote-generator/
 ├── index.html
-├── script.js              ← thin shell: constructor + event wiring only
-├── bible-api.js           ← API client + smart search logic
-├── bible-database.js      ← offline book metadata (aligned to API names)
 ├── styles.css
 ├── js/
-│   ├── game-utils.js      ← shared Arabic normalization, scramble, reverse, term pools
-│   ├── features/
-│   │   ├── quote-feature.js   ← image generator, search UI, font map
-│   │   └── memory-game.js     ← memory game logic
-│   └── games/
-│       ├── reverse-game.js    ← reverse-words game
-│       └── scramble-game.js   ← scrambled-words game
+│   ├── main.js                    ← thin shell: constructor + event wiring only
+│   ├── core/
+│   │   ├── bible-api.js           ← API client + smart search logic
+│   │   ├── bible-database.js      ← offline book metadata (aligned to API names)
+│   │   └── i18n.js                ← internationalization (AR/EN)
+│   └── features/
+│       ├── quote-feature.js       ← image generator, search UI, font map
+│       └── games/
+│           ├── memory-game.js     ← memory game logic
+│           ├── reverse-game.js    ← reverse-words game
+│           ├── scramble-game.js   ← scrambled-words game
+│           └── game-utils.js      ← shared Arabic normalization, scramble, reverse, term pools
+├── assets/
+│   ├── logo.svg
+│   └── verseup_logo.png
 └── README.md
 ```
 
-`script.js` is a thin shell that wires the constructor and event listeners. All feature logic lives in the mixin modules, composed via `Object.assign`.
+`js/main.js` is a thin shell that wires the constructor and event listeners. All feature logic lives in the mixin modules, composed via `Object.assign`.
 
 ## Features
 
@@ -107,13 +112,13 @@ The app is fully static — no build step, no dependencies to install.
 ## Data Source
 
 - Bible text: Arabic Smith & Van Dyck via `https://api.getbible.net/v2/arabicsv.json`
-- Book metadata: `bible-database.js` (used as offline fallback in `game-utils.js`)
-- Book names in `bible-database.js` are aligned to the API names (e.g. `تكوين`, `1 صموئيل`) so the fallback term pool matches live data
+- Book metadata: `js/core/bible-database.js` (used as offline fallback in `js/features/games/game-utils.js`)
+- Book names in `js/core/bible-database.js` are aligned to the API names (e.g. `تكوين`, `1 صموئيل`) so the fallback term pool matches live data
 
 ## Code Notes
 
-- Font lookup uses a single `FONT_MAP` constant in `quote-feature.js` — no repeated switch-cases
-- Arabic normalization (diacritics, alef variants, taa marbuta) is centralised in `game-utils.js`
-- `matchesDifficulty` is defined once in `game-utils.js` and imported where needed
+- Font lookup uses a single `FONT_MAP` constant in `js/features/quote-feature.js` — no repeated switch-cases
+- Arabic normalization (diacritics, alef variants, taa marbuta) is centralised in `js/features/games/game-utils.js`
+- `matchesDifficulty` is defined once in `js/features/games/game-utils.js` and imported where needed
 - Search dropdown closes on `mousedown` (not `click`) so item handlers fire before the close handler
 - Chapter expand/collapse is DOM-local state — highlight changes never rebuild the list

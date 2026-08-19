@@ -4,7 +4,7 @@ import {
     getAnswerVariants,
     normalizeAnswerText,
     scrambleText
-} from '../game-utils.js';
+} from './game-utils.js';
 
 export const scrambleGameMixin = {
     persistScrambleGamePreferences() {

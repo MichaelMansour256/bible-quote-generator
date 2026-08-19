@@ -1,7 +1,7 @@
-import { reverseGameMixin } from './js/games/reverse-game.js';
-import { scrambleGameMixin } from './js/games/scramble-game.js';
-import { quoteFeatureMixin } from './js/features/quote-feature.js';
-import { memoryGameMixin } from './js/features/memory-game.js';
+import { reverseGameMixin } from './features/games/reverse-game.js';
+import { scrambleGameMixin } from './features/games/scramble-game.js';
+import { quoteFeatureMixin } from './features/quote-feature.js';
+import { memoryGameMixin } from './features/games/memory-game.js';
 
 class BibleQuoteGenerator {
     constructor() {
@@ -67,7 +67,7 @@ class BibleQuoteGenerator {
         this.scrambleGamePool = this.reverseGamePool;
 
         this.logoImage.onload = () => { this.logoLoaded = true; };
-        this.logoImage.src = 'logo.svg';
+        this.logoImage.src = 'assets/logo.svg';
 
         this.initializeEventListeners();
         this.setupSearchFunctionality();
