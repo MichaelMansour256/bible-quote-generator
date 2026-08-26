@@ -155,7 +155,7 @@ export function createBibleTermPools() {
             { term: 'أورشليم الجديدة', aliases: ['المدينة المقدسة', 'المدينة الجديدة'], difficulty: 'hard' },
             { term: 'بيت فاجي', aliases: ['بيت فاجي وبيت عنيا'], difficulty: 'hard' },
             { term: 'قانا الجليل', aliases: ['قانا'], difficulty: 'hard' },
-            { term: 'النهر الأردن', aliases: ['الأردن', 'نهر الأردن'], difficulty: 'hard' },
+            { term: 'نهر الأردن', aliases: ['الأردن', 'نهر الأردن'], difficulty: 'hard' },
             { term: 'بحر الجليل', aliases: ['بحيرة الجليل'], difficulty: 'hard' },
             { term: 'بحر الميت', aliases: ['البحر الميت'], difficulty: 'hard' },
             { term: 'جبل الزيتون', aliases: ['جبل الزيتون الشرقي'], difficulty: 'hard' },

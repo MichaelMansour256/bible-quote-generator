@@ -1,6 +1,6 @@
 # VerseUp Arena
 
-A modular Arabic Bible web app — verse image generator and three Bible games in one place.
+A modular Arabic Bible web app — verse image generator and four Bible games in one place.
 
 ## What It Does
 
@@ -8,6 +8,7 @@ A modular Arabic Bible web app — verse image generator and three Bible games i
 - Memory game: hide words in a verse and fill them in from memory
 - Reverse-words game: guess the original word from its reversed characters
 - Scrambled-words game: unscramble shuffled characters to find the word
+- Who-Am-I? flash-card game: read a clue, click the card, and it flips to reveal the Bible person's name
 - Smart verse search: by book name, book + chapter, exact reference, or free text
 - Saved preferences and score tracking with `localStorage`
 
@@ -29,6 +30,7 @@ bible-quote-generator/
 │           ├── memory-game.js     ← memory game logic
 │           ├── reverse-game.js    ← reverse-words game
 │           ├── scramble-game.js   ← scrambled-words game
+│           ├── whoami-game.js     ← Who-Am-I? flash-card game
 │           └── game-utils.js      ← shared Arabic normalization, scramble, reverse, term pools
 ├── assets/
 │   ├── logo.svg
@@ -87,6 +89,14 @@ Chapter results show a **▼ expand arrow** — clicking opens an inline verse l
 - Same time-bonus scoring model
 - `Enter` key submits the answer
 - Category and difficulty filtering; state persisted
+
+### Who Am I? (Flash Cards)
+
+- Each flash card shows a single clue about a person from the Bible
+- Click the card (or press `Enter`/`Space` on it) to flip it and reveal the person's name
+- 20 curated Bible persons with categories (نبي، ملك، رسول، امرأة…)
+- Cards avoid repeating until the whole deck has been seen, then the cycle restarts
+- Live counters for cards shown, revealed, and a deck-completion score
 
 ## Getting Started
 

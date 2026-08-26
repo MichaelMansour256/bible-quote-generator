@@ -25,6 +25,7 @@
             <button class="view-switch-btn" id="game-view-btn" type="button" data-i18n="nav-memory">لعبة الحفظ</button>
             <button class="view-switch-btn" id="reverse-view-btn" type="button" data-i18n="nav-reverse">الكلمات المعكوسة</button>
             <button class="view-switch-btn" id="scramble-view-btn" type="button" data-i18n="nav-scramble">الكلمات المبعثرة</button>
+            <button class="view-switch-btn" id="whoami-view-btn" type="button" data-i18n="nav-whoami">من أنا؟</button>
         </div>
 
         <main>
@@ -379,6 +380,53 @@
                             <div class="input-group">
                                 <label for="scramble-game-answer" data-i18n="label-answer">اكتب الإجابة الصحيحة:</label>
                                 <input id="scramble-game-answer" type="text" data-i18n-placeholder="answer-placeholder" placeholder="اكتب الاسم أو المكان أو السفر" autocomplete="off">
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+            <section class="whoami-game-section view-panel hidden" id="whoami-view-panel">
+                <div class="game-header">
+                    <div>
+                        <h2 data-i18n="whoami-title">لعبة من أنا؟</h2>
+                        <p data-i18n="whoami-desc">اقرأ التلميح ثم اضغط على البطاقة لكشف اسم الشخصية.</p>
+                    </div>
+                    <div class="game-score-card">
+                        <span data-i18n="whoami-score-label">الدرجة</span>
+                        <strong id="whoami-game-score">0%</strong>
+                    </div>
+                </div>
+
+                <div class="game-controls whoami-controls">
+                    <div class="game-stats-bar whoami-stats-bar">
+                        <div class="game-stat"><span data-i18n="stat-category">الفئة</span><strong id="whoami-game-category">-</strong></div>
+                        <div class="game-stat"><span data-i18n="whoami-stat-count">عدد البطاقات</span><strong id="whoami-game-count">0</strong></div>
+                        <div class="game-stat"><span data-i18n="whoami-stat-revealed">المكتشفة</span><strong id="whoami-game-revealed">0</strong></div>
+                    </div>
+
+                    <div class="game-buttons">
+                        <button id="whoami-start-btn" class="game-btn primary" data-i18n="btn-whoami-start">ابدأ اللعبة</button>
+                        <button id="whoami-next-btn" class="game-btn" disabled data-i18n="btn-new-card">بطاقة جديدة</button>
+                    </div>
+
+                    <div class="game-status" id="whoami-game-status" data-i18n="whoami-status">اضغط على البدء للحصول على بطاقة تلميح.</div>
+                </div>
+
+                <div class="game-board whoami-board">
+                    <div class="game-prompt whoami-prompt">
+                        <label data-i18n="label-whoami-clue">التلميح — من أنا؟</label>
+
+                        <div class="flip-card" id="whoami-flip-card" role="button" tabindex="0" aria-pressed="false" aria-label="اضغط لكشف الاسم">
+                            <div class="flip-card-inner">
+                                <div class="flip-card-face flip-card-front">
+                                    <div class="whoami-q">؟ من أنا</div>
+                                    <p class="whoami-clue" id="whoami-game-clue-text">اضغط على زر البدء للحصول على تلميح.</p>
+                                    <div class="whoami-tap-hint" data-i18n="whoami-tap-hint">اضغط على البطاقة لكشف الاسم 👆</div>
+                                </div>
+                                <div class="flip-card-face flip-card-back">
+                                    <div class="whoami-answer-label" data-i18n="whoami-answer-label">الشخصية هي:</div>
+                                    <div class="whoami-answer" id="whoami-game-answer">---</div>
+                                </div>
                             </div>
                         </div>
                     </div>
