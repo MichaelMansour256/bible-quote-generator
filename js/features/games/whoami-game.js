@@ -273,6 +273,11 @@ export const whoamiGameMixin = {
     },
 
     nextWhoamiCard() {
+        if (this.whoamiNextTimer) {
+            clearTimeout(this.whoamiNextTimer);
+            this.whoamiNextTimer = null;
+        }
+
         const person = this.pickWhoamiPerson();
         if (!person) return;
 
@@ -280,19 +285,39 @@ export const whoamiGameMixin = {
         this.whoamiGameState.seenCount += 1;
         this.updateWhoamiCounters();
 
+        const nextBtn = document.getElementById('whoami-next-btn');
+        if (nextBtn) nextBtn.disabled = true;
+
+        // If the card is showing the previous answer, flip it back to the clue
+        // first and wait for the animation to finish before swapping in the new
+        // content — otherwise the next answer flashes on the back mid-flip.
+        const card = document.getElementById('whoami-flip-card');
+        const wasFlipped = card && card.classList.contains('flipped');
+        this.resetWhoamiFlip();
+
+        if (wasFlipped) {
+            this.whoamiNextTimer = setTimeout(() => {
+                this.whoamiNextTimer = null;
+                this.loadWhoamiCardContent();
+            }, 600);
+        } else {
+            this.loadWhoamiCardContent();
+        }
+    },
+
+    loadWhoamiCardContent() {
+        const person = this.whoamiGameState.person;
+        if (!person) return;
+
         const clueEl = document.getElementById('whoami-game-clue-text');
         const answerEl = document.getElementById('whoami-game-answer');
         const categoryEl = document.getElementById('whoami-game-category');
         const statusEl = document.getElementById('whoami-game-status');
-        const nextBtn = document.getElementById('whoami-next-btn');
 
         if (clueEl) clueEl.textContent = person.clue;
         if (answerEl) answerEl.textContent = person.name;
         if (categoryEl) categoryEl.textContent = person.category;
         if (statusEl) statusEl.textContent = 'اقرأ التلميح وقلّب البطاقة، ثم حدد: هل عرفتها؟';
-        if (nextBtn) nextBtn.disabled = true;
-
-        this.resetWhoamiFlip();
     },
 
     flipWhoamiCard() {
