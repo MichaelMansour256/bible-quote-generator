@@ -126,8 +126,23 @@ The app is fully static — no build step, no dependencies to install.
 | `Enter` (in search, verse result) | Load verse + generate image |
 | `Escape` (in search) | Close results |
 
-## Data Source
+## Deployment, SEO & Link Sharing
 
+The site is fully static — deployed to **https://verse-up-arena.vercel.app** (Vercel). Steps for Google + rich link cards:
+
+1. **Deploy** any changes to the site (all URLs already point to `https://verse-up-arena.vercel.app`).
+2. **Verify the share card**:
+   - Facebook/Instagram: `https://developers.facebook.com/tools/debug/`
+   - LinkedIn: `https://www.linkedin.com/post-inspector/`
+   - WhatsApp: paste the link into a chat — the card with the logo (`assets/og-image.png`, 1200×630) appears automatically.
+   - Sometimes the caches need a few minutes; the debug tools prompt a re-scrape.
+3. **Submit to Google**:
+   - Google Search Console → add your property → request indexing.
+   - Wait for Google to crawl; `sitemap.xml` + `robots.txt` (both included) speed this up.
+
+What was added: `meta description`/`keywords`/`robots`/`canonical`, Open Graph tags (`og:*`), Twitter card tags (`twitter:*`), `application/ld+json` WebSite/Organization schema (used by Google for the site name + logo in results), `assets/og-image.png` (branded share-card image), `sitemap.xml`, `robots.txt`.
+
+## Data Source
 - Bible text: Arabic Smith & Van Dyck via `https://api.getbible.net/v2/arabicsv.json`
 - Book metadata: `js/core/bible-database.js` (used as offline fallback in `js/features/games/game-utils.js`)
 - Book names in `js/core/bible-database.js` are aligned to the API names (e.g. `تكوين`, `1 صموئيل`) so the fallback term pool matches live data
