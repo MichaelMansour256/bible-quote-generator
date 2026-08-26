@@ -72,9 +72,10 @@ class BibleQuoteGenerator {
             category: '',
             difficulty: 'medium',
             revealed: false,
-            counted: false,
+            graded: false,
             seenCount: 0,
-            revealedCount: 0
+            knewCount: 0,
+            didntCount: 0
         };
         this.whoamiGameDifficultyKey = 'bible-whoami-game-difficulty';
         this.whoamiGamePool = this.createWhoamiGamePool();
@@ -209,6 +210,8 @@ class BibleQuoteGenerator {
         const whoamiNextBtn = document.getElementById('whoami-next-btn');
         const whoamiFlipCard = document.getElementById('whoami-flip-card');
         const whoamiDifficultySelect = document.getElementById('whoami-difficulty-select');
+        const whoamiKnewBtn = document.getElementById('whoami-knew-btn');
+        const whoamiDidntBtn = document.getElementById('whoami-didnt-btn');
 
         whoamiStartBtn.addEventListener('click', () => this.startWhoamiGame());
         whoamiNextBtn.addEventListener('click', () => this.nextWhoamiCard());
@@ -219,12 +222,17 @@ class BibleQuoteGenerator {
                 this.flipWhoamiCard();
             }
         });
+        whoamiKnewBtn.addEventListener('click', () => this.gradeWhoamiCard(true));
+        whoamiDidntBtn.addEventListener('click', () => this.gradeWhoamiCard(false));
         whoamiDifficultySelect.addEventListener('change', () => {
             this.whoamiGameState.difficulty = whoamiDifficultySelect.value;
             this.persistWhoamiGamePreferences();
             if (this.whoamiUsedPersons) this.whoamiUsedPersons.clear();
-            // Recompute the pool size for the newly selected level.
-            this.whoamiGameState.poolSize = this.buildWhoamiGamePool(whoamiDifficultySelect.value).length;
+            // Restart cleanly when switching levels (score is per-level).
+            this.whoamiGameState.knewCount = 0;
+            this.whoamiGameState.didntCount = 0;
+            this.whoamiGameState.graded = false;
+            this.resetWhoamiFlip();
             this.updateWhoamiCounters();
         });
 

@@ -203,6 +203,13 @@ export const whoamiGameMixin = {
         if (this.whoamiGameState) this.whoamiGameState.difficulty = savedDifficulty;
     },
 
+    setWhoamiGradeButtons(enabled) {
+        const knewBtn = document.getElementById('whoami-knew-btn');
+        const didntBtn = document.getElementById('whoami-didnt-btn');
+        if (knewBtn) knewBtn.disabled = !enabled;
+        if (didntBtn) didntBtn.disabled = !enabled;
+    },
+
     resetWhoamiFlip() {
         const card = document.getElementById('whoami-flip-card');
         if (card) {
@@ -211,29 +218,56 @@ export const whoamiGameMixin = {
         }
         if (this.whoamiGameState) {
             this.whoamiGameState.revealed = false;
-            this.whoamiGameState.counted = false;
+            this.whoamiGameState.graded = false;
         }
+        this.setWhoamiGradeButtons(false);
+    },
+
+    gradeWhoamiCard(knew) {
+        if (!this.whoamiGameState || !this.whoamiGameState.person) return;
+        if (!this.whoamiGameState.revealed || this.whoamiGameState.graded) return;
+
+        this.whoamiGameState.graded = true;
+        if (knew) this.whoamiGameState.knewCount += 1;
+        else this.whoamiGameState.didntCount += 1;
+
+        this.updateWhoamiCounters();
+        this.setWhoamiGradeButtons(false);
+
+        const statusEl = document.getElementById('whoami-game-status');
+        const nextBtn = document.getElementById('whoami-next-btn');
+        if (statusEl) {
+            statusEl.textContent = knew
+                ? 'أحسنت! احتسبت هذه الشخصية ضمن من عرفتهم.'
+                : 'لا بأس، ستتعرف عليها في المرة القادمة.';
+        }
+        if (nextBtn) nextBtn.disabled = false;
     },
 
     updateWhoamiCounters() {
         const st = this.whoamiGameState;
         const countEl = document.getElementById('whoami-game-count');
-        const revealedEl = document.getElementById('whoami-game-revealed');
+        const knewEl = document.getElementById('whoami-game-knew');
+        const didntEl = document.getElementById('whoami-game-didnt');
         const scoreEl = document.getElementById('whoami-game-score');
 
-        const total = st.poolSize || (this.whoamiGamePool && this.whoamiGamePool.length) || 20;
-        const score = total ? Math.round((st.revealedCount / total) * 100) : 0;
+        const answered = st.knewCount + st.didntCount;
+        const score = answered ? Math.round((st.knewCount / answered) * 100) : 0;
 
         if (countEl) countEl.textContent = String(st.seenCount);
-        if (revealedEl) revealedEl.textContent = String(st.revealedCount);
+        if (knewEl) knewEl.textContent = String(st.knewCount);
+        if (didntEl) didntEl.textContent = String(st.didntCount);
         if (scoreEl) scoreEl.textContent = `${score}%`;
     },
 
     startWhoamiGame() {
         if (!this.whoamiGameState) this.whoamiGameState = {};
         this.whoamiGameState.seenCount = 0;
-        this.whoamiGameState.revealedCount = 0;
+        this.whoamiGameState.knewCount = 0;
+        this.whoamiGameState.didntCount = 0;
+        this.whoamiGameState.graded = false;
         if (this.whoamiUsedPersons) this.whoamiUsedPersons.clear();
+        this.setWhoamiGradeButtons(false);
         this.updateWhoamiCounters();
         this.nextWhoamiCard();
     },
@@ -255,8 +289,8 @@ export const whoamiGameMixin = {
         if (clueEl) clueEl.textContent = person.clue;
         if (answerEl) answerEl.textContent = person.name;
         if (categoryEl) categoryEl.textContent = person.category;
-        if (statusEl) statusEl.textContent = 'اقرأ التلميح ثم اضغط على البطاقة لكشف الاسم.';
-        if (nextBtn) nextBtn.disabled = false;
+        if (statusEl) statusEl.textContent = 'اقرأ التلميح وقلّب البطاقة، ثم حدد: هل عرفتها؟';
+        if (nextBtn) nextBtn.disabled = true;
 
         this.resetWhoamiFlip();
     },
@@ -273,16 +307,13 @@ export const whoamiGameMixin = {
 
         const statusEl = document.getElementById('whoami-game-status');
         if (flipped) {
-            if (!this.whoamiGameState.counted) {
-                this.whoamiGameState.counted = true;
-                this.whoamiGameState.revealedCount += 1;
-                this.updateWhoamiCounters();
-            }
             card.setAttribute('aria-pressed', 'true');
-            if (statusEl) statusEl.textContent = `الشخصية هي: ${this.whoamiGameState.person.name}`;
+            if (statusEl) statusEl.textContent = `الشخصية هي: ${this.whoamiGameState.person.name} — هل عرفتها؟ اختر من الأسفل.`;
+            this.setWhoamiGradeButtons(true);
         } else {
             card.removeAttribute('aria-pressed');
-            if (statusEl) statusEl.textContent = 'اقرأ التلميح ثم اضغط على البطاقة لكشف الاسم.';
+            if (statusEl) statusEl.textContent = 'اقرأ التلميح وقلّب البطاقة، ثم حدد: هل عرفتها؟';
+            this.setWhoamiGradeButtons(false);
         }
     }
 };

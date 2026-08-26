@@ -100,7 +100,9 @@ Chapter results show a **▼ expand arrow** — clicking opens an inline verse l
   - **Hard**: obscure figures (ملك صادق، أبشالوم، كورنيليوس، حنانيا…)
 - 114 curated persons in total across the levels, each with a category (نبي، ملك، رسول، امرأة…)
 - Cards avoid repeating within a level until the whole pool has been seen, then the cycle restarts
-- Live counters for cards shown, revealed, and a deck-completion score
+- **Scoring (self-graded)**: after flipping a card, choose **"✓ عرفتها"** (I knew it) or **"✗ لم أعرفها"** (I didn't know). The score = `(عرفتها ÷ إجمالي الإجابات) × 100` — the share of people you actually recognized
+- The **"بطاقة جديدة"** button unlocks only after you grade the current card, keeping the score honest
+- Live counters for cards shown, "knew", and "didn't know"
 - Difficulty selection is saved in `localStorage` and restored on reload
 
 ## Getting Started

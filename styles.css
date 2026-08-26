@@ -2062,7 +2062,7 @@ main {
 }
 
 .whoami-stats-bar {
-    grid-template-columns: repeat(3, minmax(0, 1fr));
+    grid-template-columns: repeat(4, minmax(0, 1fr));
 }
 
 .whoami-board {
@@ -2165,6 +2165,54 @@ main {
     font-size: 1.8rem;
     font-weight: 700;
     text-shadow: 0 2px 8px rgba(0, 0, 0, 0.18);
+}
+
+/* Score card: small explanation under the percentage */
+.whoami-score-hint {
+    display: block;
+    font-size: 0.72rem;
+    opacity: 0.75;
+    margin-top: 4px;
+}
+
+/* Self-grading row shown under the flipped card */
+.whoami-grade-row {
+    display: flex;
+    justify-content: center;
+    flex-wrap: wrap;
+    gap: 12px;
+    margin-top: 18px;
+}
+
+.whoami-knew-btn {
+    background: rgba(36, 196, 178, 0.18);
+    border-color: rgba(36, 196, 178, 0.6);
+    color: #7ff0df;
+}
+
+.whoami-didnt-btn {
+    background: rgba(255, 107, 107, 0.16);
+    border-color: rgba(255, 107, 107, 0.55);
+    color: #ffb8b8;
+}
+
+.whoami-knew-btn:hover:not(:disabled),
+.whoami-didnt-btn:hover:not(:disabled) {
+    filter: brightness(1.2);
+}
+
+.whoami-knew-btn:disabled,
+.whoami-didnt-btn:disabled {
+    filter: none;
+}
+
+/* Light theme: section background is light, so darken the button text */
+[data-theme="light"] .whoami-knew-btn {
+    color: #0a7a6f;
+}
+
+[data-theme="light"] .whoami-didnt-btn {
+    color: #b02a2a;
 }
 
 @media (max-width: 768px) {
