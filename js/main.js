@@ -70,11 +70,13 @@ class BibleQuoteGenerator {
         this.whoamiGameState = {
             person: null,
             category: '',
+            difficulty: 'medium',
             revealed: false,
             counted: false,
             seenCount: 0,
             revealedCount: 0
         };
+        this.whoamiGameDifficultyKey = 'bible-whoami-game-difficulty';
         this.whoamiGamePool = this.createWhoamiGamePool();
         this.whoamiUsedPersons = new Set();
 
@@ -91,6 +93,7 @@ class BibleQuoteGenerator {
         this.loadGamePreferences();
         this.loadReverseGamePreferences();
         this.loadScrambleGamePreferences();
+        this.loadWhoamiGamePreferences();
         this.initializeCanvas();
         this.setupThemeToggle();
     }
@@ -205,6 +208,7 @@ class BibleQuoteGenerator {
         const whoamiStartBtn = document.getElementById('whoami-start-btn');
         const whoamiNextBtn = document.getElementById('whoami-next-btn');
         const whoamiFlipCard = document.getElementById('whoami-flip-card');
+        const whoamiDifficultySelect = document.getElementById('whoami-difficulty-select');
 
         whoamiStartBtn.addEventListener('click', () => this.startWhoamiGame());
         whoamiNextBtn.addEventListener('click', () => this.nextWhoamiCard());
@@ -214,6 +218,14 @@ class BibleQuoteGenerator {
                 e.preventDefault();
                 this.flipWhoamiCard();
             }
+        });
+        whoamiDifficultySelect.addEventListener('change', () => {
+            this.whoamiGameState.difficulty = whoamiDifficultySelect.value;
+            this.persistWhoamiGamePreferences();
+            if (this.whoamiUsedPersons) this.whoamiUsedPersons.clear();
+            // Recompute the pool size for the newly selected level.
+            this.whoamiGameState.poolSize = this.buildWhoamiGamePool(whoamiDifficultySelect.value).length;
+            this.updateWhoamiCounters();
         });
 
         bookSelect.addEventListener('change', () => this.onBookChange());

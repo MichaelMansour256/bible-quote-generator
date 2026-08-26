@@ -2029,6 +2029,32 @@ main {
     color: var(--text-muted);
 }
 
+.whoami-game-section .input-group label {
+    color: var(--text-muted);
+}
+
+.whoami-game-section .input-group select {
+    background: var(--input-bg);
+    border-color: var(--input-border);
+    color: var(--input-color);
+}
+
+.whoami-game-section .input-group select:focus {
+    border-color: var(--accent-2);
+    background: var(--input-bg-focus);
+    outline: none;
+    box-shadow: 0 0 0 3px rgba(91, 140, 255, 0.12);
+}
+
+.whoami-game-section .input-group select option {
+    background: var(--select-option-bg);
+    color: var(--input-color);
+}
+
+.whoami-settings-grid {
+    grid-template-columns: minmax(0, 320px);
+}
+
 .whoami-game-section .game-status,
 .whoami-game-section .game-score-card strong,
 .whoami-game-section .game-stat strong {

@@ -94,9 +94,14 @@ Chapter results show a **▼ expand arrow** — clicking opens an inline verse l
 
 - Each flash card shows a single clue about a person from the Bible
 - Click the card (or press `Enter`/`Space` on it) to flip it and reveal the person's name
-- 20 curated Bible persons with categories (نبي، ملك، رسول، امرأة…)
-- Cards avoid repeating until the whole deck has been seen, then the cycle restarts
+- **Three difficulty levels** — سهل (easy) / متوسط (medium) / صعب (hard):
+  - **Easy**: well-known figures (نوح، داود، موسى، بطرس…)
+  - **Medium**: deeper Old/New Testament people (جدعون، استفانوس، نيقوديموس…)
+  - **Hard**: obscure figures (ملك صادق، أبشالوم، كورنيليوس، حنانيا…)
+- 114 curated persons in total across the levels, each with a category (نبي، ملك، رسول، امرأة…)
+- Cards avoid repeating within a level until the whole pool has been seen, then the cycle restarts
 - Live counters for cards shown, revealed, and a deck-completion score
+- Difficulty selection is saved in `localStorage` and restored on reload
 
 ## Getting Started
 
