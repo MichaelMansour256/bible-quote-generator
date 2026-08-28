@@ -3,14 +3,14 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
-    <title>الكلمات المبعثرة — VerseUp Arena</title>
-    <meta name="description" content="فك الحروف المبعثرة واكتب الكلمة الأصلية بسرعة.">
+    <title>هولي ووردل — VerseUp Arena</title>
+    <meta name="description" content="اختر عدد الحروف (4 إلى 7) وخمّن كلمة من الكتاب المقدس خلال ست محاولات مثل لعبة ووردل.">
     <meta name="theme-color" content="#0d1b2e">
     <link rel="icon" type="image/png" href="assets/verseup_logo.png">
     <link rel="stylesheet" href="styles.css">
     <link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@400;700&family=Amiri:wght@400;700&family=Aref+Ruqaa:wght@400;700&family=Reem+Kufi:wght@400;700&family=Lateef:wght@400;700&family=Scheherazade:wght@400;700&family=Noto+Naskh+Arabic:wght@400;700&family=Changa:wght@400;700&family=Cairo:wght@400;700&family=Markazi+Text:wght@400;700&family=Katibeh:wght@400;700&family=Mirza:wght@400;700&family=Harmattan:wght@400;700&family=El+Messiri:wght@400;700&family=Diwan+Kufi:wght@400;700&family=Thuluth+Deco:wght@400;700&display=swap" rel="stylesheet">
 </head>
-<body data-page="scramble">
+<body data-page="wordle">
         <div id="splash">
         <div class="splash-inner">
             <img src="assets/verseup_logo.png" alt="VerseUp Arena" class="splash-logo">
@@ -36,9 +36,9 @@
             <li><a class="navbar-link" href="quote.html" data-i18n="nav-short-quote">الاقتباسات</a></li>
             <li><a class="navbar-link" href="memory.html" data-i18n="nav-short-memory">الحفظ</a></li>
             <li><a class="navbar-link" href="reverse.html" data-i18n="nav-short-reverse">المعكوسة</a></li>
-            <li><a class="navbar-link active" href="scramble.html" data-i18n="nav-short-scramble">المبعثرة</a></li>
+            <li><a class="navbar-link" href="scramble.html" data-i18n="nav-short-scramble">المبعثرة</a></li>
             <li><a class="navbar-link" href="whoami.html" data-i18n="nav-short-whoami">من أنا؟</a></li>
-            <li><a class="navbar-link" href="wordle.html" data-i18n="nav-short-wordle">ووردل</a></li>
+            <li><a class="navbar-link active" href="wordle.html" data-i18n="nav-short-wordle">ووردل</a></li>
         </ul>
 
         <div class="navbar-controls">
@@ -47,33 +47,31 @@
         </div>
     </nav>
 
-        
-
         <main>
-<section class="scramble-game-section view-panel" id="scramble-view-panel">
+<section class="wordle-game-section view-panel" id="wordle-view-panel">
                 <div class="game-header">
                     <div>
-                        <h2 data-i18n="scramble-title">لعبة الكلمات المبعثرة</h2>
-                        <p data-i18n="scramble-desc">اختر الفئة، ثم فك الحروف المبعثرة واكتب الكلمة الأصلية بسرعة.</p>
+                        <h2 data-i18n="wordle-title">لعبة هولي ووردل</h2>
+                        <p data-i18n="wordle-desc">اختر عدد الحروف، ثم خمّن كلمة من الكتاب المقدس خلال ست محاولات.</p>
                     </div>
                     <div class="game-score-card">
                         <span data-i18n="score-label">الدرجة</span>
-                        <strong id="scramble-game-score">0%</strong>
+                        <strong id="wordle-game-score">0%</strong>
                     </div>
                 </div>
 
-                <div class="scramble-game-shell">
-                    <div class="game-controls scramble-controls">
-                        <div class="game-stats-bar scramble-stats-bar">
-                            <div class="game-stat"><span data-i18n="stat-time">الوقت</span><strong id="scramble-game-timer">00:00</strong></div>
-                            <div class="game-stat"><span data-i18n="stat-highscore">أفضل درجة</span><strong id="scramble-game-high-score">0%</strong></div>
-                            <div class="game-stat"><span data-i18n="stat-category">الفئة</span><strong id="scramble-game-category">-</strong></div>
+                <div class="wordle-game-shell">
+                    <div class="game-controls wordle-controls">
+                        <div class="game-stats-bar wordle-stats-bar">
+                            <div class="game-stat"><span data-i18n="stat-time">الوقت</span><strong id="wordle-game-timer">00:00</strong></div>
+                            <div class="game-stat"><span data-i18n="stat-highscore">أفضل درجة</span><strong id="wordle-game-high-score">0%</strong></div>
+                            <div class="game-stat"><span data-i18n="stat-category">الفئة</span><strong id="wordle-game-category">-</strong></div>
+                            <div class="game-stat"><span data-i18n="stat-attempts">المحاولات</span><strong id="wordle-game-attempts">6 / 6</strong></div>
                         </div>
-
-                        <div class="game-settings-grid scramble-settings-grid">
+                        <div class="game-settings-grid wordle-settings-grid">
                             <div class="input-group">
-                                <label for="scramble-category-select" data-i18n="label-category">نوع الكلمات:</label>
-                                <select id="scramble-category-select">
+                                <label for="wordle-category-select" data-i18n="label-category">نوع الكلمات:</label>
+                                <select id="wordle-category-select">
                                     <option value="random" selected data-i18n="cat-random">عشوائي</option>
                                     <option value="book" data-i18n="cat-book">اسم سفر</option>
                                     <option value="name" data-i18n="cat-name">اسم</option>
@@ -87,38 +85,32 @@
                                 </select>
                             </div>
                             <div class="input-group">
-                                <label for="scramble-difficulty-select" data-i18n="label-difficulty">مستوى الصعوبة:</label>
-                                <select id="scramble-difficulty-select">
-                                    <option value="easy" data-i18n="diff-easy">سهل</option>
-                                    <option value="medium" selected data-i18n="diff-medium">متوسط</option>
-                                    <option value="hard" data-i18n="diff-hard">صعب</option>
-                                    <option value="expert" data-i18n="diff-expert">خبير</option>
+                                <label for="wordle-length-select" data-i18n="label-wordle-length">عدد الحروف:</label>
+                                <select id="wordle-length-select">
+                                    <option value="4" data-i18n="wordle-len-4">4 حروف</option>
+                                    <option value="5" selected data-i18n="wordle-len-5">5 حروف</option>
+                                    <option value="6" data-i18n="wordle-len-6">6 حروف</option>
+                                    <option value="7" data-i18n="wordle-len-7">7 حروف</option>
                                 </select>
                             </div>
                         </div>
 
                         <div class="game-buttons">
-                            <button id="scramble-start-btn" class="game-btn primary" data-i18n="btn-scramble-start">ابدأ الكلمة المبعثرة</button>
-                            <button id="scramble-next-btn" class="game-btn" disabled data-i18n="btn-new-word">كلمة جديدة</button>
-                            <button id="scramble-check-btn" class="game-btn" disabled data-i18n="btn-check">تحقق من الإجابة</button>
-                            <button id="scramble-reveal-btn" class="game-btn secondary" disabled data-i18n="btn-reveal">أظهر الإجابة</button>
+                            <button id="wordle-start-btn" class="game-btn primary" data-i18n="btn-wordle-start">ابدأ هولي ووردل</button>
+                            <button id="wordle-next-btn" class="game-btn" disabled data-i18n="btn-new-word">كلمة جديدة</button>
+                            <button id="wordle-reveal-btn" class="game-btn secondary" disabled data-i18n="btn-reveal">أظهر الإجابة</button>
                         </div>
 
-                        <div class="game-status" id="scramble-game-status" data-i18n="scramble-status">اضغط على البدء للحصول على كلمة مبعثرة.</div>
+                        <div class="game-status" id="wordle-game-status" data-i18n="wordle-status">اضغط على البدء لاختيار كلمة سرية من الكتاب.</div>
                     </div>
 
-                    <div class="game-board scramble-board">
-                        <div class="game-prompt scramble-prompt">
-                            <label data-i18n="label-scramble-clue">الكلمة المبعثرة - فك الحروف لتعرفها:</label>
-                            <div id="scramble-game-clue" class="scramble-game-clue" aria-label="التلميح المبعثر">---</div>
+                    <div class="game-board wordle-board-panel">
+                        <div class="game-prompt wordle-prompt">
+                            <label data-i18n="label-wordle-clue">لوحة التخمين — خمّن الكلمة السرية خلال ست محاولات:</label>
+                            <div id="wordle-board" class="wordle-board" dir="rtl" aria-label="لوحة تخمين الكلمة"></div>
                         </div>
 
-                        <div class="game-inputs scramble-inputs">
-                            <div class="input-group">
-                                <label for="scramble-game-answer" data-i18n="label-answer">اكتب الإجابة الصحيحة:</label>
-                                <input id="scramble-game-answer" type="text" data-i18n-placeholder="answer-placeholder" placeholder="اكتب الاسم أو المكان أو السفر" autocomplete="off">
-                            </div>
-                        </div>
+                        <div id="wordle-keyboard" class="wordle-keyboard" dir="rtl" aria-label="لوحة مفاتيح عربية"></div>
                     </div>
                 </div>
             </section>

@@ -361,3 +361,80 @@ export function buildTermPool(pools, category, difficulty = 'medium') {
 
     return terms;
 }
+
+// ── HolyWordle helpers ──────────────────────────────────────────────────────
+
+// Letter count used for word-length matching: diacritics/tatweel stripped and
+// Arabic letters folded to their base forms (أ→ا, ة→ه, …) so the count always
+// matches what the board compares against.
+export function getWordleLetterCount(word) {
+    return Array.from(normalizeArabicForMatch(String(word || '').replace(/\s+/g, ''))).length;
+}
+
+// Letters as written by the user (keeps hamza/taa-marbuta spellings) with only
+// diacritics removed, so tiles render familiar Arabic while comparisons stay
+// on the normalized forms.
+export function getWordleDisplayLetters(word) {
+    return Array.from(
+        String(word || '').replace(/\s+/g, '').replace(/[\u064B-\u065F\u0670\u0640]/g, '')
+    );
+}
+
+// Standard Wordle evaluation with duplicate-letter handling:
+// 'correct' = right letter, right spot; 'present' = letter exists elsewhere;
+// 'absent' = letter not in the word (or already fully accounted for).
+export function evaluateWordleGuess(guessLetters, targetLetters) {
+    const guess = Array.from(guessLetters || []);
+    const target = Array.from(targetLetters || []);
+    const result = new Array(guess.length).fill('absent');
+    const remaining = new Map();
+
+    target.forEach((letter, index) => {
+        if (index < guess.length && guess[index] === letter) {
+            result[index] = 'correct';
+        } else {
+            remaining.set(letter, (remaining.get(letter) || 0) + 1);
+        }
+    });
+
+    guess.forEach((letter, index) => {
+        if (result[index] === 'correct') return;
+        const left = remaining.get(letter) || 0;
+        if (left > 0) {
+            result[index] = 'present';
+            remaining.set(letter, left - 1);
+        }
+    });
+
+    return result;
+}
+
+// Single-word Bible terms (no spaces/digits) grouped for the Wordle game,
+// de-duplicated by their normalized form so two spellings of the same word
+// never both appear as answers.
+export function buildWordleWordPool(pools, category = 'random') {
+    const entries = [];
+    const pushEntries = (list, label) => {
+        list.forEach(entry => entries.push({ term: entry.term, category: label }));
+    };
+
+    if (category === 'book' || category === 'random') pushEntries(pools.books, 'اسم سفر');
+    if (category === 'name' || category === 'random') pushEntries(pools.names, 'اسم');
+    if (category === 'place' || category === 'random') pushEntries(pools.places, 'مكان');
+    if (category === 'prophet' || category === 'random') pushEntries(pools.prophets, 'نبي');
+    if (category === 'king' || category === 'random') pushEntries(pools.kings, 'ملك');
+    if (category === 'woman' || category === 'random') pushEntries(pools.women, 'امرأة');
+    if (category === 'tribe' || category === 'random') pushEntries(pools.tribes, 'سبط');
+    if (category === 'feast' || category === 'random') pushEntries(pools.feasts, 'عيد');
+    if (category === 'artifact' || category === 'random') pushEntries(pools.artifacts, 'أداة مقدسة');
+
+    const seen = new Set();
+    return entries.filter(entry => {
+        const term = String(entry.term || '');
+        if (/[\s\d٠-٩]/.test(term)) return false;
+        const normalized = normalizeArabicForMatch(term);
+        if (seen.has(normalized)) return false;
+        seen.add(normalized);
+        return true;
+    });
+}

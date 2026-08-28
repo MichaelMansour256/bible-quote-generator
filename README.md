@@ -1,6 +1,6 @@
 # VerseUp Arena
 
-A modular Arabic Bible web app — verse image generator and four Bible games in one place.
+A modular Arabic Bible web app — verse image generator and five Bible games in one place.
 
 ## What It Does
 
@@ -9,6 +9,7 @@ A modular Arabic Bible web app — verse image generator and four Bible games in
 - Reverse-words game: guess the original word from its reversed characters
 - Scrambled-words game: unscramble shuffled characters to find the word
 - Who-Am-I? flash-card game: read a clue, click the card, and it flips to reveal the Bible person's name
+- HolyWordle: Wordle-style guessing of Bible words with selectable word lengths (4–7 letters)
 - Smart verse search: by book name, book + chapter, exact reference, or free text
 - Saved preferences and score tracking with `localStorage`
 
@@ -31,6 +32,7 @@ bible-quote-generator/
 │           ├── reverse-game.js    ← reverse-words game
 │           ├── scramble-game.js   ← scrambled-words game
 │           ├── whoami-game.js     ← Who-Am-I? flash-card game
+│           ├── wordle-game.js     ← HolyWordle guessing game
 │           └── game-utils.js      ← shared Arabic normalization, scramble, reverse, term pools
 ├── assets/
 │   ├── logo.svg
@@ -90,6 +92,18 @@ Chapter results show a **▼ expand arrow** — clicking opens an inline verse l
 - `Enter` key submits the answer
 - Category and difficulty filtering; state persisted
 
+### HolyWordle (Bible Wordle)
+
+- Wordle-style guessing: find the secret Bible word within **six attempts**
+- **Selectable word length — 4, 5, 6, or 7 letters** — the length acts as the difficulty
+- Words come from the same curated term pools (books, names, places, prophets, kings, women, tribes, feasts, artifacts); single words only, de-duplicated
+- Standard Wordle coloring with duplicate-letter handling: 🟩 right letter & spot, 🟨 letter exists elsewhere, ⬛ letter not in the word
+- Arabic-aware letter matching (hamza variants, taa marbuta, diacritics are normalized) so أ/ا, ة/ه, ى/ي all match
+- Built-in Arabic on-screen keyboard plus physical keyboard support (`Enter` submits, `Backspace` deletes)
+- Keyboard keys light up with the best known status of each letter
+- Time-bonus scoring on win: `max(10, 100 − seconds)`; timer, high score, category and remaining-attempts stats
+- Board, category, length, high score and in-progress round are saved in `localStorage` and restored on reload
+
 ### Who Am I? (Flash Cards)
 
 - Each flash card shows a single clue about a person from the Bible
@@ -122,6 +136,7 @@ The app is fully static — no build step, no dependencies to install.
 | `Ctrl + Enter` | Generate image |
 | `Ctrl + S` | Download image (if generated) |
 | `Enter` (in reverse/scramble answer field) | Submit answer |
+| `Enter` / letters / `Backspace` (on HolyWordle page) | Submit row / type / erase letters |
 | `↑ / ↓` (in search) | Navigate results |
 | `Enter` (in search, verse result) | Load verse + generate image |
 | `Escape` (in search) | Close results |

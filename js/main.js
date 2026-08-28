@@ -3,6 +3,7 @@ import { scrambleGameMixin } from './features/games/scramble-game.js';
 import { quoteFeatureMixin } from './features/quote-feature.js';
 import { memoryGameMixin } from './features/games/memory-game.js';
 import { whoamiGameMixin } from './features/games/whoami-game.js';
+import { wordleGameMixin } from './features/games/wordle-game.js';
 
 class BibleQuoteGenerator {
     constructor() {
@@ -83,6 +84,26 @@ class BibleQuoteGenerator {
         this.whoamiGameDifficultyKey = 'bible-whoami-game-difficulty';
         this.whoamiGamePool = this.createWhoamiGamePool();
         this.whoamiUsedPersons = new Set();
+        this.wordleGameTimer = null;
+        this.wordleGameStartTime = null;
+        this.wordleGameState = {
+            target: null,
+            targetLetters: [],
+            displayLetters: [],
+            length: 5,
+            category: 'random',
+            displayCategory: '',
+            rows: [],
+            current: [],
+            finished: null,
+            lastScore: 0
+        };
+        this.wordleGameHighScoreKey = 'bible-wordle-game-high-score';
+        this.wordleGameStateKey = 'bible-wordle-game-state';
+        this.wordleGameCategoryKey = 'bible-wordle-game-category';
+        this.wordleGameLengthKey = 'bible-wordle-game-length';
+        this.wordleGamePool = this.createWordlePool();
+        this.wordleUsedWords = new Set();
 
         this.logoImage.onload = () => { this.logoLoaded = true; };
         this.logoImage.src = 'assets/logo.svg';
@@ -335,6 +356,10 @@ class BibleQuoteGenerator {
                 this.wireWhoamiControls();
                 this.loadWhoamiGamePreferences();
                 break;
+            case 'wordle':
+                this.wireWordleControls();
+                this.loadWordleGamePreferences();
+                break;
             default:
                 // 'home' page needs no feature wiring, but its launcher cards
                 // should navigate to the matching feature pages.
@@ -343,7 +368,8 @@ class BibleQuoteGenerator {
                     game: 'memory.html',
                     reverse: 'reverse.html',
                     scramble: 'scramble.html',
-                    whoami: 'whoami.html'
+                    whoami: 'whoami.html',
+                    wordle: 'wordle.html'
                 };
                 document.querySelectorAll('.home-card[data-target]').forEach(card => {
                     card.addEventListener('click', () => {
@@ -474,6 +500,48 @@ class BibleQuoteGenerator {
             this.scrambleGameState.difficulty = scrambleDifficultySelect.value;
             this.persistScrambleGamePreferences();
         });
+    }
+
+    wireWordleControls() {
+        const wordleStartBtn = document.getElementById('wordle-start-btn');
+        const wordleNextBtn = document.getElementById('wordle-next-btn');
+        const wordleRevealBtn = document.getElementById('wordle-reveal-btn');
+        const wordleCategorySelect = document.getElementById('wordle-category-select');
+        const wordleLengthSelect = document.getElementById('wordle-length-select');
+
+        if (wordleNextBtn) wordleNextBtn.disabled = true;
+        if (wordleRevealBtn) wordleRevealBtn.disabled = true;
+
+        if (wordleStartBtn) wordleStartBtn.addEventListener('click', () => this.startWordleGame());
+        if (wordleNextBtn) wordleNextBtn.addEventListener('click', () => this.startWordleGame());
+        if (wordleRevealBtn) wordleRevealBtn.addEventListener('click', () => this.revealWordleAnswer());
+
+        if (wordleCategorySelect) wordleCategorySelect.addEventListener('change', () => {
+            this.wordleGameState.category = wordleCategorySelect.value;
+            this.persistWordleGamePreferences();
+        });
+        if (wordleLengthSelect) wordleLengthSelect.addEventListener('change', () => {
+            this.wordleGameState.length = parseInt(wordleLengthSelect.value, 10) || 5;
+            this.persistWordleGamePreferences();
+            // A different word length invalidates any running round.
+            this.resetWordleGame();
+        });
+
+        this.buildWordleKeyboard();
+
+        // Physical keyboard support: Arabic-layout letters, Enter, Backspace.
+        // Skips keystrokes while a form control has focus, and lets buttons
+        // keep their native Enter/Space activation.
+        if (!this.wordleKeyHandler) {
+            this.wordleKeyHandler = (event) => {
+                const active = document.activeElement;
+                const tag = active ? active.tagName : '';
+                if (tag === 'INPUT' || tag === 'SELECT' || tag === 'TEXTAREA') return;
+                if (tag === 'BUTTON' && (event.key === 'Enter' || event.key === ' ')) return;
+                this.handleWordleKey(event.key);
+            };
+            document.addEventListener('keydown', this.wordleKeyHandler);
+        }
     }
 
     wireWhoamiControls() {
@@ -751,7 +819,7 @@ class BibleQuoteGenerator {
     }
 }
 
-Object.assign(BibleQuoteGenerator.prototype, reverseGameMixin, scrambleGameMixin);
+Object.assign(BibleQuoteGenerator.prototype, reverseGameMixin, scrambleGameMixin, wordleGameMixin);
 Object.assign(BibleQuoteGenerator.prototype, quoteFeatureMixin, memoryGameMixin, whoamiGameMixin);
 
 document.addEventListener('DOMContentLoaded', () => {
