@@ -330,7 +330,9 @@ header p {
 .navbar-link {
     display: block;
     text-decoration: none;
-    color: var(--text-muted);
+    /* The navbar is always a dark gradient bar, so its text is light in both
+       light and dark themes (do NOT use --text-muted, which darkens in light mode). */
+    color: #cfe0f5;
     padding: 9px 16px;
     border-radius: 999px;
     font-weight: 600;
@@ -340,8 +342,8 @@ header p {
 }
 
 .navbar-link:hover {
-    color: var(--text-strong);
-    background: var(--switcher-btn-bg);
+    color: #ffffff;
+    background: rgba(255, 255, 255, 0.14);
 }
 
 .navbar-link.active {
@@ -357,9 +359,11 @@ header p {
 }
 
 .nav-btn {
-    background: var(--toggle-bg);
-    border: 1px solid var(--toggle-border);
-    color: var(--toggle-color);
+    /* Fixed light-on-dark styling so the buttons read clearly on the navbar
+       in both themes. */
+    background: rgba(255, 255, 255, 0.12);
+    border: 1px solid rgba(255, 255, 255, 0.28);
+    color: #ffffff;
     padding: 8px 13px;
     border-radius: 999px;
     cursor: pointer;
@@ -382,8 +386,9 @@ header p {
     width: 42px;
     height: 42px;
     padding: 0 9px;
-    background: var(--toggle-bg);
-    border: 1px solid var(--toggle-border);
+    /* Light-on-dark, matching the nav buttons, so it reads in both themes. */
+    background: rgba(255, 255, 255, 0.12);
+    border: 1px solid rgba(255, 255, 255, 0.28);
     border-radius: 10px;
     cursor: pointer;
 }
@@ -393,7 +398,7 @@ header p {
     height: 2px;
     width: 100%;
     border-radius: 2px;
-    background: var(--toggle-color);
+    background: #ffffff;
     transition: transform 0.25s ease, opacity 0.25s ease;
 }
 
