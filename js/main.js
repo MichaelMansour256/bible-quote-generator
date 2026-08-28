@@ -9,6 +9,7 @@ class BibleQuoteGenerator {
         this.canvas = document.getElementById('quote-canvas');
         this.ctx = this.canvas.getContext('2d');
         this.bibleData = null;
+        this.bibleDataReady = false;
         this.currentBook = null;
         this.currentChapter = null;
         this.currentVerse = null;
@@ -86,7 +87,7 @@ class BibleQuoteGenerator {
 
         this.initializeEventListeners();
         this.setupSearchFunctionality();
-        this.loadBibleData();
+        this.setupSplash();
         this.setupColorCombinations();
         this.setupFontSelection();
         this.setupVerseTextSelection();
@@ -99,13 +100,47 @@ class BibleQuoteGenerator {
         this.setupThemeToggle();
     }
 
-    async loadBibleData() {
+    // Lazy-loads the full Arabic Bible dataset the first time a view that needs
+    // it (quote / memory game) is opened. Reverse, scrambled and "Who am I?"
+    // games use their own bundled pools and never trigger this fetch.
+    async ensureBibleDataLoaded() {
+        if (this.bibleData) return this.bibleData;
+
         this.bibleData = await bibleAPI.loadBibleData();
-        if (this.bibleData) {
+        if (this.bibleData && !this.bibleDataReady) {
             this.populateBookSelect();
             this.populateGameBookSelect();
             this.buildGameVersePool();
             this.restorePendingGameState();
+            this.bibleDataReady = true;
+        }
+        return this.bibleData;
+    }
+
+    // Shows the branded splash screen on first open and fades it out once the
+    // page has finished loading (or after a short safety timeout).
+    setupSplash() {
+        const splash = document.getElementById('splash');
+        if (!splash) return;
+
+        const startedAt = Date.now();
+        const MIN_DISPLAY = 1200; // keep the splash visible at least this long
+
+        const hideSplash = () => {
+            const delay = Math.max(0, MIN_DISPLAY - (Date.now() - startedAt));
+            setTimeout(() => {
+                splash.classList.add('splash-hidden');
+                setTimeout(() => {
+                    if (splash.parentNode) splash.parentNode.removeChild(splash);
+                }, 700);
+            }, delay);
+        };
+
+        if (document.readyState === 'complete') {
+            hideSplash();
+        } else {
+            window.addEventListener('load', hideSplash, { once: true });
+            setTimeout(hideSplash, 3500); // safety fallback
         }
     }
 
@@ -436,6 +471,7 @@ class BibleQuoteGenerator {
 
     setupViewSwitcher() {
         this.viewButtons = {
+            home: document.getElementById('home-view-btn'),
             quote: document.getElementById('quote-view-btn'),
             game: document.getElementById('game-view-btn'),
             reverse: document.getElementById('reverse-view-btn'),
@@ -444,6 +480,7 @@ class BibleQuoteGenerator {
         };
 
         this.viewPanels = {
+            home: document.getElementById('home-view-panel'),
             quote: document.getElementById('quote-view-panel'),
             game: document.getElementById('game-view-panel'),
             reverse: document.getElementById('reverse-view-panel'),
@@ -455,13 +492,26 @@ class BibleQuoteGenerator {
             if (btn) btn.addEventListener('click', () => this.setActiveView(key));
         });
 
-        this.setActiveView('quote');
+        // Home launcher cards jump directly to their feature page.
+        document.querySelectorAll('.home-card').forEach(card => {
+            card.addEventListener('click', () => {
+                if (card.dataset.target) this.setActiveView(card.dataset.target);
+            });
+        });
+
+        this.setActiveView('home');
     }
 
     setActiveView(view) {
         if (!this.viewButtons || !this.viewPanels || !this.viewPanels[view]) return;
 
         this.activeView = view;
+
+        // Quote and Memory need the full Bible dataset; load it on demand only
+        // the first time one of these views is opened.
+        if (view === 'quote' || view === 'game') {
+            this.ensureBibleDataLoaded();
+        }
 
         Object.entries(this.viewButtons).forEach(([key, btn]) => {
             if (btn) btn.classList.toggle('active', key === view);

@@ -61,6 +61,15 @@
     <link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@400;700&family=Amiri:wght@400;700&family=Aref+Ruqaa:wght@400;700&family=Reem+Kufi:wght@400;700&family=Lateef:wght@400;700&family=Scheherazade:wght@400;700&family=Noto+Naskh+Arabic:wght@400;700&family=Changa:wght@400;700&family=Cairo:wght@400;700&family=Markazi+Text:wght@400;700&family=Katibeh:wght@400;700&family=Mirza:wght@400;700&family=Harmattan:wght@400;700&family=El+Messiri:wght@400;700&family=Diwan+Kufi:wght@400;700&family=Thuluth+Deco:wght@400;700&display=swap" rel="stylesheet">
 </head>
 <body>
+    <div id="splash">
+        <div class="splash-inner">
+            <img src="assets/verseup_logo.png" alt="VerseUp Arena" class="splash-logo">
+            <div class="splash-title">VerseUp Arena</div>
+            <div class="splash-tag" data-i18n="splash-tag">بطاقات، آيات، وألعاب كتابية في مكان واحد</div>
+            <div class="splash-spinner" aria-hidden="true"></div>
+        </div>
+    </div>
+
     <div class="container">
         <header>
             <img src="assets/verseup_logo.png" alt="VerseUp Arena" style="height:90px;display:block;margin:0 auto 8px;">
@@ -73,7 +82,8 @@
         </header>
 
         <div class="view-switcher" role="tablist" aria-label="التنقل بين الصفحات">
-            <button class="view-switch-btn active" id="quote-view-btn" type="button" data-i18n="nav-quote">صفحة إنشاء الاقتباس</button>
+            <button class="view-switch-btn active" id="home-view-btn" type="button" data-i18n="nav-home">🏠 الرئيسية</button>
+            <button class="view-switch-btn" id="quote-view-btn" type="button" data-i18n="nav-quote">صفحة إنشاء الاقتباس</button>
             <button class="view-switch-btn" id="game-view-btn" type="button" data-i18n="nav-memory">لعبة الحفظ</button>
             <button class="view-switch-btn" id="reverse-view-btn" type="button" data-i18n="nav-reverse">الكلمات المعكوسة</button>
             <button class="view-switch-btn" id="scramble-view-btn" type="button" data-i18n="nav-scramble">الكلمات المبعثرة</button>
@@ -81,6 +91,40 @@
         </div>
 
         <main>
+            <div class="view-panel home-panel" id="home-view-panel" role="tabpanel">
+                <section class="home-hero">
+                    <h2 data-i18n="home-title">اختر الميزة التي تريدها</h2>
+                    <p data-i18n="home-desc">اضغط على أي بطاقة للانتقال مباشرة إلى صفحتها — كل صفحة تحمِّل بياناتها عند فتحها فقط، لتصفح أسرع.</p>
+                </section>
+                <div class="home-grid">
+                    <button class="home-card" type="button" data-target="quote">
+                        <span class="home-card-icon">🖼️</span>
+                        <span class="home-card-title" data-i18n="home-quote-title">بطاقات الاقتباسات</span>
+                        <span class="home-card-desc" data-i18n="home-quote-desc">أنشئ بطاقات آيات إنجيلية جميلة جاهزة للحفظ والمشاركة.</span>
+                    </button>
+                    <button class="home-card" type="button" data-target="game">
+                        <span class="home-card-icon">🧠</span>
+                        <span class="home-card-title" data-i18n="home-memory-title">لعبة الحفظ</span>
+                        <span class="home-card-desc" data-i18n="home-memory-desc">اخفِ كلمات الآيات واسترجعها من ذاكرتك.</span>
+                    </button>
+                    <button class="home-card" type="button" data-target="reverse">
+                        <span class="home-card-icon">🔁</span>
+                        <span class="home-card-title" data-i18n="home-reverse-title">الكلمات المعكوسة</span>
+                        <span class="home-card-desc" data-i18n="home-reverse-desc">اكتشف الكلمات من الحروف المعكوسة.</span>
+                    </button>
+                    <button class="home-card" type="button" data-target="scramble">
+                        <span class="home-card-icon">🔀</span>
+                        <span class="home-card-title" data-i18n="home-scramble-title">الكلمات المبعثرة</span>
+                        <span class="home-card-desc" data-i18n="home-scramble-desc">فك الحروف المبعثرة واكتب الكلمة الصحيحة.</span>
+                    </button>
+                    <button class="home-card" type="button" data-target="whoami">
+                        <span class="home-card-icon">🤔</span>
+                        <span class="home-card-title" data-i18n="home-whoami-title">من أنا؟</span>
+                        <span class="home-card-desc" data-i18n="home-whoami-desc">اقرأ التلميح وقلّب البطاقة واعرف الشخصية.</span>
+                    </button>
+                </div>
+            </div>
+
             <div class="view-panel quote-workspace" id="quote-view-panel">
             <section class="verse-selection-section">
                 <h2 data-i18n="select-verse-title">اختر الآية</h2>
