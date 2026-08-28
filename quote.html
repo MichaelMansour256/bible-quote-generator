@@ -1,0 +1,195 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+    <title>صفحة إنشاء الاقتباس — VerseUp Arena</title>
+    <meta name="description" content="أنشئ بطاقات آيات إنجيلية جميلة بالعربية وجاهزة للحفظ والمشاركة.">
+    <meta name="theme-color" content="#0d1b2e">
+    <link rel="icon" type="image/png" href="assets/verseup_logo.png">
+    <link rel="stylesheet" href="styles.css">
+    <link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@400;700&family=Amiri:wght@400;700&family=Aref+Ruqaa:wght@400;700&family=Reem+Kufi:wght@400;700&family=Lateef:wght@400;700&family=Scheherazade:wght@400;700&family=Noto+Naskh+Arabic:wght@400;700&family=Changa:wght@400;700&family=Cairo:wght@400;700&family=Markazi+Text:wght@400;700&family=Katibeh:wght@400;700&family=Mirza:wght@400;700&family=Harmattan:wght@400;700&family=El+Messiri:wght@400;700&family=Diwan+Kufi:wght@400;700&family=Thuluth+Deco:wght@400;700&display=swap" rel="stylesheet">
+</head>
+<body data-page="quote">
+        <div id="splash">
+        <div class="splash-inner">
+            <img src="assets/verseup_logo.png" alt="VerseUp Arena" class="splash-logo">
+            <div class="splash-title">VerseUp Arena</div>
+            <div class="splash-tag" data-i18n="splash-tag">بطاقات، آيات، وألعاب كتابية في مكان واحد</div>
+            <div class="splash-spinner" aria-hidden="true"></div>
+        </div>
+    </div>
+    <div class="container">
+
+    <header>
+        <img src="assets/verseup_logo.png" alt="VerseUp Arena" style="height:90px;display:block;margin:0 auto 8px;">
+        <h1>VerseUp Arena</h1>
+        <p data-i18n="header-desc">اقتباسات، حفظ الآيات، والألعاب الكتابية في مكان واحد</p>
+        <div class="header-controls">
+            <button id="lang-toggle" class="theme-toggle" type="button" data-i18n="lang-toggle">EN</button>
+            <button id="theme-toggle" class="theme-toggle" type="button" aria-label="تبديل المظهر">🌙</button>
+        </div>
+    </header>
+        <div class="view-switcher" role="tablist" aria-label="التنقل بين الصفحات">
+        <a class="view-switch-btn" href="index.html" data-i18n="nav-home">🏠 الرئيسية</a>
+        <a class="view-switch-btn active" href="quote.html" data-i18n="nav-quote">صفحة إنشاء الاقتباس</a>
+        <a class="view-switch-btn" href="memory.html" data-i18n="nav-memory">لعبة الحفظ</a>
+        <a class="view-switch-btn" href="reverse.html" data-i18n="nav-reverse">الكلمات المعكوسة</a>
+        <a class="view-switch-btn" href="scramble.html" data-i18n="nav-scramble">الكلمات المبعثرة</a>
+        <a class="view-switch-btn" href="whoami.html" data-i18n="nav-whoami">من أنا؟</a>
+        </div>
+
+        <main>
+<div class="view-panel quote-workspace" id="quote-view-panel">
+            <section class="verse-selection-section">
+                <h2 data-i18n="select-verse-title">اختر الآية</h2>
+                <div class="selection-controls">
+                    <div class="book-chapter-controls">
+                        <div class="input-group">
+                            <label for="book-select" data-i18n="label-book">اختر السفر:</label>
+                            <select id="book-select">
+                                <option value="" data-i18n="opt-book">-- اختر سفر --</option>
+                            </select>
+                        </div>
+
+                        <div class="input-group">
+                            <label for="chapter-select" data-i18n="label-chapter">الإصحاح:</label>
+                            <select id="chapter-select" disabled>
+                                <option value="" data-i18n="opt-chapter">-- اختر إصحاح --</option>
+                            </select>
+                        </div>
+
+                        <div class="input-group">
+                            <label for="verse-select" data-i18n="label-verse">الآية:</label>
+                            <select id="verse-select" disabled>
+                                <option value="" data-i18n="opt-verse">-- اختر آية --</option>
+                            </select>
+                        </div>
+
+                        <button id="load-verse-btn" class="load-verse-btn" disabled data-i18n="load-verse-btn">تحميل الآية</button>
+                    </div>
+
+                    <div class="search-control">
+                        <div class="input-group">
+                            <label for="verse-search" data-i18n="label-search">البحث في الآيات:</label>
+                            <input type="text" id="verse-search" data-i18n-placeholder="search-placeholder" placeholder="ابحث في النص أو المرجع مثل يوحنا 3:16">
+                            <div id="search-loading" class="loading-indicator search-loading hidden" aria-live="polite" aria-busy="true">
+                                <div class="spinner"></div>
+                                <p data-i18n="searching">جاري البحث...</p>
+                            </div>
+                            <div id="search-results" class="search-results"></div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <section class="main-content-section">
+                <div class="controls-panel">
+                    <h3 data-i18n="controls-title">تصميم التحكم</h3>
+                    
+                    <div class="verse-preview">
+                        <div class="input-group">
+                            <label for="verse-text" data-i18n="label-verse-text">نص الآية:</label>
+                            <textarea id="verse-text" data-i18n-placeholder="verse-placeholder" placeholder="سيتم ملؤه تلقائياً عند اختيار آية" rows="4" readonly></textarea>
+                            <div class="verse-text-actions">
+                                <button id="use-selection-btn" class="verse-action-btn" disabled data-i18n="use-selection-btn">✂ استخدم المحدد</button>
+                                <button id="restore-verse-btn" class="verse-action-btn" disabled data-i18n="restore-verse-btn">↺ استعادة الكاملة</button>
+                            </div>
+                        </div>
+                        
+                        <div class="input-group">
+                            <label for="verse-reference" data-i18n="label-reference">المرجع:</label>
+                            <input type="text" id="verse-reference" data-i18n-placeholder="ref-placeholder" placeholder="سيتم ملؤه تلقائياً" readonly>
+                        </div>
+                    </div>
+
+                    <div class="design-controls">
+                        <div class="input-group">
+                            <label data-i18n="label-font">نوع الخط:</label>
+                            <select id="font-style">
+                                <option value="thuluth-deco" data-i18n="font-thuluth">ثلث</option>
+                                <option value="amiri" data-i18n="font-amiri">أميري</option>
+                                <option value="aref-ruqaa" selected data-i18n="font-aref">عرف رقاع</option>
+                                <option value="reem-kufi" data-i18n="font-reem">ريم كوفي</option>
+                                <option value="lateef" data-i18n="font-lateef">لطيف</option>
+                                <option value="scheherazade" data-i18n="font-scheherazade">شهرزاد</option>
+                                <option value="noto-naskh" data-i18n="font-noto">نسخ</option>
+                                <option value="markazi-text" data-i18n="font-markazi">مرکزي</option>
+                                <option value="katibeh" data-i18n="font-katibeh">کاتب</option>
+                                <option value="mirza" data-i18n="font-mirza">مرزا</option>
+                                <option value="harmattan" data-i18n="font-harmattan">هرماتان</option>
+                                <option value="diwan-kufi" data-i18n="font-diwan">دواني</option>
+                            </select>
+                        </div>
+
+                        <div class="input-group">
+                            <label data-i18n="label-colors">مظهر الألوان:</label>
+                            <div class="color-combinations">
+                                <div class="color-option" data-bg="gradient1" data-text="white">
+                                    <div class="color-preview bg-gradient1"></div>
+                                    <span data-i18n="color-blue-white">أزرق أبيض</span>
+                                </div>
+                                <div class="color-option" data-bg="gradient5" data-text="white">
+                                    <div class="color-preview bg-gradient5"></div>
+                                    <span data-i18n="color-purple-white">بنفسجي أبيض</span>
+                                </div>
+                                <div class="color-option" data-bg="gradient3" data-text="white">
+                                    <div class="color-preview bg-gradient3"></div>
+                                    <span data-i18n="color-pink-white">وردي أبيض</span>
+                                </div>
+                                <div class="color-option" data-bg="decorative" data-text="gold">
+                                    <div class="color-preview bg-decorative"></div>
+                                    <span data-i18n="color-dark-gold">داكن ذهبي</span>
+                                </div>
+                                <div class="color-option" data-bg="solid-white" data-text="black">
+                                    <div class="color-preview bg-solid-white"></div>
+                                    <span data-i18n="color-white-black">أبيض أسود</span>
+                                </div>
+                                <div class="color-option" data-bg="solid-cream" data-text="darkblue">
+                                    <div class="color-preview bg-solid-cream"></div>
+                                    <span data-i18n="color-cream-blue">كريمي أزرق</span>
+                                </div>
+                                <div class="color-option" data-bg="solid-lightblue" data-text="black">
+                                    <div class="color-preview bg-solid-lightblue"></div>
+                                    <span data-i18n="color-lb-black">أزرق فاتح أسود</span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="input-group">
+                            <label for="logo-toggle">
+                                <input type="checkbox" id="logo-toggle">
+                                <span data-i18n="label-logo">إظهار الشعار</span>
+                            </label>
+                        </div>
+
+                        <div class="action-buttons">
+                            <button id="generate-btn" class="generate-btn" data-i18n="generate-btn">إنشاء صورة</button>
+                            <button id="download-btn" class="download-btn" disabled data-i18n="download-btn">تحميل الصورة</button>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="preview-panel">
+                    <h3 data-i18n="preview-title">معاينة مباشرة</h3>
+                    <div class="canvas-container">
+                        <canvas id="quote-canvas" width="1080" height="1080"></canvas>
+                    </div>
+                    <div id="success-message" class="success-message" data-i18n="success-msg">تم إنشاء الصورة بنجاح!</div>
+                </div>
+            </section>
+            </div>
+
+            
+        </main>
+
+        <footer class="site-footer">
+            <p class="footer-note" data-i18n="footer-note">صمم وطور بواسطة مايكل منصور</p>
+        </footer>
+    </div>
+        <script src="js/core/bible-database.js"></script>
+    <script src="js/core/bible-api.js"></script>
+    <script src="js/core/i18n.js"></script>
+    <script type="module" src="js/main.js"></script>
+</body>
+</html>

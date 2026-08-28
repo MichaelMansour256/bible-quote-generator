@@ -85,18 +85,12 @@ class BibleQuoteGenerator {
         this.logoImage.onload = () => { this.logoLoaded = true; };
         this.logoImage.src = 'assets/logo.svg';
 
-        this.initializeEventListeners();
-        this.setupSearchFunctionality();
+        // Each page sets <body data-page="..."> so this shared app only wires
+        // and initializes the feature rendered on the current page.
+        this.page = (document.body && document.body.dataset.page) || 'home';
+
+        this.initializePage();
         this.setupSplash();
-        this.setupColorCombinations();
-        this.setupFontSelection();
-        this.setupVerseTextSelection();
-        this.setupViewSwitcher();
-        this.loadGamePreferences();
-        this.loadReverseGamePreferences();
-        this.loadScrambleGamePreferences();
-        this.loadWhoamiGamePreferences();
-        this.initializeCanvas();
         this.setupThemeToggle();
     }
 
@@ -108,10 +102,13 @@ class BibleQuoteGenerator {
 
         this.bibleData = await bibleAPI.loadBibleData();
         if (this.bibleData && !this.bibleDataReady) {
-            this.populateBookSelect();
-            this.populateGameBookSelect();
-            this.buildGameVersePool();
-            this.restorePendingGameState();
+            // Only populate the controls that actually exist on this page.
+            if (document.getElementById('book-select')) this.populateBookSelect();
+            if (document.getElementById('game-book-select')) this.populateGameBookSelect();
+            if (typeof this.buildGameVersePool === 'function') this.buildGameVersePool();
+            if (typeof this.restorePendingGameState === 'function' && document.getElementById('game-verse-display')) {
+                this.restorePendingGameState();
+            }
             this.bibleDataReady = true;
         }
         return this.bibleData;
@@ -278,6 +275,209 @@ class BibleQuoteGenerator {
         document.getElementById('verse-search').value = '';
         document.getElementById('search-results').innerHTML = '';
         document.getElementById('search-results').style.display = 'none';
+    }
+
+    // Wire up only the controls present on the current page, based on
+    // <body data-page="..."> set on each separate HTML page.
+    initializePage() {
+        switch (this.page) {
+            case 'quote':
+                this.wireQuoteControls();
+                this.setupSearchFunctionality();
+                this.setupColorCombinations();
+                this.setupFontSelection();
+                this.setupVerseTextSelection();
+                this.initializeCanvas();
+                this.ensureBibleDataLoaded();
+                break;
+            case 'memory':
+                this.wireMemorizeControls();
+                this.loadGamePreferences();
+                this.ensureBibleDataLoaded();
+                break;
+            case 'reverse':
+                this.wireReverseControls();
+                this.loadReverseGamePreferences();
+                break;
+            case 'scramble':
+                this.wireScrambleControls();
+                this.loadScrambleGamePreferences();
+                break;
+            case 'whoami':
+                this.wireWhoamiControls();
+                this.loadWhoamiGamePreferences();
+                break;
+            default:
+                // 'home' page needs no feature wiring, but its launcher cards
+                // should navigate to the matching feature pages.
+                const pageTargets = {
+                    quote: 'quote.html',
+                    game: 'memory.html',
+                    reverse: 'reverse.html',
+                    scramble: 'scramble.html',
+                    whoami: 'whoami.html'
+                };
+                document.querySelectorAll('.home-card[data-target]').forEach(card => {
+                    card.addEventListener('click', () => {
+                        const href = pageTargets[card.dataset.target];
+                        if (href) window.location.href = href;
+                    });
+                });
+                break;
+        }
+    }
+
+    wireQuoteControls() {
+        const generateBtn = document.getElementById('generate-btn');
+        const downloadBtn = document.getElementById('download-btn');
+        const loadVerseBtn = document.getElementById('load-verse-btn');
+        const bookSelect = document.getElementById('book-select');
+        const chapterSelect = document.getElementById('chapter-select');
+        const verseSelect = document.getElementById('verse-select');
+
+        if (generateBtn) generateBtn.addEventListener('click', () => this.generateImage());
+        if (downloadBtn) downloadBtn.addEventListener('click', () => this.downloadImage());
+        if (loadVerseBtn) loadVerseBtn.addEventListener('click', () => this.loadSelectedVerse());
+        if (bookSelect) bookSelect.addEventListener('change', () => this.onBookChange());
+        if (chapterSelect) chapterSelect.addEventListener('change', () => this.onChapterChange());
+        if (verseSelect) verseSelect.addEventListener('change', () => this.onVerseChange());
+
+        const searchInput = document.getElementById('verse-search');
+        if (searchInput) searchInput.value = '';
+        const searchResults = document.getElementById('search-results');
+        if (searchResults) {
+            searchResults.innerHTML = '';
+            searchResults.style.display = 'none';
+        }
+    }
+
+    wireMemorizeControls() {
+        const gameBookSelect = document.getElementById('game-book-select');
+        const gameChapterSelect = document.getElementById('game-chapter-select');
+        const gameVerseSelect = document.getElementById('game-verse-select');
+        const gameStartBtn = document.getElementById('game-start-btn');
+        const gameSpecificBtn = document.getElementById('game-specific-btn');
+        const gameCheckBtn = document.getElementById('game-check-btn');
+        const gameRevealBtn = document.getElementById('game-reveal-btn');
+        const gameNextBtn = document.getElementById('game-next-btn');
+        const gameVerseDisplay = document.getElementById('game-verse-display');
+        const gameDifficultySelect = document.getElementById('game-difficulty-select');
+
+        if (gameSpecificBtn) gameSpecificBtn.disabled = true;
+        if (gameNextBtn) gameNextBtn.disabled = true;
+
+        if (gameStartBtn) gameStartBtn.addEventListener('click', () => this.startMemorizeGame());
+        if (gameSpecificBtn) gameSpecificBtn.addEventListener('click', () => this.startMemorizeGameFromSelection());
+        if (gameNextBtn) gameNextBtn.addEventListener('click', () => this.startNextMemorizeGame());
+        if (gameCheckBtn) gameCheckBtn.addEventListener('click', () => this.checkMemorizeGameAnswer());
+        if (gameRevealBtn) gameRevealBtn.addEventListener('click', () => this.revealMemorizeGameAnswer());
+        if (gameVerseDisplay) gameVerseDisplay.addEventListener('input', () => {
+            if (gameCheckBtn) gameCheckBtn.disabled = !this.gameState.verse || !this.areGameAnswersFilled();
+        });
+        if (gameDifficultySelect) gameDifficultySelect.addEventListener('change', () => {
+            this.gameDifficulty = gameDifficultySelect.value;
+            this.persistGamePreferences();
+            this.refreshGamePreviewForCurrentVerse();
+        });
+        if (gameBookSelect) gameBookSelect.addEventListener('change', () => this.onGameBookChange());
+        if (gameChapterSelect) gameChapterSelect.addEventListener('change', () => this.onGameChapterChange());
+        if (gameVerseSelect) gameVerseSelect.addEventListener('change', () => this.onGameVerseChange());
+    }
+
+    wireReverseControls() {
+        const reverseStartBtn = document.getElementById('reverse-start-btn');
+        const reverseNextBtn = document.getElementById('reverse-next-btn');
+        const reverseCheckBtn = document.getElementById('reverse-check-btn');
+        const reverseRevealBtn = document.getElementById('reverse-reveal-btn');
+        const reverseAnswer = document.getElementById('reverse-game-answer');
+        const reverseCategorySelect = document.getElementById('reverse-category-select');
+        const reverseDifficultySelect = document.getElementById('reverse-difficulty-select');
+
+        if (reverseNextBtn) reverseNextBtn.disabled = true;
+        if (reverseCheckBtn) reverseCheckBtn.disabled = true;
+
+        if (reverseStartBtn) reverseStartBtn.addEventListener('click', () => this.startReverseGame());
+        if (reverseNextBtn) reverseNextBtn.addEventListener('click', () => this.startReverseGame());
+        if (reverseCheckBtn) reverseCheckBtn.addEventListener('click', () => this.checkReverseGameAnswer());
+        if (reverseRevealBtn) reverseRevealBtn.addEventListener('click', () => this.revealReverseGameAnswer());
+        if (reverseAnswer) reverseAnswer.addEventListener('input', () => {
+            if (reverseCheckBtn) reverseCheckBtn.disabled = !this.reverseGameState.term || reverseAnswer.value.trim().length === 0;
+        });
+        if (reverseAnswer) reverseAnswer.addEventListener('keydown', (e) => {
+            if (e.key === 'Enter' && reverseCheckBtn && !reverseCheckBtn.disabled) this.checkReverseGameAnswer();
+        });
+        if (reverseCategorySelect) reverseCategorySelect.addEventListener('change', () => {
+            this.reverseGameState.category = reverseCategorySelect.value;
+            this.persistReverseGamePreferences();
+        });
+        if (reverseDifficultySelect) reverseDifficultySelect.addEventListener('change', () => {
+            this.reverseGameState.difficulty = reverseDifficultySelect.value;
+            this.persistReverseGamePreferences();
+        });
+    }
+
+    wireScrambleControls() {
+        const scrambleStartBtn = document.getElementById('scramble-start-btn');
+        const scrambleNextBtn = document.getElementById('scramble-next-btn');
+        const scrambleCheckBtn = document.getElementById('scramble-check-btn');
+        const scrambleRevealBtn = document.getElementById('scramble-reveal-btn');
+        const scrambleAnswer = document.getElementById('scramble-game-answer');
+        const scrambleCategorySelect = document.getElementById('scramble-category-select');
+        const scrambleDifficultySelect = document.getElementById('scramble-difficulty-select');
+
+        if (scrambleNextBtn) scrambleNextBtn.disabled = true;
+        if (scrambleCheckBtn) scrambleCheckBtn.disabled = true;
+
+        if (scrambleStartBtn) scrambleStartBtn.addEventListener('click', () => this.startScrambleGame());
+        if (scrambleNextBtn) scrambleNextBtn.addEventListener('click', () => this.startScrambleGame());
+        if (scrambleCheckBtn) scrambleCheckBtn.addEventListener('click', () => this.checkScrambleGameAnswer());
+        if (scrambleRevealBtn) scrambleRevealBtn.addEventListener('click', () => this.revealScrambleGameAnswer());
+        if (scrambleAnswer) scrambleAnswer.addEventListener('input', () => {
+            if (scrambleCheckBtn) scrambleCheckBtn.disabled = !this.scrambleGameState.term || scrambleAnswer.value.trim().length === 0;
+        });
+        if (scrambleAnswer) scrambleAnswer.addEventListener('keydown', (e) => {
+            if (e.key === 'Enter' && scrambleCheckBtn && !scrambleCheckBtn.disabled) this.checkScrambleGameAnswer();
+        });
+        if (scrambleCategorySelect) scrambleCategorySelect.addEventListener('change', () => {
+            this.scrambleGameState.category = scrambleCategorySelect.value;
+            this.persistScrambleGamePreferences();
+        });
+        if (scrambleDifficultySelect) scrambleDifficultySelect.addEventListener('change', () => {
+            this.scrambleGameState.difficulty = scrambleDifficultySelect.value;
+            this.persistScrambleGamePreferences();
+        });
+    }
+
+    wireWhoamiControls() {
+        const whoamiStartBtn = document.getElementById('whoami-start-btn');
+        const whoamiNextBtn = document.getElementById('whoami-next-btn');
+        const whoamiFlipCard = document.getElementById('whoami-flip-card');
+        const whoamiDifficultySelect = document.getElementById('whoami-difficulty-select');
+        const whoamiKnewBtn = document.getElementById('whoami-knew-btn');
+        const whoamiDidntBtn = document.getElementById('whoami-didnt-btn');
+
+        if (whoamiStartBtn) whoamiStartBtn.addEventListener('click', () => this.startWhoamiGame());
+        if (whoamiNextBtn) whoamiNextBtn.addEventListener('click', () => this.nextWhoamiCard());
+        if (whoamiFlipCard) whoamiFlipCard.addEventListener('click', () => this.flipWhoamiCard());
+        if (whoamiFlipCard) whoamiFlipCard.addEventListener('keydown', (e) => {
+            if (e.key === 'Enter' || e.key === ' ') {
+                e.preventDefault();
+                this.flipWhoamiCard();
+            }
+        });
+        if (whoamiKnewBtn) whoamiKnewBtn.addEventListener('click', () => this.gradeWhoamiCard(true));
+        if (whoamiDidntBtn) whoamiDidntBtn.addEventListener('click', () => this.gradeWhoamiCard(false));
+        if (whoamiDifficultySelect) whoamiDifficultySelect.addEventListener('change', () => {
+            this.whoamiGameState.difficulty = whoamiDifficultySelect.value;
+            this.persistWhoamiGamePreferences();
+            if (this.whoamiUsedPersons) this.whoamiUsedPersons.clear();
+            // Restart cleanly when switching levels (score is per-level).
+            this.whoamiGameState.knewCount = 0;
+            this.whoamiGameState.didntCount = 0;
+            this.whoamiGameState.graded = false;
+            this.resetWhoamiFlip();
+            this.updateWhoamiCounters();
+        });
     }
 
     setupThemeToggle() {
@@ -532,16 +732,18 @@ document.addEventListener('DOMContentLoaded', () => {
 
 document.addEventListener('keydown', (e) => {
     if (e.ctrlKey || e.metaKey) {
+        const generateBtn = document.getElementById('generate-btn');
+        const downloadBtn = document.getElementById('download-btn');
         switch (e.key) {
             case 'Enter':
+                if (!generateBtn) break;
                 e.preventDefault();
-                document.getElementById('generate-btn').click();
+                generateBtn.click();
                 break;
             case 's':
+                if (!downloadBtn || downloadBtn.disabled) break;
                 e.preventDefault();
-                if (!document.getElementById('download-btn').disabled) {
-                    document.getElementById('download-btn').click();
-                }
+                downloadBtn.click();
                 break;
         }
     }

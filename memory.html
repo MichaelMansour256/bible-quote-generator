@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+    <title>لعبة الحفظ — VerseUp Arena</title>
+    <meta name="description" content="اخفِ كلمات الآيات واسترجعها من ذاكرتك واحصل على نتيجة فورية.">
+    <meta name="theme-color" content="#0d1b2e">
+    <link rel="icon" type="image/png" href="assets/verseup_logo.png">
+    <link rel="stylesheet" href="styles.css">
+    <link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@400;700&family=Amiri:wght@400;700&family=Aref+Ruqaa:wght@400;700&family=Reem+Kufi:wght@400;700&family=Lateef:wght@400;700&family=Scheherazade:wght@400;700&family=Noto+Naskh+Arabic:wght@400;700&family=Changa:wght@400;700&family=Cairo:wght@400;700&family=Markazi+Text:wght@400;700&family=Katibeh:wght@400;700&family=Mirza:wght@400;700&family=Harmattan:wght@400;700&family=El+Messiri:wght@400;700&family=Diwan+Kufi:wght@400;700&family=Thuluth+Deco:wght@400;700&display=swap" rel="stylesheet">
+</head>
+<body data-page="memory">
+        <div id="splash">
+        <div class="splash-inner">
+            <img src="assets/verseup_logo.png" alt="VerseUp Arena" class="splash-logo">
+            <div class="splash-title">VerseUp Arena</div>
+            <div class="splash-tag" data-i18n="splash-tag">بطاقات، آيات، وألعاب كتابية في مكان واحد</div>
+            <div class="splash-spinner" aria-hidden="true"></div>
+        </div>
+    </div>
+    <div class="container">
+
+    <header>
+        <img src="assets/verseup_logo.png" alt="VerseUp Arena" style="height:90px;display:block;margin:0 auto 8px;">
+        <h1>VerseUp Arena</h1>
+        <p data-i18n="header-desc">اقتباسات، حفظ الآيات، والألعاب الكتابية في مكان واحد</p>
+        <div class="header-controls">
+            <button id="lang-toggle" class="theme-toggle" type="button" data-i18n="lang-toggle">EN</button>
+            <button id="theme-toggle" class="theme-toggle" type="button" aria-label="تبديل المظهر">🌙</button>
+        </div>
+    </header>
+        <div class="view-switcher" role="tablist" aria-label="التنقل بين الصفحات">
+        <a class="view-switch-btn" href="index.html" data-i18n="nav-home">🏠 الرئيسية</a>
+        <a class="view-switch-btn" href="quote.html" data-i18n="nav-quote">صفحة إنشاء الاقتباس</a>
+        <a class="view-switch-btn active" href="memory.html" data-i18n="nav-memory">لعبة الحفظ</a>
+        <a class="view-switch-btn" href="reverse.html" data-i18n="nav-reverse">الكلمات المعكوسة</a>
+        <a class="view-switch-btn" href="scramble.html" data-i18n="nav-scramble">الكلمات المبعثرة</a>
+        <a class="view-switch-btn" href="whoami.html" data-i18n="nav-whoami">من أنا؟</a>
+        </div>
+
+        <main>
+<section class="memorize-game-section view-panel" id="game-view-panel">
+                <div class="game-header">
+                    <div>
+                        <h2 data-i18n="memory-title">لعبة حفظ الآيات</h2>
+                        <p data-i18n="memory-desc">اخفِ بعض الكلمات، اكتب الآية من الذاكرة، واحصل على نتيجة فورية.</p>
+                    </div>
+                    <div class="game-score-card">
+                        <span data-i18n="score-label">الدرجة</span>
+                        <strong id="game-score">0%</strong>
+                    </div>
+                </div>
+
+                <section class="game-mode-panel active" id="memorize-game-panel">
+                    <div class="game-controls">
+                        <div class="game-stats-bar">
+                            <div class="game-stat"><span data-i18n="stat-time">الوقت</span><strong id="game-timer">00:00</strong></div>
+                            <div class="game-stat"><span data-i18n="stat-highscore">أفضل درجة</span><strong id="game-high-score">0%</strong></div>
+                            <div class="game-stat"><span data-i18n="stat-next">الآية التالية</span><strong id="game-next-reference">-</strong></div>
+                        </div>
+
+                        <div class="game-settings-grid">
+                            <div class="input-group">
+                                <label for="game-difficulty-select" data-i18n="label-difficulty">مستوى الصعوبة:</label>
+                                <select id="game-difficulty-select">
+                                    <option value="easy" data-i18n="diff-easy">سهل</option>
+                                    <option value="medium" selected data-i18n="diff-medium">متوسط</option>
+                                    <option value="hard" data-i18n="diff-hard">صعب</option>
+                                    <option value="expert" data-i18n="diff-expert">خبير</option>
+                                </select>
+                            </div>
+                        </div>
+
+                        <div class="input-group game-picker-group">
+                            <label data-i18n="label-pick-verse">اختر آية محددة:</label>
+                            <div class="game-picker-grid">
+                                <select id="game-book-select">
+                                    <option value="" data-i18n="opt-book">-- اختر سفر --</option>
+                                </select>
+                                <select id="game-chapter-select" disabled>
+                                    <option value="" data-i18n="opt-chapter">-- اختر إصحاح --</option>
+                                </select>
+                                <select id="game-verse-select" disabled>
+                                    <option value="" data-i18n="opt-verse">-- اختر آية --</option>
+                                </select>
+                            </div>
+                        </div>
+
+                        <div class="game-buttons">
+                            <button id="game-specific-btn" class="game-btn primary" data-i18n="btn-specific">ابدأ الآية المحددة</button>
+                            <button id="game-start-btn" class="game-btn" data-i18n="btn-random">آية عشوائية</button>
+                            <button id="game-next-btn" class="game-btn" disabled data-i18n="btn-next">الآية التالية</button>
+                            <button id="game-check-btn" class="game-btn" disabled data-i18n="btn-check">تحقق من الإجابة</button>
+                            <button id="game-reveal-btn" class="game-btn secondary" disabled data-i18n="btn-reveal">أظهر الإجابة</button>
+                        </div>
+                        <div class="game-status" id="game-status" data-i18n="memory-status">اضغط على بدء آية جديدة لتبدأ الجولة.</div>
+                    </div>
+
+                    <div class="game-board">
+                        <div class="game-prompt">
+                            <label data-i18n="label-hidden-verse">الآية المخفية - املأ الفراغات:</label>
+                            <div id="game-verse-display" class="game-verse-display" aria-label="الآية المخفية"></div>
+                        </div>
+
+                        <div class="game-meta">
+                            <div><span data-i18n="meta-reference">المرجع:</span> <strong id="game-reference">-</strong></div>
+                            <div><span data-i18n="meta-hidden">الكلمات المخفية:</span> <strong id="game-hidden-count">0</strong></div>
+                        </div>
+                    </div>
+                </section>
+            </section>
+
+            
+        </main>
+
+        <footer class="site-footer">
+            <p class="footer-note" data-i18n="footer-note">صمم وطور بواسطة مايكل منصور</p>
+        </footer>
+    </div>
+        <script src="js/core/bible-database.js"></script>
+    <script src="js/core/bible-api.js"></script>
+    <script src="js/core/i18n.js"></script>
+    <script type="module" src="js/main.js"></script>
+</body>
+</html>

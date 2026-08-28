@@ -2318,6 +2318,17 @@ main {
 }
 
 /* ===== Home launcher ===== */
+.view-switcher a.view-switch-btn {
+    display: inline-block;
+    text-decoration: none;
+}
+
+a.home-card,
+a.home-card:visited {
+    text-decoration: none;
+    color: inherit;
+}
+
 .home-panel {
     grid-column: 1 / -1;
     padding: 8px 0 22px;
