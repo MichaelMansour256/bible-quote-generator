@@ -147,6 +147,11 @@
     --select-option-bg: #ffffff;
     /* switcher */
     --switcher-btn-bg: rgba(0,0,0,0.05);
+    /* surfaces (used by cards, home launcher, panes) */
+    --surface-0: rgba(255,255,255,0.94);
+    --surface-1: #ffffff;
+    --surface-2: #f4f8ff;
+    --surface-3: #eaf2ff;
     /* game elements */
     --game-el-bg: rgba(0,0,0,0.04);
     --game-el-border: rgba(0,0,0,0.10);
@@ -727,9 +732,9 @@ main {
 }
 
 .game-mode-btn {
-    border: 1px solid rgba(255, 255, 255, 0.12);
-    background: rgba(255, 255, 255, 0.06);
-    color: #edf4ff;
+    border: 1px solid var(--game-el-border);
+    background: var(--game-el-bg);
+    color: var(--game-text);
     padding: 10px 16px;
     border-radius: 999px;
     font-weight: 700;
@@ -819,8 +824,8 @@ main {
     min-width: 120px;
     padding: 16px 18px;
     border-radius: 16px;
-    background: rgba(255, 255, 255, 0.08);
-    border: 1px solid var(--line-strong);
+    background: var(--game-el-bg);
+    border: 1px solid var(--game-el-border);
     text-align: center;
     backdrop-filter: blur(10px);
 }
@@ -853,8 +858,8 @@ main {
 .game-stat {
     padding: 14px 16px;
     border-radius: 14px;
-    background: rgba(255, 255, 255, 0.08);
-    border: 1px solid rgba(255, 255, 255, 0.12);
+    background: var(--game-el-bg);
+    border: 1px solid var(--game-el-border);
     text-align: center;
 }
 
@@ -906,23 +911,26 @@ main {
     font-weight: 700;
     cursor: pointer;
     transition: transform 0.25s ease, box-shadow 0.25s ease, opacity 0.25s ease;
-    background: rgba(255, 255, 255, 0.08);
-    color: #eff6ff;
-    border: 1px solid rgba(255, 255, 255, 0.12);
+    background: var(--game-el-bg);
+    color: var(--game-btn-color);
+    border: 1px solid var(--game-el-border);
 }
 
 .game-btn.primary {
     background: linear-gradient(135deg, var(--accent-2) 0%, #7f5af0 100%);
+    color: #ffffff;
     box-shadow: 0 10px 20px rgba(91, 140, 255, 0.24);
 }
 
-.game-btn.primary:disabled {
-    background: rgba(255, 255, 255, 0.12);
+.game-btn.primary:disabled,
+.game-btn.primary:disabled:hover {
+    background: var(--game-el-bg);
+    color: var(--game-btn-color);
     box-shadow: none;
 }
 
 .game-btn.secondary {
-    background: rgba(255, 255, 255, 0.08);
+    background: var(--game-el-bg);
 }
 
 .game-btn:hover:not(:disabled) {
@@ -940,8 +948,8 @@ main {
 .game-status {
     padding: 12px 16px;
     border-radius: 12px;
-    background: rgba(255, 255, 255, 0.08);
-    border: 1px solid rgba(255, 255, 255, 0.12);
+    background: var(--game-el-bg);
+    border: 1px solid var(--game-el-border);
     line-height: 1.7;
 }
 
@@ -953,8 +961,8 @@ main {
 
 .game-prompt,
 .game-inputs {
-    background: rgba(255, 255, 255, 0.08);
-    border: 1px solid rgba(255, 255, 255, 0.12);
+    background: var(--game-el-bg);
+    border: 1px solid var(--game-el-border);
     border-radius: 16px;
     padding: 18px;
 }
@@ -1015,8 +1023,8 @@ main {
 .game-meta div {
     padding: 12px 14px;
     border-radius: 12px;
-    background: rgba(255, 255, 255, 0.08);
-    border: 1px solid rgba(255, 255, 255, 0.12);
+    background: var(--game-el-bg);
+    border: 1px solid var(--game-el-border);
 }
 
 .game-meta span {
