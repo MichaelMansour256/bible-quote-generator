@@ -96,6 +96,7 @@ class BibleQuoteGenerator {
 
         // Initialise the page feature; any error here must not freeze the app.
         try {
+            this.setupNavbar();
             this.initializePage();
             this.setupThemeToggle();
         } catch (error) {
@@ -121,6 +122,24 @@ class BibleQuoteGenerator {
             this.bibleDataReady = true;
         }
         return this.bibleData;
+    }
+
+    // Wire the responsive hamburger menu used by the top navigation bar.
+    setupNavbar() {
+        const toggle = document.querySelector('.navbar-toggle');
+        const navbar = document.querySelector('.navbar');
+        if (!toggle || !navbar) return;
+
+        toggle.addEventListener('click', () => {
+            const isOpen = navbar.classList.toggle('open');
+            toggle.setAttribute('aria-expanded', isOpen ? 'true' : 'false');
+            toggle.setAttribute('aria-label', isOpen ? 'إغلاق القائمة' : 'القائمة');
+        });
+
+        // Close the menu after tapping a link or the language/theme buttons.
+        const close = () => navbar.classList.remove('open');
+        navbar.querySelectorAll('a').forEach(a => a.addEventListener('click', close));
+        document.querySelectorAll('.navbar .nav-btn').forEach(btn => btn.addEventListener('click', close));
     }
 
     // Shows the branded splash screen on first open and fades it out once the

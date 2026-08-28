@@ -21,23 +21,32 @@
     </div>
     <div class="container">
 
-    <header>
-        <img src="assets/verseup_logo.png" alt="VerseUp Arena" style="height:90px;display:block;margin:0 auto 8px;">
-        <h1>VerseUp Arena</h1>
-        <p data-i18n="header-desc">اقتباسات، حفظ الآيات، والألعاب الكتابية في مكان واحد</p>
-        <div class="header-controls">
-            <button id="lang-toggle" class="theme-toggle" type="button" data-i18n="lang-toggle">EN</button>
-            <button id="theme-toggle" class="theme-toggle" type="button" aria-label="تبديل المظهر">🌙</button>
+    <nav class="navbar" aria-label="التنقل الرئيسي">
+        <a class="navbar-brand" href="index.html">
+            <img src="assets/verseup_logo.png" alt="VerseUp Arena">
+            <span class="navbar-brand-text">VerseUp Arena</span>
+        </a>
+
+        <button class="navbar-toggle" type="button" aria-label="القائمة" aria-expanded="false">
+            <span></span><span></span><span></span>
+        </button>
+
+        <ul class="navbar-links">
+            <li><a class="navbar-link active" href="index.html" data-i18n="nav-short-home">الرئيسية</a></li>
+            <li><a class="navbar-link" href="quote.html" data-i18n="nav-short-quote">الاقتباسات</a></li>
+            <li><a class="navbar-link" href="memory.html" data-i18n="nav-short-memory">الحفظ</a></li>
+            <li><a class="navbar-link" href="reverse.html" data-i18n="nav-short-reverse">المعكوسة</a></li>
+            <li><a class="navbar-link" href="scramble.html" data-i18n="nav-short-scramble">المبعثرة</a></li>
+            <li><a class="navbar-link" href="whoami.html" data-i18n="nav-short-whoami">من أنا؟</a></li>
+        </ul>
+
+        <div class="navbar-controls">
+            <button id="lang-toggle" class="nav-btn" type="button" data-i18n="lang-toggle">EN</button>
+            <button id="theme-toggle" class="nav-btn" type="button" aria-label="تبديل المظهر">🌙</button>
         </div>
-    </header>
-        <div class="view-switcher" role="tablist" aria-label="التنقل بين الصفحات">
-        <a class="view-switch-btn active" href="index.html" data-i18n="nav-home">🏠 الرئيسية</a>
-        <a class="view-switch-btn" href="quote.html" data-i18n="nav-quote">صفحة إنشاء الاقتباس</a>
-        <a class="view-switch-btn" href="memory.html" data-i18n="nav-memory">لعبة الحفظ</a>
-        <a class="view-switch-btn" href="reverse.html" data-i18n="nav-reverse">الكلمات المعكوسة</a>
-        <a class="view-switch-btn" href="scramble.html" data-i18n="nav-scramble">الكلمات المبعثرة</a>
-        <a class="view-switch-btn" href="whoami.html" data-i18n="nav-whoami">من أنا؟</a>
-        </div>
+    </nav>
+
+        
 
         <main>
 <div class="view-panel home-panel" id="home-view-panel" role="tabpanel">
