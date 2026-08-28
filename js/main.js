@@ -6,8 +6,10 @@ import { whoamiGameMixin } from './features/games/whoami-game.js';
 
 class BibleQuoteGenerator {
     constructor() {
+        // The quote canvas only exists on the quote page now. Guard against
+        // pages that don't contain it so the constructor never throws.
         this.canvas = document.getElementById('quote-canvas');
-        this.ctx = this.canvas.getContext('2d');
+        this.ctx = this.canvas ? this.canvas.getContext('2d') : null;
         this.bibleData = null;
         this.bibleDataReady = false;
         this.currentBook = null;
@@ -89,9 +91,16 @@ class BibleQuoteGenerator {
         // and initializes the feature rendered on the current page.
         this.page = (document.body && document.body.dataset.page) || 'home';
 
-        this.initializePage();
+        // Set up the splash first so it can never be blocked by an init error.
         this.setupSplash();
-        this.setupThemeToggle();
+
+        // Initialise the page feature; any error here must not freeze the app.
+        try {
+            this.initializePage();
+            this.setupThemeToggle();
+        } catch (error) {
+            console.error('VerseUp initialisation error:', error);
+        }
     }
 
     // Lazy-loads the full Arabic Bible dataset the first time a view that needs
