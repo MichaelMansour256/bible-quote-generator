@@ -117,7 +117,8 @@ Chapter results show a **▼ expand arrow** — clicking opens an inline verse l
 - 114 curated persons in total across the levels, each with a category (نبي، ملك، رسول، امرأة…)
 - Cards avoid repeating within a level until the whole pool has been seen, then the cycle restarts
 - **Scoring (self-graded)**: after flipping a card, choose **"✓ عرفتها"** (I knew it) or **"✗ لم أعرفها"** (I didn't know). The score = `(عرفتها ÷ إجمالي الإجابات) × 100` — the share of people you actually recognized
-- The **"بطاقة جديدة"** button unlocks only after you grade the current card, keeping the score honest
+- **No start screen** — the first card is ready the moment the page opens, and grading immediately loads the next card (fewer clicks, smoother flow)
+- The **"بطاقة جديدة"** button works as a skip: pull a different card without grading (skipped cards don't count toward the score)
 - Live counters for cards shown, "knew", and "didn't know"
 - Difficulty selection is saved in `localStorage` and restored on reload
 
@@ -132,7 +133,8 @@ Chapter results show a **▼ expand arrow** — clicking opens an inline verse l
 - 62 curated cards in total across the levels, each tagged with a category (قصة، حدث، معجزة، مثل، آية، رؤية)
 - Cards avoid repeating within a level until the whole pool has been seen, then the cycle restarts
 - **Self-graded scoring** identical to Who-Am-I?: "✓ عرفتها" / "✗ لم أعرفها", score = share of cards you knew
-- The **"بطاقة جديدة"** button unlocks only after grading the current card
+- **No start screen** — the first card is ready on page open, and grading immediately loads the next card (fewer clicks, smoother flow)
+- The **"بطاقة جديدة"** button works as a skip: pull a different card without grading
 - Live counters for cards shown, "knew", and "didn't know"; difficulty saved in `localStorage`
 
 ## Getting Started

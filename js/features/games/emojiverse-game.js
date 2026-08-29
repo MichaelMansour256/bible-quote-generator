@@ -176,13 +176,14 @@ export const emojiverseGameMixin = {
         this.setEmojiverseGradeButtons(false);
 
         const statusEl = document.getElementById('emojiverse-game-status');
-        const nextBtn = document.getElementById('emojiverse-next-btn');
         if (statusEl) {
             statusEl.textContent = knew
                 ? 'أحسنت! احتسبت هذه البطاقة ضمن من عرفتها.'
                 : 'لا بأس، ستتعرف على هذه القصة في المرة القادمة.';
         }
-        if (nextBtn) nextBtn.disabled = false;
+
+        // Grading immediately moves to the next card — no "new card" click needed.
+        this.nextEmojiverseCard();
     },
 
     updateEmojiverseCounters() {
@@ -261,6 +262,10 @@ export const emojiverseGameMixin = {
         if (storyEl) storyEl.textContent = card.story;
         if (categoryEl) categoryEl.textContent = card.category;
         if (statusEl) statusEl.textContent = 'اقرأ الإيموجي وقلّب البطاقة، ثم حدّد: هل عرفتها؟';
+
+        // The card is ready — allow skipping it with "بطاقة جديدة".
+        const nextBtn = document.getElementById('emojiverse-next-btn');
+        if (nextBtn) nextBtn.disabled = false;
     },
 
     flipEmojiverseCard() {

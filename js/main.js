@@ -369,6 +369,8 @@ class BibleQuoteGenerator {
             case 'whoami':
                 this.wireWhoamiControls();
                 this.loadWhoamiGamePreferences();
+                // First card is ready immediately — no start button needed.
+                this.startWhoamiGame();
                 break;
             case 'wordle':
                 this.wireWordleControls();
@@ -377,6 +379,8 @@ class BibleQuoteGenerator {
             case 'emojiverse':
                 this.wireEmojiverseControls();
                 this.loadEmojiverseGamePreferences();
+                // First card is ready immediately — no start button needed.
+                this.startEmojiverseGame();
                 break;
             default:
                 // 'home' page needs no feature wiring, but its launcher cards
@@ -564,14 +568,12 @@ class BibleQuoteGenerator {
     }
 
     wireWhoamiControls() {
-        const whoamiStartBtn = document.getElementById('whoami-start-btn');
         const whoamiNextBtn = document.getElementById('whoami-next-btn');
         const whoamiFlipCard = document.getElementById('whoami-flip-card');
         const whoamiDifficultySelect = document.getElementById('whoami-difficulty-select');
         const whoamiKnewBtn = document.getElementById('whoami-knew-btn');
         const whoamiDidntBtn = document.getElementById('whoami-didnt-btn');
 
-        if (whoamiStartBtn) whoamiStartBtn.addEventListener('click', () => this.startWhoamiGame());
         if (whoamiNextBtn) whoamiNextBtn.addEventListener('click', () => this.nextWhoamiCard());
         if (whoamiFlipCard) whoamiFlipCard.addEventListener('click', () => this.flipWhoamiCard());
         if (whoamiFlipCard) whoamiFlipCard.addEventListener('keydown', (e) => {
@@ -585,26 +587,20 @@ class BibleQuoteGenerator {
         if (whoamiDifficultySelect) whoamiDifficultySelect.addEventListener('change', () => {
             this.whoamiGameState.difficulty = whoamiDifficultySelect.value;
             this.persistWhoamiGamePreferences();
-            if (this.whoamiUsedPersons) this.whoamiUsedPersons.clear();
-            // Restart cleanly when switching levels (score is per-level).
-            this.whoamiGameState.knewCount = 0;
-            this.whoamiGameState.didntCount = 0;
-            this.whoamiGameState.graded = false;
-            this.resetWhoamiFlip();
-            this.updateWhoamiCounters();
+            // Restart cleanly when switching levels (score is per-level) and
+            // show the first card of the new level right away.
+            this.startWhoamiGame();
         });
     }
 
     // EmojiVerse (إيموجي آية) — emoji flash-card game controls.
     wireEmojiverseControls() {
-        const startBtn = document.getElementById('emojiverse-start-btn');
         const nextBtn = document.getElementById('emojiverse-next-btn');
         const flipCard = document.getElementById('emojiverse-flip-card');
         const difficultySelect = document.getElementById('emojiverse-difficulty-select');
         const knewBtn = document.getElementById('emojiverse-knew-btn');
         const didntBtn = document.getElementById('emojiverse-didnt-btn');
 
-        if (startBtn) startBtn.addEventListener('click', () => this.startEmojiverseGame());
         if (nextBtn) nextBtn.addEventListener('click', () => this.nextEmojiverseCard());
         if (flipCard) flipCard.addEventListener('click', () => this.flipEmojiverseCard());
         if (flipCard) flipCard.addEventListener('keydown', (e) => {
@@ -618,13 +614,9 @@ class BibleQuoteGenerator {
         if (difficultySelect) difficultySelect.addEventListener('change', () => {
             this.emojiverseGameState.difficulty = difficultySelect.value;
             this.persistEmojiverseGamePreferences();
-            if (this.emojiverseUsedCards) this.emojiverseUsedCards.clear();
-            // Restart cleanly when switching levels (score is per-level).
-            this.emojiverseGameState.knewCount = 0;
-            this.emojiverseGameState.didntCount = 0;
-            this.emojiverseGameState.graded = false;
-            this.resetEmojiverseFlip();
-            this.updateEmojiverseCounters();
+            // Restart cleanly when switching levels (score is per-level) and
+            // show the first card of the new level right away.
+            this.startEmojiverseGame();
         });
     }
 

@@ -235,13 +235,14 @@ export const whoamiGameMixin = {
         this.setWhoamiGradeButtons(false);
 
         const statusEl = document.getElementById('whoami-game-status');
-        const nextBtn = document.getElementById('whoami-next-btn');
         if (statusEl) {
             statusEl.textContent = knew
                 ? 'أحسنت! احتسبت هذه الشخصية ضمن من عرفتهم.'
                 : 'لا بأس، ستتعرف عليها في المرة القادمة.';
         }
-        if (nextBtn) nextBtn.disabled = false;
+
+        // Grading immediately moves to the next card — no "new card" click needed.
+        this.nextWhoamiCard();
     },
 
     updateWhoamiCounters() {
@@ -318,6 +319,10 @@ export const whoamiGameMixin = {
         if (answerEl) answerEl.textContent = person.name;
         if (categoryEl) categoryEl.textContent = person.category;
         if (statusEl) statusEl.textContent = 'اقرأ التلميح وقلّب البطاقة، ثم حدد: هل عرفتها؟';
+
+        // The card is ready — allow skipping it with "بطاقة جديدة".
+        const nextBtn = document.getElementById('whoami-next-btn');
+        if (nextBtn) nextBtn.disabled = false;
     },
 
     flipWhoamiCard() {
