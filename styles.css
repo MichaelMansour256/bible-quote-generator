@@ -2200,7 +2200,8 @@ main {
 /* ══════════════════════════════════════════════════════════════
    "Who Am I?" (من أنا؟) — flash-card game
    ══════════════════════════════════════════════════════════════ */
-.whoami-game-section {
+.whoami-game-section,
+.emojiverse-game-section {
     background: linear-gradient(135deg, var(--reverse-section-bg-0) 0%, var(--reverse-section-bg-1) 100%);
     color: var(--text);
     padding: 30px;
@@ -2213,53 +2214,71 @@ main {
 .whoami-game-section label,
 .whoami-game-section span,
 .whoami-game-section p,
-.whoami-game-section strong {
+.whoami-game-section strong,
+.emojiverse-game-section h2,
+.emojiverse-game-section label,
+.emojiverse-game-section span,
+.emojiverse-game-section p,
+.emojiverse-game-section strong {
     color: var(--text);
 }
 
 .whoami-game-section .game-stat span,
 .whoami-game-section .game-status,
-.whoami-game-section .game-score-card span {
+.whoami-game-section .game-score-card span,
+.emojiverse-game-section .game-stat span,
+.emojiverse-game-section .game-status,
+.emojiverse-game-section .game-score-card span {
     color: var(--text-muted);
 }
 
-.whoami-game-section .input-group label {
+.whoami-game-section .input-group label,
+.emojiverse-game-section .input-group label {
     color: var(--text-muted);
 }
 
-.whoami-game-section .input-group select {
+.whoami-game-section .input-group select,
+.emojiverse-game-section .input-group select {
     background: var(--input-bg);
     border-color: var(--input-border);
     color: var(--input-color);
 }
 
-.whoami-game-section .input-group select:focus {
+.whoami-game-section .input-group select:focus,
+.emojiverse-game-section .input-group select:focus {
     border-color: var(--accent-2);
     background: var(--input-bg-focus);
     outline: none;
     box-shadow: 0 0 0 3px rgba(91, 140, 255, 0.12);
 }
 
-.whoami-game-section .input-group select option {
+.whoami-game-section .input-group select option,
+.emojiverse-game-section .input-group select option {
     background: var(--select-option-bg);
     color: var(--input-color);
 }
 
-.whoami-settings-grid {
+.whoami-settings-grid,
+.emojiverse-settings-grid {
     grid-template-columns: minmax(0, 320px);
 }
 
 .whoami-game-section .game-status,
 .whoami-game-section .game-score-card strong,
-.whoami-game-section .game-stat strong {
+.whoami-game-section .game-stat strong,
+.emojiverse-game-section .game-status,
+.emojiverse-game-section .game-score-card strong,
+.emojiverse-game-section .game-stat strong {
     color: var(--text-strong);
 }
 
-.whoami-stats-bar {
+.whoami-stats-bar,
+.emojiverse-stats-bar {
     grid-template-columns: repeat(4, minmax(0, 1fr));
 }
 
-.whoami-board {
+.whoami-board,
+.emojiverse-board {
     grid-template-columns: 1fr;
 }
 
@@ -2346,7 +2365,11 @@ main {
 /* Back face is a bright gradient, so keep its text white. */
 .whoami-game-section .flip-card-back,
 .whoami-game-section .flip-card-back .whoami-answer-label,
-.whoami-game-section .flip-card-back .whoami-answer {
+.whoami-game-section .flip-card-back .whoami-answer,
+.emojiverse-game-section .flip-card-back,
+.emojiverse-game-section .flip-card-back .emojiverse-answer-label,
+.emojiverse-game-section .flip-card-back .emojiverse-answer,
+.emojiverse-game-section .flip-card-back .emojiverse-story {
     color: #ffffff;
 }
 
@@ -2370,7 +2393,8 @@ main {
 }
 
 /* Self-grading row shown under the flipped card */
-.whoami-grade-row {
+.whoami-grade-row,
+.emojiverse-grade-row {
     display: flex;
     justify-content: center;
     flex-wrap: wrap;
@@ -2378,34 +2402,42 @@ main {
     margin-top: 18px;
 }
 
-.whoami-knew-btn {
+.whoami-knew-btn,
+.emojiverse-knew-btn {
     background: rgba(36, 196, 178, 0.18);
     border-color: rgba(36, 196, 178, 0.6);
     color: #7ff0df;
 }
 
-.whoami-didnt-btn {
+.whoami-didnt-btn,
+.emojiverse-didnt-btn {
     background: rgba(255, 107, 107, 0.16);
     border-color: rgba(255, 107, 107, 0.55);
     color: #ffb8b8;
 }
 
 .whoami-knew-btn:hover:not(:disabled),
-.whoami-didnt-btn:hover:not(:disabled) {
+.whoami-didnt-btn:hover:not(:disabled),
+.emojiverse-knew-btn:hover:not(:disabled),
+.emojiverse-didnt-btn:hover:not(:disabled) {
     filter: brightness(1.2);
 }
 
 .whoami-knew-btn:disabled,
-.whoami-didnt-btn:disabled {
+.whoami-didnt-btn:disabled,
+.emojiverse-knew-btn:disabled,
+.emojiverse-didnt-btn:disabled {
     filter: none;
 }
 
 /* Light theme: section background is light, so darken the button text */
-[data-theme="light"] .whoami-knew-btn {
+[data-theme="light"] .whoami-knew-btn,
+[data-theme="light"] .emojiverse-knew-btn {
     color: #0a7a6f;
 }
 
-[data-theme="light"] .whoami-didnt-btn {
+[data-theme="light"] .whoami-didnt-btn,
+[data-theme="light"] .emojiverse-didnt-btn {
     color: #b02a2a;
 }
 
@@ -2419,12 +2451,82 @@ main {
         padding: 20px;
     }
 
-    .whoami-game-section {
+    .whoami-game-section,
+    .emojiverse-game-section {
         padding: 20px 16px;
     }
 
-    .whoami-stats-bar {
+    .whoami-stats-bar,
+    .emojiverse-stats-bar {
         grid-template-columns: 1fr;
+    }
+}
+
+/* ══════════════════════════════════════════════════════════════
+   EmojiVerse (إيموجي آية) — emoji flash-card game
+   ══════════════════════════════════════════════════════════════ */
+.emojiverse-q {
+    font-size: 1.5rem;
+    font-weight: 700;
+    color: var(--accent);
+}
+
+/* Front face sits on a white background, so its text must be dark. */
+.emojiverse-game-section .flip-card-front .emojiverse-q,
+.emojiverse-game-section .flip-card-front .emojiverse-tap-hint {
+    color: var(--clue-color);
+}
+
+.emojiverse-emoji-row {
+    font-size: 2.7rem;
+    line-height: 1.5;
+    letter-spacing: 10px;
+    max-width: 92%;
+}
+
+.emojiverse-game-section .flip-card-front .emojiverse-tap-hint {
+    font-size: 0.92rem;
+    opacity: 0.72;
+}
+
+.emojiverse-answer {
+    font-size: 1.7rem;
+    font-weight: 700;
+    text-shadow: 0 2px 8px rgba(0, 0, 0, 0.18);
+}
+
+/* Short story summary under the answer on the back face. */
+.emojiverse-game-section .flip-card-back .emojiverse-story {
+    font-size: 1rem;
+    line-height: 1.9;
+    opacity: 0.94;
+    max-width: 94%;
+    margin-top: 2px;
+}
+
+/* Score card: small explanation under the percentage */
+.emojiverse-score-hint {
+    display: block;
+    font-size: 0.72rem;
+    opacity: 0.75;
+    margin-top: 4px;
+}
+
+@media (max-width: 768px) {
+    .emojiverse-emoji-row {
+        font-size: 2.2rem;
+        letter-spacing: 6px;
+    }
+}
+
+@media (max-width: 480px) {
+    .emojiverse-emoji-row {
+        font-size: 1.9rem;
+        letter-spacing: 4px;
+    }
+
+    .emojiverse-answer {
+        font-size: 1.45rem;
     }
 }
 

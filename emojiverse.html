@@ -3,14 +3,14 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
-    <title>من أنا؟ — VerseUp Arena</title>
-    <meta name="description" content="اقرأ التلميح وقلّب البطاقة واعرف الشخصية من الكتاب المقدس.">
+    <title>إيموجي آية (EmojiVerse) — VerseUp Arena</title>
+    <meta name="description" content="اقرأ مجموعة الإيموجي ثم اقلب البطاقة لتكتشف القصة أو الحدث أو الآية من الكتاب المقدس.">
     <meta name="theme-color" content="#0d1b2e">
     <link rel="icon" type="image/png" href="assets/verseup_logo.png">
     <link rel="stylesheet" href="styles.css">
     <link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@400;700&family=Amiri:wght@400;700&family=Aref+Ruqaa:wght@400;700&family=Reem+Kufi:wght@400;700&family=Lateef:wght@400;700&family=Scheherazade:wght@400;700&family=Noto+Naskh+Arabic:wght@400;700&family=Changa:wght@400;700&family=Cairo:wght@400;700&family=Markazi+Text:wght@400;700&family=Katibeh:wght@400;700&family=Mirza:wght@400;700&family=Harmattan:wght@400;700&family=El+Messiri:wght@400;700&family=Diwan+Kufi:wght@400;700&family=Thuluth+Deco:wght@400;700&display=swap" rel="stylesheet">
 </head>
-<body data-page="whoami">
+<body data-page="emojiverse">
         <div id="splash">
         <div class="splash-inner">
             <img src="assets/verseup_logo.png" alt="VerseUp Arena" class="splash-logo">
@@ -37,9 +37,9 @@
             <li><a class="navbar-link" href="memory.html" data-i18n="nav-short-memory">الحفظ</a></li>
             <li><a class="navbar-link" href="reverse.html" data-i18n="nav-short-reverse">المعكوسة</a></li>
             <li><a class="navbar-link" href="scramble.html" data-i18n="nav-short-scramble">المبعثرة</a></li>
-            <li><a class="navbar-link active" href="whoami.html" data-i18n="nav-short-whoami">من أنا؟</a></li>
+            <li><a class="navbar-link" href="whoami.html" data-i18n="nav-short-whoami">من أنا؟</a></li>
             <li><a class="navbar-link" href="wordle.html" data-i18n="nav-short-wordle">ووردل</a></li>
-            <li><a class="navbar-link" href="emojiverse.html" data-i18n="nav-short-emojiverse">الإيموجي</a></li>
+            <li><a class="navbar-link active" href="emojiverse.html" data-i18n="nav-short-emojiverse">الإيموجي</a></li>
         </ul>
 
         <div class="navbar-controls">
@@ -48,34 +48,32 @@
         </div>
     </nav>
 
-        
-
         <main>
-<section class="whoami-game-section view-panel" id="whoami-view-panel">
+<section class="emojiverse-game-section view-panel" id="emojiverse-view-panel">
                 <div class="game-header">
                     <div>
-                        <h2 data-i18n="whoami-title">لعبة من أنا؟</h2>
-                        <p data-i18n="whoami-desc">اقرأ التلميح ثم اضغط على البطاقة لكشف اسم الشخصية.</p>
+                        <h2 data-i18n="emojiverse-title">لعبة إيموجي آية</h2>
+                        <p data-i18n="emojiverse-desc">اقرأ الإيموجي ثم اضغط على البطاقة لكشف القصة أو الحدث أو الآية.</p>
                     </div>
                     <div class="game-score-card">
-                        <span data-i18n="whoami-score-label">الدرجة</span>
-                        <strong id="whoami-game-score">0%</strong>
-                        <small class="whoami-score-hint" data-i18n="whoami-score-hint">نسبة من عرفتهم</small>
+                        <span data-i18n="emojiverse-score-label">الدرجة</span>
+                        <strong id="emojiverse-game-score">0%</strong>
+                        <small class="emojiverse-score-hint" data-i18n="emojiverse-score-hint">نسبة من عرفتهم</small>
                     </div>
                 </div>
 
-                <div class="game-controls whoami-controls">
-                    <div class="game-stats-bar whoami-stats-bar">
-                        <div class="game-stat"><span data-i18n="stat-category">الفئة</span><strong id="whoami-game-category">-</strong></div>
-                        <div class="game-stat"><span data-i18n="whoami-stat-count">عدد البطاقات</span><strong id="whoami-game-count">0</strong></div>
-                        <div class="game-stat"><span data-i18n="whoami-knew-stat">عرفتها</span><strong id="whoami-game-knew">0</strong></div>
-                        <div class="game-stat"><span data-i18n="whoami-didnt-stat">لم أعرفها</span><strong id="whoami-game-didnt">0</strong></div>
+                <div class="game-controls emojiverse-controls">
+                    <div class="game-stats-bar emojiverse-stats-bar">
+                        <div class="game-stat"><span data-i18n="stat-category">الفئة</span><strong id="emojiverse-game-category">-</strong></div>
+                        <div class="game-stat"><span data-i18n="emojiverse-stat-count">عدد البطاقات</span><strong id="emojiverse-game-count">0</strong></div>
+                        <div class="game-stat"><span data-i18n="emojiverse-knew-stat">عرفتها</span><strong id="emojiverse-game-knew">0</strong></div>
+                        <div class="game-stat"><span data-i18n="emojiverse-didnt-stat">لم أعرفها</span><strong id="emojiverse-game-didnt">0</strong></div>
                     </div>
 
-                    <div class="game-settings-grid whoami-settings-grid">
+                    <div class="game-settings-grid emojiverse-settings-grid">
                         <div class="input-group">
-                            <label for="whoami-difficulty-select" data-i18n="label-difficulty">مستوى الصعوبة:</label>
-                            <select id="whoami-difficulty-select">
+                            <label for="emojiverse-difficulty-select" data-i18n="label-difficulty">مستوى الصعوبة:</label>
+                            <select id="emojiverse-difficulty-select">
                                 <option value="easy" data-i18n="diff-easy">سهل</option>
                                 <option value="medium" selected data-i18n="diff-medium">متوسط</option>
                                 <option value="hard" data-i18n="diff-hard">صعب</option>
@@ -84,34 +82,35 @@
                     </div>
 
                     <div class="game-buttons">
-                        <button id="whoami-start-btn" class="game-btn primary" data-i18n="btn-whoami-start">ابدأ اللعبة</button>
-                        <button id="whoami-next-btn" class="game-btn" disabled data-i18n="btn-new-card">بطاقة جديدة</button>
+                        <button id="emojiverse-start-btn" class="game-btn primary" data-i18n="btn-emojiverse-start">ابدأ اللعبة</button>
+                        <button id="emojiverse-next-btn" class="game-btn" disabled data-i18n="btn-new-card">بطاقة جديدة</button>
                     </div>
 
-                    <div class="game-status" id="whoami-game-status" data-i18n="whoami-status">اضغط على البدء، ثم اقرأ التلميح وقلّب البطاقة وحدّد: هل عرفتها؟</div>
+                    <div class="game-status" id="emojiverse-game-status" data-i18n="emojiverse-status">اضغط على البدء، ثم اقرأ الإيموجي وقلّب البطاقة وحدّد: هل عرفتها؟</div>
                 </div>
 
-                <div class="game-board whoami-board">
-                    <div class="game-prompt whoami-prompt">
-                        <label data-i18n="label-whoami-clue">التلميح — من أنا؟</label>
+                <div class="game-board emojiverse-board">
+                    <div class="game-prompt emojiverse-prompt">
+                        <label data-i18n="label-emojiverse-clue">التلميح — ما القصة؟</label>
 
-                        <div class="flip-card" id="whoami-flip-card" role="button" tabindex="0" aria-pressed="false" aria-label="اضغط لكشف الاسم">
+                        <div class="flip-card" id="emojiverse-flip-card" role="button" tabindex="0" aria-pressed="false" aria-label="اضغط لكشف الإجابة">
                             <div class="flip-card-inner">
                                 <div class="flip-card-face flip-card-front">
-                                    <div class="whoami-q">؟ من أنا</div>
-                                    <p class="whoami-clue" id="whoami-game-clue-text">اضغط على زر البدء للحصول على تلميح.</p>
-                                    <div class="whoami-tap-hint" data-i18n="whoami-tap-hint">اضغط على البطاقة لكشف الاسم 👆</div>
+                                    <div class="emojiverse-q" data-i18n="emojiverse-q">؟ ما القصة</div>
+                                    <div class="emojiverse-emoji-row" id="emojiverse-game-emoji">🎬🧩✨</div>
+                                    <div class="emojiverse-tap-hint" data-i18n="emojiverse-tap-hint">اضغط على البطاقة لكشف الإجابة 👆</div>
                                 </div>
                                 <div class="flip-card-face flip-card-back">
-                                    <div class="whoami-answer-label" data-i18n="whoami-answer-label">الشخصية هي:</div>
-                                    <div class="whoami-answer" id="whoami-game-answer">---</div>
+                                    <div class="emojiverse-answer-label" data-i18n="emojiverse-answer-label">الإجابة هي:</div>
+                                    <div class="emojiverse-answer" id="emojiverse-game-answer">---</div>
+                                    <div class="emojiverse-story" id="emojiverse-game-story"></div>
                                 </div>
                             </div>
                         </div>
 
-                        <div class="whoami-grade-row">
-                            <button id="whoami-knew-btn" class="game-btn whoami-knew-btn" type="button" disabled data-i18n="whoami-knew">✓ عرفتها</button>
-                            <button id="whoami-didnt-btn" class="game-btn whoami-didnt-btn" type="button" disabled data-i18n="whoami-didnt">✗ لم أعرفها</button>
+                        <div class="emojiverse-grade-row">
+                            <button id="emojiverse-knew-btn" class="game-btn emojiverse-knew-btn" type="button" disabled data-i18n="emojiverse-knew">✓ عرفتها</button>
+                            <button id="emojiverse-didnt-btn" class="game-btn emojiverse-didnt-btn" type="button" disabled data-i18n="emojiverse-didnt">✗ لم أعرفها</button>
                         </div>
                     </div>
                 </div>

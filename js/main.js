@@ -4,6 +4,7 @@ import { quoteFeatureMixin } from './features/quote-feature.js';
 import { memoryGameMixin } from './features/games/memory-game.js';
 import { whoamiGameMixin } from './features/games/whoami-game.js';
 import { wordleGameMixin } from './features/games/wordle-game.js';
+import { emojiverseGameMixin } from './features/games/emojiverse-game.js';
 
 class BibleQuoteGenerator {
     constructor() {
@@ -104,6 +105,19 @@ class BibleQuoteGenerator {
         this.wordleGameLengthKey = 'bible-wordle-game-length';
         this.wordleGamePool = this.createWordlePool();
         this.wordleUsedWords = new Set();
+        this.emojiverseGameState = {
+            card: null,
+            category: '',
+            difficulty: 'medium',
+            revealed: false,
+            graded: false,
+            seenCount: 0,
+            knewCount: 0,
+            didntCount: 0
+        };
+        this.emojiverseGameDifficultyKey = 'bible-emojiverse-game-difficulty';
+        this.emojiverseGamePool = this.createEmojiverseGamePool();
+        this.emojiverseUsedCards = new Set();
 
         this.logoImage.onload = () => { this.logoLoaded = true; };
         this.logoImage.src = 'assets/logo.svg';
@@ -360,6 +374,10 @@ class BibleQuoteGenerator {
                 this.wireWordleControls();
                 this.loadWordleGamePreferences();
                 break;
+            case 'emojiverse':
+                this.wireEmojiverseControls();
+                this.loadEmojiverseGamePreferences();
+                break;
             default:
                 // 'home' page needs no feature wiring, but its launcher cards
                 // should navigate to the matching feature pages.
@@ -369,7 +387,8 @@ class BibleQuoteGenerator {
                     reverse: 'reverse.html',
                     scramble: 'scramble.html',
                     whoami: 'whoami.html',
-                    wordle: 'wordle.html'
+                    wordle: 'wordle.html',
+                    emojiverse: 'emojiverse.html'
                 };
                 document.querySelectorAll('.home-card[data-target]').forEach(card => {
                     card.addEventListener('click', () => {
@@ -573,6 +592,39 @@ class BibleQuoteGenerator {
             this.whoamiGameState.graded = false;
             this.resetWhoamiFlip();
             this.updateWhoamiCounters();
+        });
+    }
+
+    // EmojiVerse (إيموجي آية) — emoji flash-card game controls.
+    wireEmojiverseControls() {
+        const startBtn = document.getElementById('emojiverse-start-btn');
+        const nextBtn = document.getElementById('emojiverse-next-btn');
+        const flipCard = document.getElementById('emojiverse-flip-card');
+        const difficultySelect = document.getElementById('emojiverse-difficulty-select');
+        const knewBtn = document.getElementById('emojiverse-knew-btn');
+        const didntBtn = document.getElementById('emojiverse-didnt-btn');
+
+        if (startBtn) startBtn.addEventListener('click', () => this.startEmojiverseGame());
+        if (nextBtn) nextBtn.addEventListener('click', () => this.nextEmojiverseCard());
+        if (flipCard) flipCard.addEventListener('click', () => this.flipEmojiverseCard());
+        if (flipCard) flipCard.addEventListener('keydown', (e) => {
+            if (e.key === 'Enter' || e.key === ' ') {
+                e.preventDefault();
+                this.flipEmojiverseCard();
+            }
+        });
+        if (knewBtn) knewBtn.addEventListener('click', () => this.gradeEmojiverseCard(true));
+        if (didntBtn) didntBtn.addEventListener('click', () => this.gradeEmojiverseCard(false));
+        if (difficultySelect) difficultySelect.addEventListener('change', () => {
+            this.emojiverseGameState.difficulty = difficultySelect.value;
+            this.persistEmojiverseGamePreferences();
+            if (this.emojiverseUsedCards) this.emojiverseUsedCards.clear();
+            // Restart cleanly when switching levels (score is per-level).
+            this.emojiverseGameState.knewCount = 0;
+            this.emojiverseGameState.didntCount = 0;
+            this.emojiverseGameState.graded = false;
+            this.resetEmojiverseFlip();
+            this.updateEmojiverseCounters();
         });
     }
 
@@ -820,7 +872,7 @@ class BibleQuoteGenerator {
 }
 
 Object.assign(BibleQuoteGenerator.prototype, reverseGameMixin, scrambleGameMixin, wordleGameMixin);
-Object.assign(BibleQuoteGenerator.prototype, quoteFeatureMixin, memoryGameMixin, whoamiGameMixin);
+Object.assign(BibleQuoteGenerator.prototype, quoteFeatureMixin, memoryGameMixin, whoamiGameMixin, emojiverseGameMixin);
 
 document.addEventListener('DOMContentLoaded', () => {
     new BibleQuoteGenerator();

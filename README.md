@@ -1,6 +1,6 @@
 # VerseUp Arena
 
-A modular Arabic Bible web app — verse image generator and five Bible games in one place.
+A modular Arabic Bible web app — verse image generator and six Bible games in one place.
 
 ## What It Does
 
@@ -10,6 +10,7 @@ A modular Arabic Bible web app — verse image generator and five Bible games in
 - Scrambled-words game: unscramble shuffled characters to find the word
 - Who-Am-I? flash-card game: read a clue, click the card, and it flips to reveal the Bible person's name
 - HolyWordle: Wordle-style guessing of Bible words with selectable word lengths (4–7 letters)
+- EmojiVerse: emoji flash cards — decode a set of emojis describing a Bible story, event, or verse, then flip the card for the answer
 - Smart verse search: by book name, book + chapter, exact reference, or free text
 - Saved preferences and score tracking with `localStorage`
 
@@ -33,6 +34,7 @@ bible-quote-generator/
 │           ├── scramble-game.js   ← scrambled-words game
 │           ├── whoami-game.js     ← Who-Am-I? flash-card game
 │           ├── wordle-game.js     ← HolyWordle guessing game
+│           ├── emojiverse-game.js ← EmojiVerse emoji flash-card game
 │           └── game-utils.js      ← shared Arabic normalization, scramble, reverse, term pools
 ├── assets/
 │   ├── logo.svg
@@ -119,6 +121,20 @@ Chapter results show a **▼ expand arrow** — clicking opens an inline verse l
 - Live counters for cards shown, "knew", and "didn't know"
 - Difficulty selection is saved in `localStorage` and restored on reload
 
+### EmojiVerse (إيموجي آية)
+
+- Flash-card game: the **front of each card shows a set of emojis** hinting at a Bible story, event, miracle, parable, vision, or verse
+- Click the card (or press `Enter`/`Space` on it) to flip it and reveal **the answer plus a one-line story summary** with the reference
+- **Three difficulty levels** — سهل (easy) / متوسط (medium) / صعب (hard):
+  - **Easy**: famous stories everyone knows (🍎🐍🌳 آدم وحواء، 🌊➗🚶 انشقاق البحر…)
+  - **Medium**: familiar but needing a second look (🕊️⬇️🔊 معمودية يسوع، 🐎🔥🌪️ صعود إيليا…)
+  - **Hard**: deeper or less familiar references (✍️🏛️⚖️ الكتابة على الحائط، 🦴🦴💨 وادي العظام…)
+- 62 curated cards in total across the levels, each tagged with a category (قصة، حدث، معجزة، مثل، آية، رؤية)
+- Cards avoid repeating within a level until the whole pool has been seen, then the cycle restarts
+- **Self-graded scoring** identical to Who-Am-I?: "✓ عرفتها" / "✗ لم أعرفها", score = share of cards you knew
+- The **"بطاقة جديدة"** button unlocks only after grading the current card
+- Live counters for cards shown, "knew", and "didn't know"; difficulty saved in `localStorage`
+
 ## Getting Started
 
 ```bash
@@ -136,6 +152,7 @@ The app is fully static — no build step, no dependencies to install.
 | `Ctrl + Enter` | Generate image |
 | `Ctrl + S` | Download image (if generated) |
 | `Enter` (in reverse/scramble answer field) | Submit answer |
+| `Enter` / `Space` (on Who-Am-I? / EmojiVerse card) | Flip the card |
 | `Enter` / letters / `Backspace` (on HolyWordle page) | Submit row / type / erase letters |
 | `↑ / ↓` (in search) | Navigate results |
 | `Enter` (in search, verse result) | Load verse + generate image |
