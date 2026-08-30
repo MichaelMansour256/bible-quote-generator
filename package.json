@@ -4,7 +4,7 @@
   "description": "A modular Arabic Bible web app — verse image generator and six Bible games in one place.",
   "type": "module",
   "scripts": {
-    "test": "node --test tests/",
+    "test": "node --test \"tests/*.test.js\"",
     "serve": "python -m http.server 8000",
     "dev": "python -m http.server 8000"
   },

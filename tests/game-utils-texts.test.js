@@ -36,7 +36,10 @@ describe('getAnswerVariants', () => {
     });
 
     test('handles null/undefined input', () => {
-        assert.deepEqual(getAnswerVariants(null), ['']);
+        // Empty variants are dropped by the internal `.filter(Boolean)`,
+        // so a null/undefined term simply yields no variants.
+        assert.deepEqual(getAnswerVariants(null), []);
+        assert.deepEqual(getAnswerVariants(undefined), []);
     });
 });
 
@@ -49,8 +52,12 @@ describe('reverseCharacters', () => {
         assert.equal(reverseCharacters('يوحنا'), 'انحوي');
     });
 
-    test('normalizes whitespace before reversing', () => {
-        assert.equal(reverseCharacters('a  b'), 'b  a');
+    test('collapses repeated whitespace before reversing', () => {
+        assert.equal(reverseCharacters('a  b'), 'b a');
+    });
+
+    test('trims leading/trailing whitespace before reversing', () => {
+        assert.equal(reverseCharacters('  a b  '), 'b a');
     });
 
     test('handles empty/null/undefined', () => {

@@ -11,9 +11,13 @@ const apiCode = fs.readFileSync(
     'utf8'
 );
 
-globalThis.document = { querySelectorAll: () => [], querySelector: () => null };
+globalThis.document = { querySelectorAll: () => [], querySelector: () => null, createElement: () => ({ remove: () => {}, style: {} }) };
 globalThis.fetch = () => Promise.resolve({ ok: true, json: async () => ({}) });
-vm.runInThisContext(apiCode, { filename: 'bible-api.js' });
+// bible-api.js declares `const bibleAPI` at top level.  In a browser classic
+// <script> that forms a *global lexical binding* (visible to later scripts, but
+// not enumerable on `window`).  vm.runInThisContext behaves the same way, so
+// append an explicit assignment to reach the instance via globalThis in Node.
+vm.runInThisContext(`${apiCode}\n;\nglobalThis.bibleAPI = bibleAPI;`, { filename: 'bible-api.js' });
 
 const bibleAPI = globalThis.bibleAPI;
 
@@ -118,5 +122,82 @@ describe('BibleAPI.getVerse', () => {
 
     test('handles string chapter/verse arguments', () => {
         assert.equal(bibleAPI.getVerse(mockBibleData, 'يوحنا', '3', '16'), 'كما أحب الله العالم...');
+    });
+});
+
+describe('BibleAPI.validateReference', () => {
+    test('returns true for an existing verse', () => {
+        assert.equal(bibleAPI.validateReference(mockBibleData, 'يوحنا', 3, 16), true);
+    });
+
+    test('returns false for a non-existent verse', () => {
+        assert.equal(bibleAPI.validateReference(mockBibleData, 'يوحنا', 3, 999), false);
+    });
+
+    test('returns false for a non-existent chapter', () => {
+        assert.equal(bibleAPI.validateReference(mockBibleData, 'يوحنا', 99, 1), false);
+    });
+
+    test('returns false for an unknown book', () => {
+        assert.equal(bibleAPI.validateReference(mockBibleData, 'Genesis', 1, 1), false);
+    });
+
+    test('returns false for null bibleData', () => {
+        assert.equal(bibleAPI.validateReference(null, 'يوحنا', 3, 16), false);
+    });
+});
+
+describe('BibleAPI.getPopularVerses', () => {
+    test('returns verse objects with text and reference for matched books', () => {
+        const verses = bibleAPI.getPopularVerses(mockBibleData);
+        const john = verses.find(v => v.reference === 'يوحنا 3:16');
+        assert.ok(john, 'يوحنا 3:16 exists in the mock data and should be returned');
+        assert.equal(john.text, 'كما أحب الله العالم...');
+    });
+
+    test('skips references missing from the data set', () => {
+        const verses = bibleAPI.getPopularVerses(mockBibleData);
+        assert.ok(Array.isArray(verses));
+        assert.ok(!verses.some(v => v.reference === 'ناحوم 1:7'), 'ناحوم is not in the mock data');
+    });
+
+    test('returns empty array for null bibleData', () => {
+        assert.deepEqual(bibleAPI.getPopularVerses(null), []);
+    });
+});
+
+describe('BibleAPI.loadBibleData', () => {
+    test('fetches data on the first call and serves it from cache afterwards', async () => {
+        bibleAPI.cache.clear(); // isolate from any earlier calls on the shared instance
+        const expected = { books: [] };
+        let fetchCalls = 0;
+        const originalFetch = globalThis.fetch;
+        globalThis.fetch = () => {
+            fetchCalls += 1;
+            return Promise.resolve({ ok: true, json: async () => expected });
+        };
+
+        try {
+            const first = await bibleAPI.loadBibleData();
+            const second = await bibleAPI.loadBibleData();
+            assert.equal(first, expected);
+            assert.equal(second, expected);
+            assert.equal(fetchCalls, 1, 'fetch should only run once (subsequent calls hit the cache)');
+        } finally {
+            globalThis.fetch = originalFetch;
+        }
+    });
+
+    test('returns null when the fetch fails', async () => {
+        bibleAPI.cache.clear(); // otherwise the previously cached payload would be served instead
+        const originalFetch = globalThis.fetch;
+        globalThis.fetch = () => Promise.reject(new Error('network down'));
+
+        try {
+            const result = await bibleAPI.loadBibleData();
+            assert.equal(result, null);
+        } finally {
+            globalThis.fetch = originalFetch;
+        }
     });
 });

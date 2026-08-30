@@ -12,7 +12,11 @@ const apiCode = fs.readFileSync(
 
 globalThis.document = { querySelectorAll: () => [], querySelector: () => null };
 globalThis.fetch = () => Promise.resolve({ ok: true, json: async () => ({}) });
-vm.runInThisContext(apiCode, { filename: 'bible-api.js' });
+// bible-api.js declares `const bibleAPI` at top level.  In a browser classic
+// <script> that forms a *global lexical binding* (visible to later scripts, but
+// not enumerable on `window`).  vm.runInThisContext behaves the same way, so
+// append an explicit assignment to reach the instance via globalThis in Node.
+vm.runInThisContext(`${apiCode}\n;\nglobalThis.bibleAPI = bibleAPI;`, { filename: 'bible-api.js' });
 
 const bibleAPI = globalThis.bibleAPI;
 
@@ -34,7 +38,7 @@ const mockBibleData = {
 describe('BibleAPI.normalizeSearchText', () => {
     test('normalizes Arabic text for search', () => {
         assert.equal(
-            bibleAPI.normalizeSearchText('الْيَوْحَنَا'),
+            bibleAPI.normalizeSearchText('يُوحَنَّا'),
             bibleAPI.normalizeSearchText('يوحنا')
         );
     });

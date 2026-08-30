@@ -41,7 +41,7 @@ class BibleAPI {
             this.normalizeSearchText(book.name) === normalizedBookName ||
             this.normalizeSearchText(book.name_ar || book.name) === normalizedBookName ||
             this.normalizeSearchText(book.abbreviation || '') === normalizedBookName
-        );
+        ) || null;
     }
 
     // Get chapters for a book
@@ -137,7 +137,7 @@ class BibleAPI {
 
     // Parse "bookName chapter:verse" or "bookName chapter-verse"
     parseExactReference(query) {
-        const normalized = this.normalizeSearchText(query).replace(/\s+/g, ' ').trim();
+        const normalized = this.normalizeReferenceQuery(query);
         const m = normalized.match(/^(.+?)\s+(\d+)\s*[:\-]\s*(\d+)$/);
         if (!m) return null;
         const bookName = m[1].trim();
@@ -149,10 +149,24 @@ class BibleAPI {
 
     // Parse "bookName chapterPrefix" e.g. "يوحنا 1" or "يوحنا 11"
     parseChapterQuery(query) {
+        // A full "book chapter:verse" reference belongs to parseExactReference,
+        // not to a chapter-prefix query.
+        if (this.parseExactReference(query)) return null;
         const normalized = this.normalizeSearchText(query).replace(/\s+/g, ' ').trim();
         const m = normalized.match(/^(.+?)\s+(\d+)$/);
         if (!m) return null;
         return { bookName: m[1].trim(), chapterPrefix: m[2] };
+    }
+
+    // Prepare a query for reference parsing: strip diacritics, convert Arabic
+    // digits to ASCII, and collapse whitespace — while KEEPING the `:` / `-`
+    // separators that normalizeSearchText deliberately turns into spaces.
+    normalizeReferenceQuery(query) {
+        return this.removeDiacritics(String(query || ''))
+            .replace(/[٠-٩]/g, digit => '0123456789'['٠١٢٣٤٥٦٧٨٩'.indexOf(digit)])
+            .replace(/[،؛.,]/g, ' ')
+            .replace(/\s+/g, ' ')
+            .trim();
     }
 
     findBookByQuery(bibleData, normalizedQuery) {
@@ -245,7 +259,7 @@ class BibleAPI {
 
     normalizeSearchText(text) {
         return this.removeDiacritics(text)
-            .replace(/[٠-٩]/g, digit => '0123456789'[parseInt(digit, 10)])
+            .replace(/[٠-٩]/g, digit => '0123456789'['٠١٢٣٤٥٦٧٨٩'.indexOf(digit)])
             .replace(/[\u060C\u061B\u061F\.,!?:;"'()\[\]{}«»ـ]/g, ' ')
             .replace(/\s+/g, ' ')
             .trim();

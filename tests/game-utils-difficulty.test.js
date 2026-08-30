@@ -68,7 +68,7 @@ describe('matchesDifficulty', () => {
         assert.ok(!matchesDifficulty({ term: 'قاس', difficulty: 'hard' }, 'hard'));
     });
 
-        test('expert includes 3+ word terms and expert-tagged terms', () => {
+    test('expert includes 3+ word terms and expert-tagged terms', () => {
         const result = mockEntries.filter(e => matchesDifficulty(e, 'expert'));
         assert.ok(result.some(e => e.term === 'يوشع بن نون'));
         assert.ok(result.some(e => e.term === 'إبراهيم الخليل'));

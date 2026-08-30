@@ -11,7 +11,7 @@ describe('getWordleLetterCount', () => {
     test('counts letters after normalization', () => {
         assert.equal(getWordleLetterCount('موسى'), 4);
         assert.equal(getWordleLetterCount('الله'), 4);
-        assert.equal(getWordleLetterCount('يوحنا'), 4);
+        assert.equal(getWordleLetterCount('يوحنا'), 5);
         assert.equal(getWordleLetterCount('الملك'), 5);
     });
 
@@ -52,7 +52,7 @@ describe('evaluateWordleGuess', () => {
         assert.deepEqual(evaluateWordleGuess(guess, target), ['correct', 'correct', 'correct', 'correct']);
     });
 
-        test('all absent when no letters match', () => {
+    test('all absent when no letters match', () => {
         const target = Array.from(normalizeArabicForMatch('موسى'));
         const guess = Array.from(normalizeArabicForMatch('دهرب'));
         assert.deepEqual(evaluateWordleGuess(guess, target), ['absent', 'absent', 'absent', 'absent']);
