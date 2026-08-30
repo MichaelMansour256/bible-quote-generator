@@ -305,7 +305,8 @@ export function matchesDifficulty(entry, difficulty) {
 
 export function buildTermPool(pools, category, difficulty = 'medium') {
     const terms = [];
-    const pushEntries = (entries, label) => {
+        const pushEntries = (entries, label) => {
+        if (!entries || !Array.isArray(entries)) return;
         entries
             .filter(entry => matchesDifficulty(entry, difficulty))
             .forEach(entry => {

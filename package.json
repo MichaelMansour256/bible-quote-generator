@@ -1,0 +1,14 @@
+{
+  "name": "verseup-arena",
+  "version": "1.0.0",
+  "description": "A modular Arabic Bible web app — verse image generator and six Bible games in one place.",
+  "type": "module",
+  "scripts": {
+    "test": "node --test tests/",
+    "serve": "python -m http.server 8000",
+    "dev": "python -m http.server 8000"
+  },
+  "keywords": ["bible", "arabic", "verse", "generator", "games"],
+  "author": "Michael Mansour",
+  "license": "MIT"
+}
