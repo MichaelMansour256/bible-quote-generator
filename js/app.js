@@ -1,11 +1,18 @@
+// VerseUp Arena — application shell. Owns the shared app state, the page
+// dispatcher (one HTML page per feature, selected via <body data-page>), the
+// verse browser, and composition of the shared + feature mixins. Shared
+// UI concerns live in js/shared/, features in js/features/.
 import { reverseGameMixin } from './features/games/reverse-game.js';
 import { scrambleGameMixin } from './features/games/scramble-game.js';
-import { quoteFeatureMixin } from './features/quote-feature.js';
+import { quoteFeatureMixin } from './features/quote/quote-feature.js';
 import { memoryGameMixin } from './features/games/memory-game.js';
 import { whoamiGameMixin } from './features/games/whoami-game.js';
 import { wordleGameMixin } from './features/games/wordle-game.js';
 import { emojiverseGameMixin } from './features/games/emojiverse-game.js';
 import { attachSwipeGrading } from './features/games/game-utils.js';
+import { navbarMixin } from './shared/navbar.js';
+import { themeMixin } from './shared/theme.js';
+import { navigationMixin } from './shared/navigation.js';
 
 class BibleQuoteGenerator {
     constructor() {
@@ -121,7 +128,7 @@ class BibleQuoteGenerator {
         this.emojiverseUsedCards = new Set();
 
         this.logoImage.onload = () => { this.logoLoaded = true; };
-        this.logoImage.src = 'assets/logo.svg';
+        this.logoImage.src = 'assets/icons/logo.svg';
 
         // Each page sets <body data-page="..."> so this shared app only wires
         // and initializes the feature rendered on the current page.
@@ -165,23 +172,6 @@ class BibleQuoteGenerator {
         return this.bibleData;
     }
 
-    // Wire the responsive hamburger menu used by the top navigation bar.
-    setupNavbar() {
-        const toggle = document.querySelector('.navbar-toggle');
-        const navbar = document.querySelector('.navbar');
-        if (!toggle || !navbar) return;
-
-        toggle.addEventListener('click', () => {
-            const isOpen = navbar.classList.toggle('open');
-            toggle.setAttribute('aria-expanded', isOpen ? 'true' : 'false');
-            toggle.setAttribute('aria-label', isOpen ? 'إغلاق القائمة' : 'القائمة');
-        });
-
-        // Close the menu after tapping a link or the language/theme buttons.
-        const close = () => navbar.classList.remove('open');
-        navbar.querySelectorAll('a').forEach(a => a.addEventListener('click', close));
-        document.querySelectorAll('.navbar .nav-btn').forEach(btn => btn.addEventListener('click', close));
-    }
 
     // Shows the branded splash screen on first open and fades it out once the
     // page has finished loading (or after a short safety timeout).
@@ -398,22 +388,9 @@ class BibleQuoteGenerator {
                 break;
             default:
                 // 'home' page needs no feature wiring, but its launcher cards
-                // should navigate to the matching feature pages.
-                const pageTargets = {
-                    quote: 'quote.html',
-                    game: 'memory.html',
-                    reverse: 'reverse.html',
-                    scramble: 'scramble.html',
-                    whoami: 'whoami.html',
-                    wordle: 'wordle.html',
-                    emojiverse: 'emojiverse.html'
-                };
-                document.querySelectorAll('.home-card[data-target]').forEach(card => {
-                    card.addEventListener('click', () => {
-                        const href = pageTargets[card.dataset.target];
-                        if (href) window.location.href = href;
-                    });
-                });
+                // should navigate to the matching feature pages (shared
+                // navigation mixin).
+                this.wireHomeCardNavigation();
                 break;
         }
     }
@@ -669,29 +646,6 @@ class BibleQuoteGenerator {
         });
     }
 
-    setupThemeToggle() {
-        const themeToggle = document.getElementById('theme-toggle');
-        if (!themeToggle) return;
-
-        // Load saved theme preference
-        const savedTheme = localStorage.getItem('verseup-theme') || 'dark';
-        this.setTheme(savedTheme);
-
-        themeToggle.addEventListener('click', () => {
-            const currentTheme = document.documentElement.getAttribute('data-theme') || 'dark';
-            const newTheme = currentTheme === 'dark' ? 'light' : 'dark';
-            this.setTheme(newTheme);
-        });
-    }
-
-    setTheme(theme) {
-        document.documentElement.setAttribute('data-theme', theme);
-        localStorage.setItem('verseup-theme', theme);
-        const themeToggle = document.getElementById('theme-toggle');
-        if (themeToggle) {
-            themeToggle.textContent = theme === 'dark' ? '🌙' : '☀️';
-        }
-    }
 
     getGameVersePool() {
         const verses = [];
@@ -860,62 +814,25 @@ class BibleQuoteGenerator {
         }
     }
 
-    setupViewSwitcher() {
-        this.viewButtons = {
-            home: document.getElementById('home-view-btn'),
-            quote: document.getElementById('quote-view-btn'),
-            game: document.getElementById('game-view-btn'),
-            reverse: document.getElementById('reverse-view-btn'),
-            scramble: document.getElementById('scramble-view-btn'),
-            whoami: document.getElementById('whoami-view-btn')
-        };
 
-        this.viewPanels = {
-            home: document.getElementById('home-view-panel'),
-            quote: document.getElementById('quote-view-panel'),
-            game: document.getElementById('game-view-panel'),
-            reverse: document.getElementById('reverse-view-panel'),
-            scramble: document.getElementById('scramble-view-panel'),
-            whoami: document.getElementById('whoami-view-panel')
-        };
-
-        Object.entries(this.viewButtons).forEach(([key, btn]) => {
-            if (btn) btn.addEventListener('click', () => this.setActiveView(key));
-        });
-
-        // Home launcher cards jump directly to their feature page.
-        document.querySelectorAll('.home-card').forEach(card => {
-            card.addEventListener('click', () => {
-                if (card.dataset.target) this.setActiveView(card.dataset.target);
-            });
-        });
-
-        this.setActiveView('home');
-    }
-
-    setActiveView(view) {
-        if (!this.viewButtons || !this.viewPanels || !this.viewPanels[view]) return;
-
-        this.activeView = view;
-
-        // Quote and Memory need the full Bible dataset; load it on demand only
-        // the first time one of these views is opened.
-        if (view === 'quote' || view === 'game') {
-            this.ensureBibleDataLoaded();
-        }
-
-        Object.entries(this.viewButtons).forEach(([key, btn]) => {
-            if (btn) btn.classList.toggle('active', key === view);
-        });
-
-        Object.entries(this.viewPanels).forEach(([key, panel]) => {
-            if (panel) panel.classList.toggle('hidden', key !== view);
-        });
-    }
 }
 
-Object.assign(BibleQuoteGenerator.prototype, reverseGameMixin, scrambleGameMixin, wordleGameMixin);
-Object.assign(BibleQuoteGenerator.prototype, quoteFeatureMixin, memoryGameMixin, whoamiGameMixin, emojiverseGameMixin);
+// Compose the shared app-shell mixins (navigation, navbar, theme) and every
+// page-feature mixin onto the prototype — the same composition pattern the
+// monolith used, now spread across shared/ and features/ modules.
+Object.assign(
+    BibleQuoteGenerator.prototype,
+    navigationMixin,
+    navbarMixin,
+    themeMixin,
+    reverseGameMixin,
+    scrambleGameMixin,
+    wordleGameMixin,
+    quoteFeatureMixin,
+    memoryGameMixin,
+    whoamiGameMixin,
+    emojiverseGameMixin
+);
 
 document.addEventListener('DOMContentLoaded', () => {
     new BibleQuoteGenerator();

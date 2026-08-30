@@ -1,0 +1,209 @@
+/* Reusable components: color swatches, selection/preview panels, action buttons.
+   Extracted from the original single-file stylesheet. */
+
+/* Color Combinations */
+.color-combinations {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+    gap: 15px;
+    margin-top: 10px;
+}
+
+.color-option {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 12px;
+    border: 2px solid rgba(255, 255, 255, 0.12);
+    border-radius: 12px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    background: rgba(255, 255, 255, 0.96);
+}
+
+.color-option:hover {
+    border-color: var(--accent-2);
+    transform: translateY(-2px);
+    box-shadow: 0 10px 24px rgba(91, 140, 255, 0.18);
+}
+
+.color-option.selected {
+    border-color: var(--accent-2);
+    background: #f8fbff;
+    box-shadow: 0 0 0 3px rgba(91, 140, 255, 0.2);
+    transform: translateY(-2px);
+}
+
+.color-option.selected .color-preview {
+    transform: scale(1.1);
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+}
+
+.color-option.selected span {
+    color: #244a91;
+    font-weight: 600;
+}
+
+.color-preview {
+    width: 40px;
+    height: 40px;
+    border-radius: 8px;
+    margin-bottom: 8px;
+    border: 1px solid rgba(0, 0, 0, 0.1);
+}
+
+.color-option span {
+    font-size: 12px;
+    font-weight: 500;
+    color: #344e68;
+    text-align: center;
+}
+
+/* Background Preview Classes */
+.bg-gradient1 {
+    background: linear-gradient(135deg, #5b8cff, #3f6fe8, #234b9b);
+}
+
+.bg-gradient5 {
+    background: linear-gradient(135deg, #9b59b6, #8e44ad, #663399);
+}
+
+.bg-gradient3 {
+    background: radial-gradient(circle, #d4a855, #f1d7a1);
+}
+
+.bg-decorative {
+    background: linear-gradient(135deg, #13253c, #1f3653);
+}
+
+.bg-solid-white {
+    background: #ffffff;
+}
+
+.bg-solid-cream {
+    background: #fffdd0;
+}
+
+.bg-solid-lightblue {
+    background: #add8e6;
+}
+
+.selection-controls {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 30px;
+    align-items: start;
+}
+
+.book-chapter-controls {
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+}
+
+.search-control {
+    display: flex;
+    flex-direction: column;
+}
+
+.main-content-section {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 40px;
+}
+
+.controls-panel {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+    background: linear-gradient(135deg, var(--section-bg-0) 0%, var(--section-bg-1) 100%);
+    padding: 28px;
+    border-radius: 15px;
+    border: 1px solid var(--line-strong);
+    box-shadow: 0 14px 30px rgba(4, 15, 28, 0.28);
+}
+
+.controls-panel h3 {
+    color: var(--text);
+}
+
+.controls-panel .input-group label {
+    color: var(--text-muted);
+}
+
+.controls-panel .input-group textarea,
+.controls-panel .input-group input,
+.controls-panel .input-group select {
+    background: var(--input-bg);
+    border-color: var(--input-border);
+    color: var(--input-color);
+}
+
+.controls-panel .input-group textarea::placeholder,
+.controls-panel .input-group input::placeholder {
+    color: var(--input-placeholder);
+}
+
+.controls-panel .input-group textarea:focus,
+.controls-panel .input-group input:focus,
+.controls-panel .input-group select:focus {
+    border-color: var(--accent-2);
+    background: var(--input-bg-focus);
+}
+
+.controls-panel .input-group select option {
+    background: var(--select-option-bg);
+    color: var(--input-color);
+}
+
+.controls-panel .input-group textarea[readonly],
+.controls-panel .input-group input[readonly] {
+    background: var(--input-readonly-bg);
+    color: var(--input-color);
+    cursor: text;
+    user-select: text;
+}
+
+.controls-panel .verse-action-btn {
+    background: rgba(255,255,255,0.07);
+    border-color: rgba(255,255,255,0.15);
+    color: var(--text);
+}
+
+.controls-panel .verse-action-btn:hover:not(:disabled) {
+    background: rgba(255,255,255,0.13);
+    border-color: var(--accent-2);
+}
+
+.controls-panel #use-selection-btn:not(:disabled) {
+    border-color: var(--accent-2);
+    background: rgba(91,140,255,0.15);
+    color: #a8c4ff;
+}
+
+.verse-preview {
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+}
+
+.preview-panel {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.action-buttons {
+    display: flex;
+    gap: 15px;
+    margin-top: 20px;
+}
+
+.action-buttons .generate-btn,
+.action-buttons .download-btn {
+    flex: 1;
+    padding: 16px;
+    font-size: 1.05rem;
+    margin-top: 0;
+    text-align: center;
+}

@@ -1,0 +1,84 @@
+/* Home launcher grid.
+   Extracted from the original single-file stylesheet. */
+
+/* ===== Home launcher ===== */
+.view-switcher a.view-switch-btn {
+    display: inline-block;
+    text-decoration: none;
+}
+
+a.home-card,
+a.home-card:visited {
+    text-decoration: none;
+    color: inherit;
+}
+
+.home-panel {
+    grid-column: 1 / -1;
+    padding: 8px 0 22px;
+}
+
+.home-hero {
+    text-align: center;
+    margin-bottom: 28px;
+}
+
+.home-hero h2 {
+    font-family: 'Amiri', serif;
+    font-size: 1.9rem;
+    color: var(--text-strong);
+    margin-bottom: 8px;
+}
+
+.home-hero p {
+    color: var(--text-muted);
+    font-size: 1.02rem;
+    max-width: 640px;
+    margin: 0 auto;
+    line-height: 1.8;
+}
+
+.home-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(215px, 1fr));
+    gap: 18px;
+}
+
+.home-card {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 10px;
+    text-align: center;
+    padding: 28px 20px;
+    border-radius: 18px;
+    border: 1px solid var(--line-strong);
+    background: var(--surface-1);
+    color: var(--text);
+    font-family: inherit;
+    cursor: pointer;
+    transition: transform 0.25s ease, box-shadow 0.25s ease, border-color 0.25s ease;
+}
+
+.home-card:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 16px 34px rgba(0, 0, 0, 0.22);
+    border-color: var(--accent-2);
+}
+
+.home-card-icon {
+    font-size: 2.3rem;
+    line-height: 1;
+}
+
+.home-card-title {
+    font-weight: 700;
+    font-size: 1.12rem;
+    color: var(--text-strong);
+}
+
+.home-card-desc {
+    font-size: 0.9rem;
+    color: var(--text-muted);
+    line-height: 1.6;
+}

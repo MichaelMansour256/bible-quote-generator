@@ -1,0 +1,354 @@
+/* Base: design tokens (dark/light), reset, page scaffold, footer, splash screen.
+   Extracted from the original single-file stylesheet. */
+
+:root {
+    /* ── Dark mode (default) ── */
+    --bg-0: #07111f;
+    --bg-1: #0d1b2e;
+    --bg-2: #14263d;
+    --body-bg-radial-1: rgba(91, 140, 255, 0.24);
+    --body-bg-radial-2: rgba(212, 168, 85, 0.16);
+    --container-bg: rgba(10, 18, 31, 0.84);
+    --container-border: rgba(255, 255, 255, 0.06);
+    --header-bg-0: #09111d;
+    --header-bg-1: #13253c;
+    --header-bg-2: #1b3557;
+    --section-bg-0: #0e1e33;
+    --section-bg-1: #162d4a;
+    --game-section-bg-0: #0c1728;
+    --game-section-bg-1: #152640;
+    --reverse-section-bg-0: #0b192c;
+    --reverse-section-bg-1: #162946;
+    --surface-0: rgba(11, 22, 38, 0.92);
+    --surface-1: rgba(19, 31, 52, 0.94);
+    --surface-2: rgba(29, 44, 69, 0.96);
+    --surface-3: rgba(40, 58, 87, 0.98);
+    --card: #f7f9fc;
+    --card-2: #edf2f7;
+    --text: #e8eef7;
+    --text-strong: #ffffff;
+    --text-muted: #aac0da;
+    --line: rgba(255, 255, 255, 0.1);
+    --line-strong: rgba(255, 255, 255, 0.16);
+    --accent: #d4a855;
+    --accent-2: #5b8cff;
+    --accent-3: #24c4b2;
+    --shadow: 0 24px 50px rgba(1, 8, 18, 0.35);
+    /* inputs */
+    --input-bg: rgba(255,255,255,0.11);
+    --input-border: rgba(255,255,255,0.28);
+    --input-bg-focus: rgba(255,255,255,0.16);
+    --input-color: #e8eef7;
+    --input-placeholder: rgba(170,192,218,0.70);
+    --input-readonly-bg: rgba(255,255,255,0.08);
+    --select-option-bg: #162d4a;
+    /* switcher */
+    --switcher-btn-bg: rgba(255,255,255,0.08);
+    /* game elements */
+    --game-el-bg: rgba(255,255,255,0.08);
+    --game-el-border: rgba(255,255,255,0.12);
+    --game-btn-color: #eff6ff;
+    --game-text: #edf4ff;
+    --game-label: #f4f7fb;
+    --game-strong: #ffffff;
+    /* clue box */
+    --clue-bg: rgba(248,250,255,0.98);
+    --clue-color: #102033;
+    /* verse display */
+    --verse-display-bg: rgba(248,250,255,0.98);
+    --verse-display-color: #102033;
+    --blank-color: #1e3a8a;
+    /* search */
+    --search-bg: #ffffff;
+    --search-border: #dde3ec;
+    --search-item-border: #f0f2f5;
+    --search-item-hover: #f5f0eb;
+    --search-ref-color: #1a2a3a;
+    --search-text-color: #6b7a8d;
+    --search-verse-list-bg: #faf8f5;
+    --search-verse-list-border: #ede8e0;
+    --search-verse-item-border: #f0ece4;
+    --search-verse-item-hover: #f0ebe0;
+    /* action btns */
+    --action-btn-bg: #f4f7fb;
+    --action-btn-border: #d0d8e4;
+    --action-btn-color: #1f3a5f;
+    --action-btn-hover-bg: #e6eef8;
+    --use-sel-bg: #eef3ff;
+    --use-sel-color: #1a4db5;
+    /* misc */
+    --loading-bg: #f8f9fa;
+    --loading-border: #e9ecef;
+    --loading-text: #6c757d;
+    --canvas-container-bg: #f8f9fa;
+    --label-color: #aac0da;
+    --base-input-bg: rgba(255,255,255,0.11);
+    --base-input-border: rgba(255,255,255,0.28);
+    --color-option-bg: rgba(255,255,255,0.96);
+    --color-option-selected-bg: #f8fbff;
+    --color-option-span: #344e68;
+    --color-option-selected-span: #244a91;
+    /* theme toggle */
+    --toggle-bg: rgba(255,255,255,0.1);
+    --toggle-border: rgba(255,255,255,0.2);
+    --toggle-color: #e8eef7;
+}
+
+.header-controls {
+    display: flex;
+    justify-content: center;
+    gap: 10px;
+    margin-top: 12px;
+}
+
+.theme-toggle {
+    background: var(--toggle-bg);
+    border: 1px solid var(--toggle-border);
+    color: var(--toggle-color);
+    padding: 8px 14px;
+    border-radius: 999px;
+    cursor: pointer;
+    font-size: 1.2rem;
+    transition: all 0.25s ease;
+}
+
+.theme-toggle:hover {
+    background: var(--toggle-bg);
+    transform: scale(1.05);
+}
+
+[data-theme="light"] {
+    --bg-0: #e8f0fb;
+    --bg-1: #dce8f8;
+    --bg-2: #cfddf4;
+    --body-bg-radial-1: rgba(91, 140, 255, 0.12);
+    --body-bg-radial-2: rgba(212, 168, 85, 0.10);
+    --container-bg: rgba(255,255,255,0.95);
+    --container-border: rgba(0,0,0,0.08);
+    --header-bg-0: #1a3a6b;
+    --header-bg-1: #1e4d8c;
+    --header-bg-2: #2563b0;
+    --section-bg-0: #f0f5ff;
+    --section-bg-1: #e4eeff;
+    --game-section-bg-0: #eef4ff;
+    --game-section-bg-1: #e0ecff;
+    --reverse-section-bg-0: #edf3ff;
+    --reverse-section-bg-1: #ddeaff;
+    --text: #1a2a3a;
+    --text-strong: #0d1b2e;
+    --text-muted: #3a5a7a;
+    --line: rgba(0,0,0,0.08);
+    --line-strong: rgba(0,0,0,0.14);
+    --shadow: 0 24px 50px rgba(0,0,0,0.10);
+    /* inputs */
+    --input-bg: #ffffff;
+    --input-border: #b8cce4;
+    --input-bg-focus: #f0f6ff;
+    --input-color: #1a2a3a;
+    --input-placeholder: rgba(60,90,120,0.5);
+    --input-readonly-bg: #f4f8ff;
+    --select-option-bg: #ffffff;
+    /* switcher */
+    --switcher-btn-bg: rgba(0,0,0,0.05);
+    /* surfaces (used by cards, home launcher, panes) */
+    --surface-0: rgba(255,255,255,0.94);
+    --surface-1: #ffffff;
+    --surface-2: #f4f8ff;
+    --surface-3: #eaf2ff;
+    /* game elements */
+    --game-el-bg: rgba(0,0,0,0.04);
+    --game-el-border: rgba(0,0,0,0.10);
+    --game-btn-color: #1a2a3a;
+    --game-text: #1a2a3a;
+    --game-label: #1a2a3a;
+    --game-strong: #0d1b2e;
+    /* clue box */
+    --clue-bg: #ffffff;
+    --clue-color: #102033;
+    /* verse display */
+    --verse-display-bg: #ffffff;
+    --verse-display-color: #102033;
+    --blank-color: #1e3a8a;
+    /* search */
+    --search-bg: #ffffff;
+    --search-border: #b8cce4;
+    --search-item-border: #e8eef8;
+    --search-item-hover: #eef4ff;
+    --search-ref-color: #1a2a3a;
+    --search-text-color: #4a6080;
+    --search-verse-list-bg: #f5f8ff;
+    --search-verse-list-border: #d0ddf0;
+    --search-verse-item-border: #dde8f8;
+    --search-verse-item-hover: #e4eeff;
+    /* action btns */
+    --action-btn-bg: #f0f5ff;
+    --action-btn-border: #b8cce4;
+    --action-btn-color: #1f3a5f;
+    --action-btn-hover-bg: #ddeaff;
+    --use-sel-bg: #e4eeff;
+    --use-sel-color: #1a4db5;
+    /* misc */
+    --loading-bg: #f0f5ff;
+    --loading-border: #b8cce4;
+    --loading-text: #3a5a7a;
+    --canvas-container-bg: #f0f5ff;
+    --label-color: #1a2a3a;
+    --base-input-bg: #ffffff;
+    --base-input-border: #b8cce4;
+    --color-option-selected-bg: #f0f6ff;
+    --color-option-span: #2a4060;
+    --color-option-selected-span: #1a4db5;
+    /* theme toggle */
+    --toggle-bg: rgba(0,0,0,0.08);
+    --toggle-border: rgba(0,0,0,0.15);
+    --toggle-color: #1a2a3a;
+}
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: 'Tajawal', sans-serif;
+    background:
+        radial-gradient(circle at top left, rgba(91, 140, 255, 0.24), transparent 30%),
+        radial-gradient(circle at bottom right, rgba(212, 168, 85, 0.16), transparent 32%),
+        linear-gradient(135deg, var(--bg-0) 0%, var(--bg-1) 50%, var(--bg-2) 100%);
+    min-height: 100vh;
+    padding: 20px;
+    color: var(--text);
+}
+
+.container {
+    max-width: 1200px;
+    margin: 0 auto;
+    background: var(--container-bg);
+    border-radius: 20px;
+    box-shadow: var(--shadow);
+    /* overflow is set to visible so the sticky navbar behaves correctly. */
+    overflow: visible;
+    border: 1px solid var(--container-border);
+}
+
+header {
+    background: linear-gradient(135deg, var(--header-bg-0) 0%, var(--header-bg-1) 55%, var(--header-bg-2) 100%);
+    color: var(--text-strong);
+    text-align: center;
+    padding: 40px 20px;
+}
+
+header h1 {
+    font-family: 'Amiri', serif;
+    font-size: 2.5rem;
+    margin-bottom: 10px;
+    font-weight: 700;
+    color: #ffffff;
+    text-shadow: 0 2px 12px rgba(0,0,0,0.4);
+}
+
+header p {
+    font-size: 1.1rem;
+    color: #ffffff;
+    opacity: 0.92;
+    text-shadow: 0 1px 6px rgba(0,0,0,0.3);
+}
+
+/* Footer */
+.site-footer {
+    margin-top: 40px;
+    padding: 20px 16px 28px;
+    border-top: 1px solid var(--line);
+    text-align: center;
+}
+
+.footer-note {
+    margin: 0;
+    font-size: 0.9rem;
+    color: var(--text-muted);
+    letter-spacing: 0.3px;
+    line-height: 1.6;
+}
+
+/* ===== Splash screen ===== */
+#splash {
+    position: fixed;
+    inset: 0;
+    z-index: 9999;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background:
+        radial-gradient(circle at top left, rgba(91, 140, 255, 0.30), transparent 35%),
+        radial-gradient(circle at bottom right, rgba(212, 168, 85, 0.22), transparent 38%),
+        linear-gradient(135deg, #07111f 0%, #0d1b2e 50%, #14263d 100%);
+    opacity: 1;
+    visibility: visible;
+    transition: opacity 0.6s ease, visibility 0.6s ease;
+    /* Failsafe: even if JS never runs, always hide the splash on its own. */
+    animation: splashAutoHide 0.5s ease 4s forwards;
+}
+
+@keyframes splashAutoHide {
+    to {
+        opacity: 0;
+        visibility: hidden;
+        pointer-events: none;
+    }
+}
+
+#splash.splash-hidden {
+    opacity: 0;
+    visibility: hidden;
+    pointer-events: none;
+}
+
+.splash-inner {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 16px;
+    text-align: center;
+    animation: splashPulse 1.3s ease-in-out infinite;
+    padding: 20px;
+}
+
+.splash-logo {
+    width: 150px;
+    height: auto;
+    filter: drop-shadow(0 10px 30px rgba(91, 140, 255, 0.35));
+}
+
+.splash-title {
+    font-family: 'Amiri', serif;
+    font-size: 2.4rem;
+    font-weight: 700;
+    color: #ffffff;
+    text-shadow: 0 2px 14px rgba(0, 0, 0, 0.45);
+}
+
+.splash-tag {
+    color: #aac0da;
+    font-size: 1.05rem;
+    max-width: 330px;
+}
+
+.splash-spinner {
+    width: 42px;
+    height: 42px;
+    margin-top: 6px;
+    border: 3px solid rgba(91, 140, 255, 0.25);
+    border-top-color: var(--accent);
+    border-radius: 50%;
+    animation: splashSpin 0.8s linear infinite;
+}
+
+@keyframes splashSpin {
+    to { transform: rotate(360deg); }
+}
+
+@keyframes splashPulse {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0.82; }
+}

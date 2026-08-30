@@ -18,31 +18,59 @@ A modular Arabic Bible web app — verse image generator and six Bible games in 
 
 ```text
 bible-quote-generator/
-├── index.html
-├── styles.css
+├── index.html                       ← home launcher
+├── pages/
+│   ├── quote.html / memory.html / reverse.html / scramble.html
+│   └── whoami.html / wordle.html / emojiverse.html
+│
+├── css/
+│   ├── base.css                     ← design tokens (dark/light), reset, footer, splash
+│   ├── components.css               ← reusable swatches, panels, action buttons
+│   ├── layout.css                   ← page sections, responsive media queries, mobile polish
+│   ├── navigation.css               ← top navbar (desktop + hamburger)
+│   ├── home.css / quote.css         ← page-specific styles
+│   └── games/
+│       ├── common.css               ← shared game components (headers, stats, flip cards)
+│       └── memory.css / reverse.css / scramble.css / whoami.css / wordle.css / emojiverse.css
+│
 ├── js/
-│   ├── main.js                    ← thin shell: constructor + event wiring only
-│   ├── core/
-│   │   ├── bible-api.js           ← API client + smart search logic
-│   │   ├── bible-database.js      ← offline book metadata (aligned to API names)
-│   │   └── i18n.js                ← internationalization (AR/EN)
-│   └── features/
-│       ├── quote-feature.js       ← image generator, search UI, font map
-│       └── games/
-│           ├── memory-game.js     ← memory game logic
-│           ├── reverse-game.js    ← reverse-words game
-│           ├── scramble-game.js   ← scrambled-words game
-│           ├── whoami-game.js     ← Who-Am-I? flash-card game
-│           ├── wordle-game.js     ← HolyWordle guessing game
-│           ├── emojiverse-game.js ← EmojiVerse emoji flash-card game
-│           └── game-utils.js      ← shared Arabic normalization, scramble, reverse, term pools
+│   ├── app.js                       ← app shell: shared state, page dispatcher, mixin composition
+│   ├── services/
+│   │   ├── bible-api.js             ← API client + smart search logic
+│   │   ├── i18n.js                  ← internationalization (AR/EN)
+│   │   └── storage.js               ← safe localStorage helpers + key registry
+│   ├── data/
+│   │   ├── bible-database.js        ← offline book metadata (aligned to API names)
+│   │   └── games/
+│   │       ├── whoami-data.js       ← "Who Am I?" card pools
+│   │       ├── emojiverse-data.js   ← EmojiVerse card pools
+│   │       └── wordle-data.js       ← HolyWordle limits + keyboard rows
+│   ├── features/
+│   │   ├── quote/
+│   │   │   ├── quote-feature.js     ← page wiring + verse selection (facade)
+│   │   │   ├── quote-renderer.js    ← canvas rendering, fonts, PNG download
+│   │   │   └── quote-search.js      ← smart search UI
+│   │   └── games/
+│   │       ├── memory-game.js       ← memory game logic
+│   │       ├── reverse-game.js      ← reverse-words game
+│   │       ├── scramble-game.js     ← scrambled-words game
+│   │       ├── whoami-game.js       ← Who-Am-I? flash-card game
+│   │       ├── wordle-game.js       ← HolyWordle guessing game
+│   │       ├── emojiverse-game.js   ← EmojiVerse emoji flash-card game
+│   │       └── game-utils.js        ← shared Arabic normalization, scramble, reverse, term pools
+│   └── shared/
+│       ├── navbar.js                ← responsive hamburger menu
+│       ├── theme.js                 ← dark/light toggle (persisted via storage service)
+│       └── navigation.js            ← view switching + home launcher routing
+│
 ├── assets/
-│   ├── logo.svg
-│   └── verseup_logo.png
-└── README.md
+│   ├── images/                      ← verseup_logo.png, logo.png, og-image.png
+│   ├── icons/                       ← logo.svg (canvas watermark)
+│   └── fonts/
+└── tests/
 ```
 
-`js/main.js` is a thin shell that wires the constructor and event listeners. All feature logic lives in the mixin modules, composed via `Object.assign`.
+`js/app.js` is the thin shell that owns shared state and dispatches per page (`<body data-page="…">`). All feature logic lives in the mixin modules, composed via `Object.assign`; shared UI concerns (navbar, theme, navigation) live in `js/shared/`. CSS is loaded per page: `base → components → layout → navigation` plus the page's own stylesheet (games also load `games/common.css`).
 
 ## Features
 
@@ -179,7 +207,7 @@ The site is fully static — deployed to **https://verse-up-arena.vercel.app** (
 2. **Verify the share card**:
    - Facebook/Instagram: `https://developers.facebook.com/tools/debug/`
    - LinkedIn: `https://www.linkedin.com/post-inspector/`
-   - WhatsApp: paste the link into a chat — the card with the logo (`assets/og-image.png`, 1200×630) appears automatically.
+   - WhatsApp: paste the link into a chat — the card with the logo (`assets/images/og-image.png`, 1200×630) appears automatically.
    - Sometimes the caches need a few minutes; the debug tools prompt a re-scrape.
 3. **Submit to Google**:
    - Google Search Console → add your property → request indexing.
@@ -189,13 +217,14 @@ What was added: `meta description`/`keywords`/`robots`/`canonical`, Open Graph t
 
 ## Data Source
 - Bible text: Arabic Smith & Van Dyck via `https://api.getbible.net/v2/arabicsv.json`
-- Book metadata: `js/core/bible-database.js` (used as offline fallback in `js/features/games/game-utils.js`)
-- Book names in `js/core/bible-database.js` are aligned to the API names (e.g. `تكوين`, `1 صموئيل`) so the fallback term pool matches live data
+- Book metadata: `js/data/bible-database.js` (used as offline fallback in `js/features/games/game-utils.js`)
+- Book names in `js/data/bible-database.js` are aligned to the API names (e.g. `تكوين`, `1 صموئيل`) so the fallback term pool matches live data
 
 ## Code Notes
 
-- Font lookup uses a single `FONT_MAP` constant in `js/features/quote-feature.js` — no repeated switch-cases
+- Font lookup uses a single `FONT_MAP` constant in `js/features/quote/quote-renderer.js` — no repeated switch-cases
 - Arabic normalization (diacritics, alef variants, taa marbuta) is centralised in `js/features/games/game-utils.js`
 - `matchesDifficulty` is defined once in `js/features/games/game-utils.js` and imported where needed
+- Game content (card pools, keyboard rows) lives in `js/data/games/` so it stays separate from game logic
 - Search dropdown closes on `mousedown` (not `click`) so item handlers fire before the close handler
 - Chapter expand/collapse is DOM-local state — highlight changes never rebuild the list

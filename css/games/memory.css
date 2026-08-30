@@ -1,0 +1,38 @@
+/* Memory game: word-bank chips.
+   Extracted from the original single-file stylesheet. */
+
+/* ── Memory word-bank chips ── */
+.memory-chips-wrap {
+    margin-top: 14px;
+}
+
+.memory-chips-wrap label {
+    display: block;
+    font-size: 0.95rem;
+    opacity: 0.85;
+    margin-bottom: 8px;
+}
+
+.memory-chips {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+}
+
+.memory-chip {
+    padding: 8px 18px;
+    min-height: 44px;
+    border-radius: 999px;
+    font-family: inherit;
+    font-size: 1.05rem;
+    font-weight: 700;
+    border: 1px dashed var(--line-strong);
+    background: var(--clue-bg);
+    color: var(--clue-color);
+    cursor: pointer;
+    transition: opacity 0.12s ease;
+}
+
+.memory-chip.used {
+    opacity: 0.35;
+}

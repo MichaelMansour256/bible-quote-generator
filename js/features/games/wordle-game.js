@@ -10,19 +10,11 @@ import {
     normalizeArabicForMatch
 } from './game-utils.js';
 
-const WORDLE_MAX_ATTEMPTS = 6;
-const WORDLE_ALLOWED_LENGTHS = [4, 5, 6, 7];
-
-// On-screen keyboard keys in the SAME left-to-right order as a normal physical
-// Arabic keyboard (row 1 = ض/ص/ث/ق/ف/غ/ع/ه/خ/ح, row 2 = ش/س/…, row 3 = ئ/ء/…).
-// The keyboard container renders these rows LTR so letter positions match the
-// physical keyboard — Backspace and Enter land on the right-hand side too.
-// (The word board above stays RTL since Arabic words are written right-to-left.)
-const WORDLE_KEY_ROWS = [
-    ['ض', 'ص', 'ث', 'ق', 'ف', 'غ', 'ع', 'ه', 'خ', 'ح', 'ج'],
-    ['ش', 'س', 'ي', 'ب', 'ل', 'ا', 'ت', 'ن', 'م', 'ك', 'ط'],
-    ['ذ', 'ئ', 'ء', 'ؤ', 'ر', 'ى', 'ة', 'و', 'ز', 'ظ', 'د']
-];
+import {
+    WORDLE_ALLOWED_LENGTHS,
+    WORDLE_KEY_ROWS,
+    WORDLE_MAX_ATTEMPTS
+} from '../../data/games/wordle-data.js';
 
 const WORDLE_STATUS_RANK = { absent: 1, present: 2, correct: 3 };
 

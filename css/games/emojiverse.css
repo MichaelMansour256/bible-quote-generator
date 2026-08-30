@@ -1,0 +1,70 @@
+/* EmojiVerse emoji flash-card game.
+   Extracted from the original single-file stylesheet. */
+
+/* ══════════════════════════════════════════════════════════════
+   EmojiVerse (إيموجي آية) — emoji flash-card game
+   ══════════════════════════════════════════════════════════════ */
+.emojiverse-q {
+    font-size: 1.5rem;
+    font-weight: 700;
+    color: var(--accent);
+}
+
+/* Front face sits on a white background, so its text must be dark. */
+.emojiverse-game-section .flip-card-front .emojiverse-q,
+.emojiverse-game-section .flip-card-front .emojiverse-tap-hint {
+    color: var(--clue-color);
+}
+
+.emojiverse-emoji-row {
+    font-size: 2.7rem;
+    line-height: 1.5;
+    letter-spacing: 10px;
+    max-width: 92%;
+}
+
+.emojiverse-game-section .flip-card-front .emojiverse-tap-hint {
+    font-size: 0.92rem;
+    opacity: 0.72;
+}
+
+.emojiverse-answer {
+    font-size: 1.7rem;
+    font-weight: 700;
+    text-shadow: 0 2px 8px rgba(0, 0, 0, 0.18);
+}
+
+/* Short story summary under the answer on the back face. */
+.emojiverse-game-section .flip-card-back .emojiverse-story {
+    font-size: 1rem;
+    line-height: 1.9;
+    opacity: 0.94;
+    max-width: 94%;
+    margin-top: 2px;
+}
+
+/* Score card: small explanation under the percentage */
+.emojiverse-score-hint {
+    display: block;
+    font-size: 0.72rem;
+    opacity: 0.75;
+    margin-top: 4px;
+}
+
+@media (max-width: 768px) {
+    .emojiverse-emoji-row {
+        font-size: 2.2rem;
+        letter-spacing: 6px;
+    }
+}
+
+@media (max-width: 480px) {
+    .emojiverse-emoji-row {
+        font-size: 1.9rem;
+        letter-spacing: 4px;
+    }
+
+    .emojiverse-answer {
+        font-size: 1.45rem;
+    }
+}
