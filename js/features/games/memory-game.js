@@ -1,5 +1,12 @@
 import { buzz, normalizeArabicForMatch, normalizeGameText } from './game-utils.js';
 
+// Fallback decoy words used when a verse does not have enough non-hidden words
+// to mix into the word bank.
+const MEMORY_DECOY_WORDS = [
+    'الله', 'الرب', 'المسيح', 'القدس', 'محبة', 'نور', 'حياة', 'سلام',
+    'خلاص', 'قلب', 'يوم', 'مجد', 'قوة', 'سماء', 'أرض', 'خبز'
+];
+
 export const memoryGameMixin = {
     buildMaskedVerse(text) {
         const tokens = text.split(/(\s+)/);
@@ -252,6 +259,8 @@ export const memoryGameMixin = {
         blankInputs.forEach(input => {
             input.addEventListener('input', () => {
                 document.getElementById('game-check-btn').disabled = !this.areGameAnswersFilled();
+                // Keep chip dimming in sync so cleared (wrong) taps re-light.
+                this.syncMemoryChipStates();
                 // Every blank correct → grade the round without a click.
                 this.maybeAutoCheckGameAnswers();
             });
@@ -296,17 +305,51 @@ export const memoryGameMixin = {
 
     // ── Word-bank chips (tap-to-fill, no typing needed on phones) ──
 
+    // Shuffles an array in place (Fisher–Yates) and returns it.
+    shuffleMemoryChips(list) {
+        for (let i = list.length - 1; i > 0; i--) {
+            const j = Math.floor(Math.random() * (i + 1));
+            [list[i], list[j]] = [list[j], list[i]];
+        }
+        return list;
+    },
+
+    // Word-bank content: the hidden answer words PLUS extra decoy words that
+    // are NOT in the answer, so the chips never hand the solution over.
+    buildMemoryChipWords() {
+        const hidden = (this.gameState.hiddenWords || []).slice();
+        const hiddenNormalized = new Set(hidden.map(word => this.normalizeArabicForMatch(word).trim()));
+        const candidates = [];
+
+        const addCandidate = (raw) => {
+            const token = String(raw || '').trim();
+            if (!token) return;
+            const letters = token.replace(/[^\u0621-\u064A]/g, '');
+            if (letters.length < 3) return;
+            const normalized = this.normalizeArabicForMatch(token).trim();
+            if (hiddenNormalized.has(normalized)) return;
+            if (candidates.some(existing => this.normalizeArabicForMatch(existing) === normalized)) return;
+            candidates.push(token);
+        };
+
+        // Plausible decoys: the verse's own non-hidden words.
+        if (this.gameState.verse && this.gameState.verse.text) {
+            this.gameState.verse.text.split(/(\s+)/).forEach(token => addCandidate(token));
+        }
+        // Top up from common Bible vocabulary when the verse is too short.
+        MEMORY_DECOY_WORDS.forEach(addCandidate);
+
+        // Roughly double the bank: one decoy per hidden word, if available.
+        const decoyCount = Math.min(hidden.length || 1, candidates.length);
+        const decoys = this.shuffleMemoryChips(candidates.slice()).slice(0, decoyCount);
+        return this.shuffleMemoryChips([...hidden, ...decoys]);
+    },
+
     renderGameWordChips() {
         const chipsContainer = document.getElementById('game-word-chips');
         if (!chipsContainer) return;
 
-        const words = (this.gameState.hiddenWords || []).slice();
-        // Shuffle so the chip order doesn't leak the order of the blanks.
-        for (let i = words.length - 1; i > 0; i--) {
-            const j = Math.floor(Math.random() * (i + 1));
-            [words[i], words[j]] = [words[j], words[i]];
-        }
-
+        const words = this.buildMemoryChipWords();
         chipsContainer.innerHTML = '';
         chipsContainer.hidden = words.length === 0;
         words.forEach(word => {
@@ -315,6 +358,23 @@ export const memoryGameMixin = {
             chip.className = 'memory-chip';
             chip.textContent = word;
             chipsContainer.appendChild(chip);
+        });
+    },
+
+    // Dim the chips whose word is currently sitting in a blank; light them
+    // again when the blank is cleared so a wrong tap can be undone.
+    syncMemoryChipStates() {
+        const chipsContainer = document.getElementById('game-word-chips');
+        if (!chipsContainer) return;
+
+        const filled = new Set(
+            Array.from(document.querySelectorAll('#game-verse-display .game-blank'))
+                .map(input => this.normalizeArabicForMatch(input.value.trim()).trim())
+                .filter(Boolean)
+        );
+        chipsContainer.querySelectorAll('.memory-chip').forEach(chip => {
+            const chipWord = this.normalizeArabicForMatch(chip.textContent).trim();
+            chip.classList.toggle('used', filled.has(chipWord));
         });
     },
 
@@ -355,24 +415,29 @@ export const memoryGameMixin = {
     },
 
     calculateGameScore(expectedText, userText) {
-        const expectedWords = (this.gameState.hiddenWords && this.gameState.hiddenWords.length > 0)
-            ? this.gameState.hiddenWords.map(word => this.normalizeArabicForMatch(word).trim())
+        // Normalize the hidden words with the SAME pipeline as the user's input
+        // (diacritics and punctuation stripped). Previously the expected side
+        // only used normalizeArabicForMatch, which kept attached punctuation —
+        // a word like "شَيْءٌ." never matched a typed "شيء" and perfect rounds
+        // scored close to zero.
+        const hiddenWords = (this.gameState.hiddenWords && this.gameState.hiddenWords.length > 0)
+            ? this.gameState.hiddenWords.map(word => this.normalizeGameText(word)).filter(Boolean)
             : this.normalizeGameText(expectedText).split(' ').filter(Boolean);
-        const userWords = this.normalizeGameText(userText).split(' ').filter(Boolean).map(word => this.normalizeArabicForMatch(word).trim());
+        const userWords = this.normalizeGameText(userText).split(' ').filter(Boolean);
 
-        if (expectedWords.length === 0) {
+        if (hiddenWords.length === 0) {
             return 0;
         }
 
         let exactMatches = 0;
 
-        for (let index = 0; index < expectedWords.length; index++) {
-            if (expectedWords[index] && userWords[index] && expectedWords[index] === userWords[index]) {
+        for (let index = 0; index < hiddenWords.length; index++) {
+            if (hiddenWords[index] && userWords[index] && hiddenWords[index] === userWords[index]) {
                 exactMatches += 1;
             }
         }
 
-        return Math.round((exactMatches / expectedWords.length) * 100);
+        return Math.round((exactMatches / hiddenWords.length) * 100);
     },
 
     updateGameScore(score) {

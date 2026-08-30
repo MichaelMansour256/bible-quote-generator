@@ -465,7 +465,7 @@ class BibleQuoteGenerator {
         if (gameWordChips) gameWordChips.addEventListener('click', (event) => {
             const chip = event.target.closest('.memory-chip');
             if (!chip) return;
-            if (this.fillGameBlankFromChip(chip.textContent)) chip.classList.add('used');
+            if (this.fillGameBlankFromChip(chip.textContent)) this.syncMemoryChipStates();
         });
         if (gameDifficultySelect) gameDifficultySelect.addEventListener('change', () => {
             this.gameDifficulty = gameDifficultySelect.value;
