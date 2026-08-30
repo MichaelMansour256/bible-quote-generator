@@ -1,3 +1,55 @@
 {
-  "cleanUrls": true
+  "cleanUrls": true,
+  "trailingSlash": false,
+
+  "rewrites": [
+    {
+      "source": "/quote",
+      "destination": "/pages/quote.html"
+    },
+    {
+      "source": "/memory",
+      "destination": "/pages/memory.html"
+    },
+    {
+      "source": "/reverse",
+      "destination": "/pages/reverse.html"
+    },
+    {
+      "source": "/scramble",
+      "destination": "/pages/scramble.html"
+    },
+    {
+      "source": "/whoami",
+      "destination": "/pages/whoami.html"
+    },
+    {
+      "source": "/wordle",
+      "destination": "/pages/wordle.html"
+    },
+    {
+      "source": "/emojiverse",
+      "destination": "/pages/emojiverse.html"
+    }
+  ],
+
+  "headers": [
+    {
+      "source": "/(.*)",
+      "headers": [
+        {
+          "key": "X-Content-Type-Options",
+          "value": "nosniff"
+        },
+        {
+          "key": "X-Frame-Options",
+          "value": "SAMEORIGIN"
+        },
+        {
+          "key": "Referrer-Policy",
+          "value": "strict-origin-when-cross-origin"
+        }
+      ]
+    }
+  ]
 }

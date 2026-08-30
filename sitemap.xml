@@ -1,8 +1,60 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
+
+  <!-- Home -->
   <url>
     <loc>https://verse-up-arena.vercel.app/</loc>
     <changefreq>weekly</changefreq>
     <priority>1.0</priority>
   </url>
+
+  <!-- Verse Generator -->
+  <url>
+    <loc>https://verse-up-arena.vercel.app/quote</loc>
+    <changefreq>monthly</changefreq>
+    <priority>0.9</priority>
+  </url>
+
+  <!-- Memory Game -->
+  <url>
+    <loc>https://verse-up-arena.vercel.app/memory</loc>
+    <changefreq>monthly</changefreq>
+    <priority>0.8</priority>
+  </url>
+
+  <!-- Reverse Game -->
+  <url>
+    <loc>https://verse-up-arena.vercel.app/reverse</loc>
+    <changefreq>monthly</changefreq>
+    <priority>0.8</priority>
+  </url>
+
+  <!-- Scramble Game -->
+  <url>
+    <loc>https://verse-up-arena.vercel.app/scramble</loc>
+    <changefreq>monthly</changefreq>
+    <priority>0.8</priority>
+  </url>
+
+  <!-- Who Am I Game -->
+  <url>
+    <loc>https://verse-up-arena.vercel.app/whoami</loc>
+    <changefreq>monthly</changefreq>
+    <priority>0.8</priority>
+  </url>
+
+  <!-- HolyWordle -->
+  <url>
+    <loc>https://verse-up-arena.vercel.app/wordle</loc>
+    <changefreq>monthly</changefreq>
+    <priority>0.8</priority>
+  </url>
+
+  <!-- EmojiVerse -->
+  <url>
+    <loc>https://verse-up-arena.vercel.app/emojiverse</loc>
+    <changefreq>monthly</changefreq>
+    <priority>0.8</priority>
+  </url>
+
 </urlset>
