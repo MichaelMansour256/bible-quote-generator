@@ -1,10 +1,12 @@
 import {
+    buildWordleDictionary,
     buildWordleWordPool,
     buzz,
     createBibleTermPools,
     evaluateWordleGuess,
     getWordleDisplayLetters,
     getWordleLetterCount,
+    isWordleGuessValid,
     normalizeArabicForMatch
 } from './game-utils.js';
 
@@ -27,6 +29,84 @@ export const wordleGameMixin = {
     buildWordlePool(category) {
         const sourcePool = this.wordleGamePool || this.createWordlePool();
         return buildWordleWordPool(sourcePool, category);
+    },
+
+    // Every Bible term and alias across all pools — feeds the guess dictionary
+    // so the answer words themselves are always acceptable guesses.
+    collectWordlePoolTerms() {
+        const pools = this.wordleGamePool || this.createWordlePool();
+        const terms = [];
+        Object.values(pools).forEach(list => {
+            (list || []).forEach(entry => {
+                if (!entry) return;
+                if (entry.term) terms.push(entry.term);
+                (entry.aliases || []).forEach(alias => terms.push(alias));
+            });
+        });
+        return terms;
+    },
+
+    // Raw verse text used to build the guess dictionary: the full fetched Bible
+    // when already loaded, plus the popular verses bundled in bible-database.js.
+    collectWordleBibleText() {
+        const texts = [];
+        if (this.bibleData && Array.isArray(this.bibleData.books)) {
+            this.bibleData.books.forEach(book => {
+                (book.chapters || []).forEach(chapter => {
+                    if (!chapter) return;
+                    const verses = Array.isArray(chapter.verses)
+                        ? chapter.verses
+                        : (chapter.verses ? Object.values(chapter.verses) : []);
+                    verses.forEach(verse => {
+                        const text = verse && (typeof verse === 'string' ? verse : verse.text);
+                        if (text) texts.push(text);
+                    });
+                });
+            });
+        }
+        if (typeof bibleDatabase !== 'undefined' && bibleDatabase.verses) {
+            Object.values(bibleDatabase.verses).forEach(verse => {
+                if (verse && verse.text) texts.push(verse.text);
+            });
+        }
+        return texts;
+    },
+
+    // Set of accepted guesses, built once and cached on the instance.
+    buildWordleDictionary() {
+        if (!this.wordleDictionary) {
+            this.wordleDictionary = buildWordleDictionary({
+                bibleText: this.collectWordleBibleText(),
+                poolTerms: this.collectWordlePoolTerms()
+            });
+        }
+        return this.wordleDictionary;
+    },
+
+    // Kick off a background fetch of the full Bible so the guess dictionary
+    // grows to the whole Bible vocabulary as soon as the text arrives.
+    warmWordleDictionary() {
+        if (typeof this.ensureBibleDataLoaded !== 'function') return;
+        Promise.resolve(this.ensureBibleDataLoaded())
+            .then(() => {
+                this.wordleDictionary = null;
+                this.buildWordleDictionary();
+            })
+            .catch(() => {
+                /* offline — the bundled dictionary still applies */
+            });
+    },
+
+    // Shake the row being typed for a moment to flag a rejected guess.
+    shakeWordleRow() {
+        const board = document.getElementById('wordle-board');
+        if (!board) return;
+        const rowEl = board.querySelectorAll('.wordle-row')[this.wordleGameState.rows.length];
+        if (!rowEl) return;
+        rowEl.classList.remove('wordle-shake');
+        void rowEl.offsetWidth; // restart the animation
+        rowEl.classList.add('wordle-shake');
+        setTimeout(() => rowEl.classList.remove('wordle-shake'), 450);
     },
 
     persistWordleGamePreferences() {
@@ -283,6 +363,22 @@ export const wordleGameMixin = {
         }
 
         const guessLetters = state.current.map(letter => normalizeArabicForMatch(letter));
+        const guessWord = guessLetters.join('');
+        const targetWord = state.targetLetters.join('');
+
+        // Only real words are accepted — gibberish is rejected without
+        // consuming the row. A guess counts as valid when it is the secret
+        // word itself, appears in the Bible text (full fetch or bundled
+        // verses), comes from the game's own term pools, or is in the bundled
+        // common-Arabic baseline list.
+        if (guessWord !== targetWord && !isWordleGuessValid(this.buildWordleDictionary(), guessWord)) {
+            document.getElementById('wordle-game-status').textContent =
+                `كلمة \"${state.current.join('')}\" ليست كلمة صحيحة — حاول كلمة من الكتاب المقدس.`;
+            this.shakeWordleRow();
+            buzz([40, 30, 40]);
+            return;
+        }
+
         const statuses = evaluateWordleGuess(guessLetters, state.targetLetters);
         const rowIndex = state.rows.length;
 

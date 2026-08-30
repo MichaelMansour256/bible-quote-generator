@@ -410,6 +410,113 @@ export function evaluateWordleGuess(guessLetters, targetLetters) {
     return result;
 }
 
+// ── HolyWordle guess validation ─────────────────────────────────────────────
+
+// Common Arabic words (no diacritics) kept bundled so the Wordle game can
+// reject gibberish even before the full Bible text has loaded. The Bible text
+// and the game's term pools are merged on top of this baseline at runtime.
+export const WORDLE_COMMON_ARABIC_WORDS = [
+    'من', 'في', 'على', 'إلى', 'عن', 'حتى', 'إذا', 'كما', 'لكن', 'بين',
+    'عند', 'قبل', 'بعد', 'فوق', 'تحت', 'أمام', 'خلف', 'مع', 'ضد', 'مثل',
+    'غير', 'سوى', 'كل', 'بعض', 'أي', 'ما', 'لا', 'لم', 'لن', 'هل',
+    'أين', 'متى', 'كيف', 'هو', 'هي', 'هم', 'هن', 'هذا', 'هذه', 'ذلك',
+    'تلك', 'الذي', 'التي', 'الذين', 'اللواتي', 'أنا', 'أنت', 'أنتم',
+    'نحن', 'إياك', 'إياه', 'إياها', 'كان', 'كانت', 'كانوا', 'يكون',
+    'تكون', 'أصبح', 'صار', 'ليس', 'ليست', 'إن', 'أن', 'كي', 'لكي',
+    'بأن', 'فإن', 'الله', 'الرب', 'رب', 'ربي', 'ربنا', 'إله', 'إلهي',
+    'آلهة', 'الآب', 'الابن', 'المسيح', 'يسوع', 'روح', 'القدس', 'إيمان',
+    'محبة', 'رحمة', 'نعمة', 'سلام', 'خلاص', 'مجد', 'ملكوت', 'ملك',
+    'ملكة', 'كاهن', 'كهنة', 'نبي', 'أنبياء', 'رسول', 'رسل', 'كلمة',
+    'كلام', 'آية', 'آيات', 'عهد', 'شريعة', 'وصية', 'وصايا', 'صلاة',
+    'صيام', 'صوم', 'مزمور', 'مزامير', 'سفر', 'أسفار', 'إنجيل', 'بشارة',
+    'سماء', 'أرض', 'ماء', 'نار', 'نور', 'ظلمة', 'حياة', 'موت', 'قيامة',
+    'صليب', 'يوم', 'أيام', 'ليلة', 'ليال', 'ساعة', 'شهر', 'سنة', 'سنين',
+    'بيت', 'بيوت', 'مدينة', 'مدن', 'قرية', 'قرى', 'طريق', 'طرق', 'جبل',
+    'جبال', 'بحر', 'نهر', 'شجرة', 'ثمر', 'زيت', 'خمر', 'خبز', 'عسل',
+    'ذهب', 'فضة', 'شعب', 'أمم', 'أمة', 'قبيلة', 'سبط', 'أورشليم', 'صهيون',
+    'يد', 'رأس', 'وجه', 'عين', 'أذن', 'فم', 'شفة', 'قلب', 'قلوب',
+    'نفس', 'جسد', 'دم', 'لحم', 'شعر', 'ابن', 'بنت', 'أبناء', 'بنات',
+    'أب', 'أم', 'أخ', 'أخت', 'إخوة', 'زوج', 'زوجة', 'امرأة', 'رجال',
+    'نساء', 'ولد', 'أطفال', 'طفل', 'شيخ', 'شاب', 'خير', 'شر', 'شرير',
+    'صالح', 'بار', 'خطية', 'خطايا', 'ذنب', 'ذنوب', 'مغفرة', 'توبة',
+    'غفران', 'حق', 'باطل', 'عدل', 'قضاء', 'قال', 'قالت', 'قالوا',
+    'يقول', 'قل', 'تكلم', 'يتكلم', 'علّم', 'علم', 'يعلم', 'عرف', 'يعرف',
+    'فهم', 'يفهم', 'فهمت', 'ذكر', 'يتذكر', 'نسي', 'ينسى', 'حفظ', 'يحفظ',
+    'احفظ', 'أحب', 'يحب', 'محبوب', 'صديق', 'أصدقاء', 'عدو', 'أعداء',
+    'سمع', 'يسمع', 'سمعنا', 'رأى', 'يرى', 'رأينا', 'نظر', 'ينظر',
+    'أبصر', 'أدرك', 'ظن', 'يظن', 'أعتقد', 'يعتقد', 'عمل', 'يعمل',
+    'صنع', 'يصنع', 'خلق', 'يخلق', 'جعل', 'يجعل', 'أعطى', 'يعطي',
+    'وهب', 'أخذ', 'يأخذ', 'أخذوا', 'أكل', 'شرب', 'مشى', 'يمشي',
+    'جلس', 'يجلس', 'قام', 'يقوم', 'وقف', 'نام', 'استيقظ', 'عاش',
+    'يعيش', 'مات', 'يموت', 'ولد', 'يولد', 'أراد', 'يريد', 'سأل',
+    'يسأل', 'طلب', 'يطلب', 'شاء', 'يشاء', 'قدر', 'يقدر', 'خاف',
+    'يخاف', 'رجى', 'يرجو', 'توكل', 'اعتمد', 'صعد', 'ينزل', 'نزل',
+    'كبير', 'صغير', 'عظيم', 'قوي', 'ضعيف', 'جديد', 'قديم', 'جميل',
+    'طويل', 'قصير', 'واسع', 'ضيق', 'حسن', 'جيد', 'طيب', 'نعم',
+    'بلى', 'شيء', 'أشياء', 'ماذا', 'لماذا', 'أينما'
+];
+
+// Prefixes that routinely glue onto words in the Arabic Bible text: the
+// single-letter clitics "و", "ف", "ب", "ل", "ك", "س" and the definite article.
+// Stacks like "وبالخير" (و + بال + خير) or "والرب" (و + ال + رب) are handled by
+// stripping one clitic at a time, so every intermediate form ("بالخير" →
+// "الخير" → "خير") lands in the dictionary.
+const ARABIC_CLITIC_PREFIXES = ['ال', 'و', 'ف', 'ب', 'ل', 'ك', 'س'];
+
+// Produces stripped variants of a normalized Arabic word ("المسيح" → "مسيح",
+// "والحياة" → "الحياة" → "حياة") so bare-stem guesses are accepted too.
+export function getArabicStemVariants(word) {
+    const variants = new Set();
+    let current = String(word || '').replace(/[\s\u0640]/g, '');
+    for (let depth = 0; depth < 5 && current.length > 0; depth += 1) {
+        const prefix = ARABIC_CLITIC_PREFIXES.find(p => current.startsWith(p));
+        if (!prefix) break;
+        current = current.slice(prefix.length);
+        if (current.length >= 2) variants.add(current);
+    }
+    return Array.from(variants);
+}
+
+// Builds the set of accepted Wordle guesses from three sources:
+//   - bibleText : raw verse text (full fetched Bible and/or bundled verses)
+//   - poolTerms : the game's own Bible term pools (book names, people, places…)
+//   - WORDLE_COMMON_ARABIC_WORDS : bundled offline baseline
+// Every word is normalized with normalizeArabicForMatch so it lines up with
+// what the on-screen keyboard can produce, and clitic/ال variants are added.
+export function buildWordleDictionary({ bibleText = [], poolTerms = [] } = {}) {
+    const dictionary = new Set();
+
+    const addToken = (rawToken) => {
+        const token = normalizeArabicForMatch(String(rawToken || ''))
+            .replace(/[^\u0621-\u064A]/g, '');
+        if (token.length < 2) return;
+        dictionary.add(token);
+        getArabicStemVariants(token).forEach(variant => dictionary.add(variant));
+    };
+
+    (bibleText || []).forEach(text => {
+        String(text || '')
+            .replace(/[\u060C\u061B\u061F.,!?:;()\[\]{}«»ـ]/g, ' ')
+            .split(/\s+/)
+            .forEach(addToken);
+    });
+
+    (poolTerms || []).forEach(term => {
+        String(term || '').split(/\s+/).forEach(addToken);
+    });
+
+    WORDLE_COMMON_ARABIC_WORDS.forEach(addToken);
+
+    return dictionary;
+}
+
+// True only when the normalized guess is a known word (gibberish is rejected).
+export function isWordleGuessValid(dictionary, normalizedGuess) {
+    if (!dictionary || !(dictionary instanceof Set)) return false;
+    const guess = String(normalizedGuess || '').replace(/[\s\u0640]/g, '');
+    return guess.length > 0 && dictionary.has(guess);
+}
+
 // Single-word Bible terms (no spaces/digits) grouped for the Wordle game,
 // de-duplicated by their normalized form so two spellings of the same word
 // never both appear as answers.

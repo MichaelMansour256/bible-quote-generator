@@ -379,6 +379,7 @@ class BibleQuoteGenerator {
                 break;
             case 'wordle':
                 this.wireWordleControls();
+                this.warmWordleDictionary();
                 this.loadWordleGamePreferences();
                 // Fresh visitors get a word immediately; returning players
                 // resume the round saved from their last visit.

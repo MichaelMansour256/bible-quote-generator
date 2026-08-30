@@ -2928,6 +2928,18 @@ a.home-card:visited {
     100% { transform: rotateX(0deg); }
 }
 
+.wordle-row.wordle-shake {
+    animation: wordle-shake 0.45s ease;
+}
+
+@keyframes wordle-shake {
+    0%, 100% { transform: translateX(0); }
+    20% { transform: translateX(-6px); }
+    40% { transform: translateX(6px); }
+    60% { transform: translateX(-4px); }
+    80% { transform: translateX(4px); }
+}
+
 .wordle-keyboard {
     display: flex;
     flex-direction: column;
