@@ -309,7 +309,7 @@ const TRANSLATIONS = {
 
         'splash-tag':           'Cards, verses, and Bible games — all in one place',
         'home-title':           'Pick the feature you want',
-        'home-desc':            'Tap any card to jump to its page — each page loads its data only when opened, for faster browsing.',
+        'home-desc':            'Tap any card to jump to its page and start the challenge 👇',
 
         'home-quote-title':     'Quote Cards',
         'home-quote-desc':      'Create beautiful Arabic Bible verse cards to memorize and share.',
