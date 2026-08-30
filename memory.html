@@ -105,13 +105,18 @@
                             <button id="game-check-btn" class="game-btn" disabled data-i18n="btn-check">تحقق من الإجابة</button>
                             <button id="game-reveal-btn" class="game-btn secondary" disabled data-i18n="btn-reveal">أظهر الإجابة</button>
                         </div>
-                        <div class="game-status" id="game-status" data-i18n="memory-status">اضغط على بدء آية جديدة لتبدأ الجولة.</div>
+                        <div class="game-status" id="game-status" aria-live="polite" data-i18n="memory-status">اضغط على بدء آية جديدة لتبدأ الجولة.</div>
                     </div>
 
                     <div class="game-board">
                         <div class="game-prompt">
                             <label data-i18n="label-hidden-verse">الآية المخفية - املأ الفراغات:</label>
                             <div id="game-verse-display" class="game-verse-display" aria-label="الآية المخفية"></div>
+
+                            <div class="memory-chips-wrap">
+                                <label data-i18n="label-memory-chips">بنك الكلمات — اضغط الكلمة لتعبئة فراغها:</label>
+                                <div id="game-word-chips" class="memory-chips" hidden></div>
+                            </div>
                         </div>
 
                         <div class="game-meta">

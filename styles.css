@@ -2530,6 +2530,140 @@ main {
     }
 }
 
+/* ══════════════════════════════════════════════════════════════
+   Mobile-friendly interaction polish (all games)
+   ══════════════════════════════════════════════════════════════ */
+body {
+    overscroll-behavior-y: contain;
+}
+
+.game-btn,
+.wordle-key,
+.memory-chip,
+.scramble-tile,
+.scramble-backspace {
+    touch-action: manipulation;
+}
+
+.game-btn {
+    min-height: 44px;
+}
+
+/* 16px+ inputs keep iOS from zooming when a game field gets focus. */
+.input-group input,
+.input-group select,
+.game-blank {
+    font-size: 16px;
+}
+
+/* Vertical page scrolling stays native; horizontal swipes grade the card. */
+.flip-card {
+    touch-action: pan-y;
+}
+
+/* ── Scramble tap-to-build letter tiles ── */
+.scramble-tiles-row {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    margin-top: 14px;
+}
+
+.scramble-tiles {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 8px;
+}
+
+.scramble-tile,
+.scramble-backspace {
+    min-width: 46px;
+    min-height: 46px;
+    padding: 6px 12px;
+    font-family: inherit;
+    font-size: 1.25rem;
+    font-weight: 700;
+    border-radius: 12px;
+    border: 1px solid var(--line-strong);
+    background: var(--clue-bg);
+    color: var(--clue-color);
+    cursor: pointer;
+    box-shadow: 0 4px 12px rgba(4, 11, 24, 0.18);
+    transition: transform 0.12s ease, opacity 0.12s ease;
+}
+
+.scramble-tile:active,
+.scramble-backspace:active {
+    transform: scale(0.94);
+}
+
+.scramble-tile.used {
+    opacity: 0.3;
+    transform: scale(0.92);
+}
+
+.scramble-backspace {
+    font-size: 1.1rem;
+}
+
+/* ── Memory word-bank chips ── */
+.memory-chips-wrap {
+    margin-top: 14px;
+}
+
+.memory-chips-wrap label {
+    display: block;
+    font-size: 0.95rem;
+    opacity: 0.85;
+    margin-bottom: 8px;
+}
+
+.memory-chips {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+}
+
+.memory-chip {
+    padding: 8px 18px;
+    min-height: 44px;
+    border-radius: 999px;
+    font-family: inherit;
+    font-size: 1.05rem;
+    font-weight: 700;
+    border: 1px dashed var(--line-strong);
+    background: var(--clue-bg);
+    color: var(--clue-color);
+    cursor: pointer;
+    transition: opacity 0.12s ease;
+}
+
+.memory-chip.used {
+    opacity: 0.35;
+}
+
+/* ── Wordle in-board replay button ── */
+.wordle-again-btn {
+    display: block;
+    margin: 16px auto 0;
+}
+
+.wordle-again-btn[hidden] {
+    display: none;
+}
+
+@media (max-width: 480px) {
+    .scramble-tile,
+    .scramble-backspace {
+        min-width: 42px;
+        min-height: 42px;
+        font-size: 1.1rem;
+    }
+}
+
 @media (max-width: 480px) {
     .flip-card,
     .flip-card-inner {

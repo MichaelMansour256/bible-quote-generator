@@ -438,3 +438,57 @@ export function buildWordleWordPool(pools, category = 'random') {
         return true;
     });
 }
+
+// ── Mobile helpers ──────────────────────────────────────────────────────────
+
+// Haptic feedback where supported (Android browsers); silently ignored
+// everywhere else so callers never need feature checks.
+export function buzz(pattern) {
+    try {
+        if (typeof navigator !== 'undefined' && typeof navigator.vibrate === 'function') {
+            navigator.vibrate(pattern);
+        }
+    } catch (error) {
+        /* haptics unsupported — ignore */
+    }
+}
+
+// Horizontal swipe grading for flip-card games (RTL-friendly):
+// swiping left = positive action (عرفتها), swiping right = negative one.
+// Tap-to-flip keeps working — a swipe is only detected past the threshold.
+export function attachSwipeGrading(cardElement, { onSwipeLeft, onSwipeRight, threshold = 60 } = {}) {
+    if (!cardElement || typeof cardElement.addEventListener !== 'function') return;
+
+    let startX = null;
+    let startY = null;
+
+    cardElement.addEventListener('touchstart', (event) => {
+        const touch = event.changedTouches && event.changedTouches[0];
+        if (!touch) return;
+        startX = touch.clientX;
+        startY = touch.clientY;
+    }, { passive: true });
+
+    cardElement.addEventListener('touchcancel', () => {
+        startX = null;
+        startY = null;
+    }, { passive: true });
+
+    cardElement.addEventListener('touchend', (event) => {
+        if (startX === null) return;
+        const touch = event.changedTouches && event.changedTouches[0];
+        const dx = touch ? touch.clientX - startX : 0;
+        const dy = touch ? touch.clientY - startY : 0;
+        startX = null;
+        startY = null;
+
+        // Ignore short taps and vertical drags (page scrolling).
+        if (Math.abs(dx) < threshold || Math.abs(dy) > Math.abs(dx)) return;
+
+        if (dx < 0) {
+            if (onSwipeLeft) onSwipeLeft();
+        } else if (onSwipeRight) {
+            onSwipeRight();
+        }
+    }, { passive: true });
+}

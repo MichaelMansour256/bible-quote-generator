@@ -1,3 +1,5 @@
+import { buzz } from './game-utils.js';
+
 // "EmojiVerse" (إيموجي آية) — emoji flash-card game with difficulty levels.
 // The front of each card shows a set of emojis describing a Bible story,
 // event, or verse. Clicking the card flips it to reveal the answer plus a
@@ -171,6 +173,7 @@ export const emojiverseGameMixin = {
         this.emojiverseGameState.graded = true;
         if (knew) this.emojiverseGameState.knewCount += 1;
         else this.emojiverseGameState.didntCount += 1;
+        buzz(20);
 
         this.updateEmojiverseCounters();
         this.setEmojiverseGradeButtons(false);
@@ -281,7 +284,7 @@ export const emojiverseGameMixin = {
         const statusEl = document.getElementById('emojiverse-game-status');
         if (flipped) {
             card.setAttribute('aria-pressed', 'true');
-            if (statusEl) statusEl.textContent = `الإجابة: ${this.emojiverseGameState.card.answer} — هل عرفتها؟ اختر من الأسفل.`;
+            if (statusEl) statusEl.textContent = `الإجابة: ${this.emojiverseGameState.card.answer} — اسحب البطاقة يسارًا (عرفتها) أو يمينًا (لم أعرفها).`;
             this.setEmojiverseGradeButtons(true);
         } else {
             card.removeAttribute('aria-pressed');

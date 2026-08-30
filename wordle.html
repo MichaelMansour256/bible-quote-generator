@@ -97,12 +97,11 @@
                         </div>
 
                         <div class="game-buttons">
-                            <button id="wordle-start-btn" class="game-btn primary" data-i18n="btn-wordle-start">ابدأ هولي ووردل</button>
                             <button id="wordle-next-btn" class="game-btn" disabled data-i18n="btn-new-word">كلمة جديدة</button>
                             <button id="wordle-reveal-btn" class="game-btn secondary" disabled data-i18n="btn-reveal">أظهر الإجابة</button>
                         </div>
 
-                        <div class="game-status" id="wordle-game-status" data-i18n="wordle-status">اضغط على البدء لاختيار كلمة سرية من الكتاب.</div>
+                        <div class="game-status" id="wordle-game-status" aria-live="polite" data-i18n="wordle-status">خمّن الكلمة السرية من الكتاب خلال ست محاولات.</div>
                     </div>
 
                     <div class="game-board wordle-board-panel">
@@ -112,6 +111,8 @@
                         </div>
 
                         <div id="wordle-keyboard" class="wordle-keyboard" dir="rtl" aria-label="لوحة مفاتيح عربية"></div>
+
+                        <button type="button" id="wordle-again-btn" class="game-btn primary wordle-again-btn" hidden data-i18n="btn-new-word">كلمة جديدة</button>
                     </div>
                 </div>
             </section>

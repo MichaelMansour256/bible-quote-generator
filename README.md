@@ -74,34 +74,42 @@ Chapter results show a **▼ expand arrow** — clicking opens an inline verse l
 
 - Pick a specific verse or a random one
 - Words hidden by difficulty ratio (easy 20 % → expert 60 %)
-- Type missing words into inline blanks
+- Fill blanks by typing **or** tapping the **word-bank chips** below the verse (shuffled, tap-to-fill, no typing needed on phones)
+- When every blank is correct the round is **graded automatically** — no check click needed
 - Score, timer, high score, next-verse progression
 - Last selected verse and difficulty saved and restored on reload
 
 ### Reverse Game
 
+- **Starts the moment the page opens** — no start button
 - Choose books, names, places, or random
 - Read the reversed word, type the original
+- **Live auto-check**: the answer is graded on every keystroke — a correct answer jumps straight to the next word with no clicks at all
 - Time-bonus scoring: `max(10, 100 − seconds)` — faster answers score higher
-- `Enter` key submits the answer
+- `Enter` key still submits manually; "كلمة جديدة" works as a skip
 - Tracks score, timer, high score; state persisted in `localStorage`
 
 ### Scrambled Words Game
 
+- **Starts the moment the page opens** — no start button
 - Same curated term pool as the reverse game
-- Characters shuffled; type the original word
+- Characters shuffled; solve by typing **or tapping the letter tiles** below the clue — spaces are inserted automatically between words, and a ⌫ tile erases
+- **Live auto-check**: correct answers advance automatically, zero clicks
 - Same time-bonus scoring model
-- `Enter` key submits the answer
+- `Enter` key still submits manually; "كلمة جديدة" works as a skip
 - Category and difficulty filtering; state persisted
 
 ### HolyWordle (Bible Wordle)
 
+- **Starts the moment the page opens** — returning players resume the round saved from their last visit
 - Wordle-style guessing: find the secret Bible word within **six attempts**
-- **Selectable word length — 4, 5, 6, or 7 letters** — the length acts as the difficulty
+- **Selectable word length — 4, 5, 6, or 7 letters** — changing the length starts a fresh round immediately
 - Words come from the same curated term pools (books, names, places, prophets, kings, women, tribes, feasts, artifacts); single words only, de-duplicated
 - Standard Wordle coloring with duplicate-letter handling: 🟩 right letter & spot, 🟨 letter exists elsewhere, ⬛ letter not in the word
 - Arabic-aware letter matching (hamza variants, taa marbuta, diacritics are normalized) so أ/ا, ة/ه, ى/ي all match
 - Built-in Arabic on-screen keyboard plus physical keyboard support (`Enter` submits, `Backspace` deletes)
+- A **"كلمة جديدة" replay button appears inside the board** when a round ends — one tap to play again
+- Haptic feedback (vibration) on tile reveals and win/lose where supported
 - Keyboard keys light up with the best known status of each letter
 - Time-bonus scoring on win: `max(10, 100 − seconds)`; timer, high score, category and remaining-attempts stats
 - Board, category, length, high score and in-progress round are saved in `localStorage` and restored on reload
@@ -118,6 +126,7 @@ Chapter results show a **▼ expand arrow** — clicking opens an inline verse l
 - Cards avoid repeating within a level until the whole pool has been seen, then the cycle restarts
 - **Scoring (self-graded)**: after flipping a card, choose **"✓ عرفتها"** (I knew it) or **"✗ لم أعرفها"** (I didn't know). The score = `(عرفتها ÷ إجمالي الإجابات) × 100` — the share of people you actually recognized
 - **No start screen** — the first card is ready the moment the page opens, and grading immediately loads the next card (fewer clicks, smoother flow)
+- **Phone gesture (RTL)**: swipe the flipped card **left = ✓ عرفتها, right = ✗ لم أعرفها** — grading becomes a single flick; tap still flips
 - The **"بطاقة جديدة"** button works as a skip: pull a different card without grading (skipped cards don't count toward the score)
 - Live counters for cards shown, "knew", and "didn't know"
 - Difficulty selection is saved in `localStorage` and restored on reload
@@ -134,6 +143,7 @@ Chapter results show a **▼ expand arrow** — clicking opens an inline verse l
 - Cards avoid repeating within a level until the whole pool has been seen, then the cycle restarts
 - **Self-graded scoring** identical to Who-Am-I?: "✓ عرفتها" / "✗ لم أعرفها", score = share of cards you knew
 - **No start screen** — the first card is ready on page open, and grading immediately loads the next card (fewer clicks, smoother flow)
+- **Phone gesture (RTL)**: swipe the flipped card **left = ✓ عرفتها, right = ✗ لم أعرفها**
 - The **"بطاقة جديدة"** button works as a skip: pull a different card without grading
 - Live counters for cards shown, "knew", and "didn't know"; difficulty saved in `localStorage`
 
@@ -153,8 +163,9 @@ The app is fully static — no build step, no dependencies to install.
 |---|---|
 | `Ctrl + Enter` | Generate image |
 | `Ctrl + S` | Download image (if generated) |
-| `Enter` (in reverse/scramble answer field) | Submit answer |
+| `Enter` (in reverse/scramble answer field) | Submit answer (correct answers also auto-advance while typing) |
 | `Enter` / `Space` (on Who-Am-I? / EmojiVerse card) | Flip the card |
+| Swipe left / right (on a flipped Who-Am-I? / EmojiVerse card) | Grade: knew / didn't know |
 | `Enter` / letters / `Backspace` (on HolyWordle page) | Submit row / type / erase letters |
 | `↑ / ↓` (in search) | Navigate results |
 | `Enter` (in search, verse result) | Load verse + generate image |

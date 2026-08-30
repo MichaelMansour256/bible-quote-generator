@@ -99,13 +99,12 @@
                         </div>
 
                         <div class="game-buttons">
-                            <button id="reverse-start-btn" class="game-btn primary" data-i18n="btn-reverse-start">ابدأ الكلمة المعكوسة</button>
                             <button id="reverse-next-btn" class="game-btn" disabled data-i18n="btn-new-word">كلمة جديدة</button>
                             <button id="reverse-check-btn" class="game-btn" disabled data-i18n="btn-check">تحقق من الإجابة</button>
                             <button id="reverse-reveal-btn" class="game-btn secondary" disabled data-i18n="btn-reveal">أظهر الإجابة</button>
                         </div>
 
-                        <div class="game-status" id="reverse-game-status" data-i18n="reverse-status">اضغط على البدء للحصول على كلمة معكوسة.</div>
+                        <div class="game-status" id="reverse-game-status" aria-live="polite" data-i18n="reverse-status">اقرأ الكلمة المعكوسة واكتب الإجابة الصحيحة.</div>
                     </div>
 
                     <div class="game-board reverse-board">
@@ -117,7 +116,7 @@
                         <div class="game-inputs reverse-inputs">
                             <div class="input-group">
                                 <label for="reverse-game-answer" data-i18n="label-answer">اكتب الإجابة الصحيحة:</label>
-                                <input id="reverse-game-answer" type="text" data-i18n-placeholder="answer-placeholder" placeholder="اكتب الاسم أو المكان أو السفر" autocomplete="off">
+                                <input id="reverse-game-answer" type="text" data-i18n-placeholder="answer-placeholder" placeholder="اكتب الاسم أو المكان أو السفر" autocomplete="off" autocapitalize="none" autocorrect="off" spellcheck="false" enterkeyhint="go">
                             </div>
                         </div>
                     </div>

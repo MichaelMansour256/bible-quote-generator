@@ -1,3 +1,5 @@
+import { buzz } from './game-utils.js';
+
 // "Who Am I?" (من أنا؟) — flash-card game with difficulty levels.
 // Each card shows a single clue about a person from the Bible.
 // Clicking the card flips it to reveal that person's name.
@@ -230,6 +232,7 @@ export const whoamiGameMixin = {
         this.whoamiGameState.graded = true;
         if (knew) this.whoamiGameState.knewCount += 1;
         else this.whoamiGameState.didntCount += 1;
+        buzz(20);
 
         this.updateWhoamiCounters();
         this.setWhoamiGradeButtons(false);
@@ -338,7 +341,7 @@ export const whoamiGameMixin = {
         const statusEl = document.getElementById('whoami-game-status');
         if (flipped) {
             card.setAttribute('aria-pressed', 'true');
-            if (statusEl) statusEl.textContent = `الشخصية هي: ${this.whoamiGameState.person.name} — هل عرفتها؟ اختر من الأسفل.`;
+            if (statusEl) statusEl.textContent = `الشخصية هي: ${this.whoamiGameState.person.name} — اسحب البطاقة يسارًا (عرفتها) أو يمينًا (لم أعرفها).`;
             this.setWhoamiGradeButtons(true);
         } else {
             card.removeAttribute('aria-pressed');

@@ -1,5 +1,6 @@
 import {
     buildWordleWordPool,
+    buzz,
     createBibleTermPools,
     evaluateWordleGuess,
     getWordleDisplayLetters,
@@ -81,6 +82,7 @@ export const wordleGameMixin = {
                 if (this.wordleGameState.finished) {
                     const nextBtn = document.getElementById('wordle-next-btn');
                     if (nextBtn) nextBtn.disabled = false;
+                    this.showWordleAgainButton(true);
                 } else {
                     this.startWordleGameTimer();
                 }
@@ -153,6 +155,7 @@ export const wordleGameMixin = {
         document.getElementById('wordle-game-score').textContent = '0%';
         document.getElementById('wordle-next-btn').disabled = true;
         document.getElementById('wordle-reveal-btn').disabled = false;
+        this.showWordleAgainButton(false);
         document.getElementById('wordle-game-status').textContent = 'خمّن الكلمة السرية. بعد كل محاولة تتلوّن الحروف: الأخضر في مكانه الصحيح، والأصفر موجود لكن في مكان آخر.';
         this.updateWordleAttempts();
         this.renderWordleBoard();
@@ -186,6 +189,7 @@ export const wordleGameMixin = {
         if (revealBtn) revealBtn.disabled = true;
         const timerEl = document.getElementById('wordle-game-timer');
         if (timerEl) timerEl.textContent = '00:00';
+        this.showWordleAgainButton(false);
 
         this.renderWordleBoard();
         this.updateWordleAttempts();
@@ -290,6 +294,7 @@ export const wordleGameMixin = {
 
         const isWin = statuses.every(status => status === 'correct');
         if (isWin) {
+            buzz([40, 60, 40]);
             state.finished = 'won';
             const score = this.calcWordleScore();
             state.lastScore = score;
@@ -300,7 +305,9 @@ export const wordleGameMixin = {
             this.stopWordleGameTimer();
             document.getElementById('wordle-next-btn').disabled = false;
             document.getElementById('wordle-reveal-btn').disabled = true;
+            this.showWordleAgainButton(true);
         } else if (state.rows.length >= WORDLE_MAX_ATTEMPTS) {
+            buzz([60, 50, 60]);
             state.finished = 'lost';
             state.lastScore = 0;
             document.getElementById('wordle-game-score').textContent = '0%';
@@ -309,10 +316,18 @@ export const wordleGameMixin = {
             this.stopWordleGameTimer();
             document.getElementById('wordle-next-btn').disabled = false;
             document.getElementById('wordle-reveal-btn').disabled = true;
+            this.showWordleAgainButton(true);
+        } else {
+            buzz(30);
         }
 
         this.updateWordleAttempts();
         this.persistWordleGameState();
+    },
+
+    showWordleAgainButton(show) {
+        const againBtn = document.getElementById('wordle-again-btn');
+        if (againBtn) againBtn.hidden = !show;
     },
 
     revealWordleAnswer() {
@@ -335,6 +350,7 @@ export const wordleGameMixin = {
             `الكلمة الصحيحة هي "${state.target}".`;
         document.getElementById('wordle-reveal-btn').disabled = true;
         document.getElementById('wordle-next-btn').disabled = false;
+        this.showWordleAgainButton(true);
         this.stopWordleGameTimer();
         this.updateWordleAttempts();
         this.refreshWordleKeyboard();

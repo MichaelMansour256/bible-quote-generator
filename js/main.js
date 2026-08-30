@@ -5,6 +5,7 @@ import { memoryGameMixin } from './features/games/memory-game.js';
 import { whoamiGameMixin } from './features/games/whoami-game.js';
 import { wordleGameMixin } from './features/games/wordle-game.js';
 import { emojiverseGameMixin } from './features/games/emojiverse-game.js';
+import { attachSwipeGrading } from './features/games/game-utils.js';
 
 class BibleQuoteGenerator {
     constructor() {
@@ -361,10 +362,14 @@ class BibleQuoteGenerator {
             case 'reverse':
                 this.wireReverseControls();
                 this.loadReverseGamePreferences();
+                // First word is ready immediately — no start button needed.
+                this.startReverseGame();
                 break;
             case 'scramble':
                 this.wireScrambleControls();
                 this.loadScrambleGamePreferences();
+                // First word is ready immediately — no start button needed.
+                this.startScrambleGame();
                 break;
             case 'whoami':
                 this.wireWhoamiControls();
@@ -375,6 +380,9 @@ class BibleQuoteGenerator {
             case 'wordle':
                 this.wireWordleControls();
                 this.loadWordleGamePreferences();
+                // Fresh visitors get a word immediately; returning players
+                // resume the round saved from their last visit.
+                if (!this.wordleGameState.target) this.startWordleGame();
                 break;
             case 'emojiverse':
                 this.wireEmojiverseControls();
@@ -451,6 +459,13 @@ class BibleQuoteGenerator {
         if (gameVerseDisplay) gameVerseDisplay.addEventListener('input', () => {
             if (gameCheckBtn) gameCheckBtn.disabled = !this.gameState.verse || !this.areGameAnswersFilled();
         });
+        // Word-bank chips: tap a word to fill the first empty blank.
+        const gameWordChips = document.getElementById('game-word-chips');
+        if (gameWordChips) gameWordChips.addEventListener('click', (event) => {
+            const chip = event.target.closest('.memory-chip');
+            if (!chip) return;
+            if (this.fillGameBlankFromChip(chip.textContent)) chip.classList.add('used');
+        });
         if (gameDifficultySelect) gameDifficultySelect.addEventListener('change', () => {
             this.gameDifficulty = gameDifficultySelect.value;
             this.persistGamePreferences();
@@ -462,7 +477,6 @@ class BibleQuoteGenerator {
     }
 
     wireReverseControls() {
-        const reverseStartBtn = document.getElementById('reverse-start-btn');
         const reverseNextBtn = document.getElementById('reverse-next-btn');
         const reverseCheckBtn = document.getElementById('reverse-check-btn');
         const reverseRevealBtn = document.getElementById('reverse-reveal-btn');
@@ -473,12 +487,13 @@ class BibleQuoteGenerator {
         if (reverseNextBtn) reverseNextBtn.disabled = true;
         if (reverseCheckBtn) reverseCheckBtn.disabled = true;
 
-        if (reverseStartBtn) reverseStartBtn.addEventListener('click', () => this.startReverseGame());
         if (reverseNextBtn) reverseNextBtn.addEventListener('click', () => this.startReverseGame());
         if (reverseCheckBtn) reverseCheckBtn.addEventListener('click', () => this.checkReverseGameAnswer());
         if (reverseRevealBtn) reverseRevealBtn.addEventListener('click', () => this.revealReverseGameAnswer());
         if (reverseAnswer) reverseAnswer.addEventListener('input', () => {
             if (reverseCheckBtn) reverseCheckBtn.disabled = !this.reverseGameState.term || reverseAnswer.value.trim().length === 0;
+            // Live auto-check: the moment the typed answer matches, jump ahead.
+            if (this.reverseGameState.term && reverseAnswer.value.trim()) this.maybeAutoCheckReverseAnswer();
         });
         if (reverseAnswer) reverseAnswer.addEventListener('keydown', (e) => {
             if (e.key === 'Enter' && reverseCheckBtn && !reverseCheckBtn.disabled) this.checkReverseGameAnswer();
@@ -494,7 +509,6 @@ class BibleQuoteGenerator {
     }
 
     wireScrambleControls() {
-        const scrambleStartBtn = document.getElementById('scramble-start-btn');
         const scrambleNextBtn = document.getElementById('scramble-next-btn');
         const scrambleCheckBtn = document.getElementById('scramble-check-btn');
         const scrambleRevealBtn = document.getElementById('scramble-reveal-btn');
@@ -505,16 +519,26 @@ class BibleQuoteGenerator {
         if (scrambleNextBtn) scrambleNextBtn.disabled = true;
         if (scrambleCheckBtn) scrambleCheckBtn.disabled = true;
 
-        if (scrambleStartBtn) scrambleStartBtn.addEventListener('click', () => this.startScrambleGame());
         if (scrambleNextBtn) scrambleNextBtn.addEventListener('click', () => this.startScrambleGame());
         if (scrambleCheckBtn) scrambleCheckBtn.addEventListener('click', () => this.checkScrambleGameAnswer());
         if (scrambleRevealBtn) scrambleRevealBtn.addEventListener('click', () => this.revealScrambleGameAnswer());
         if (scrambleAnswer) scrambleAnswer.addEventListener('input', () => {
             if (scrambleCheckBtn) scrambleCheckBtn.disabled = !this.scrambleGameState.term || scrambleAnswer.value.trim().length === 0;
+            this.syncScrambleTileStates();
+            // Live auto-check: the moment the answer matches, jump ahead.
+            if (this.scrambleGameState.term && scrambleAnswer.value.trim()) this.maybeAutoCheckScrambleAnswer();
         });
         if (scrambleAnswer) scrambleAnswer.addEventListener('keydown', (e) => {
             if (e.key === 'Enter' && scrambleCheckBtn && !scrambleCheckBtn.disabled) this.checkScrambleGameAnswer();
         });
+        // Tap-to-build letter tiles (no OS keyboard needed on phones).
+        const scrambleTiles = document.getElementById('scramble-tiles');
+        if (scrambleTiles) scrambleTiles.addEventListener('click', (event) => {
+            const tileEl = event.target.closest('.scramble-tile');
+            if (tileEl) this.handleScrambleTileClick(tileEl);
+        });
+        const scrambleBackspace = document.getElementById('scramble-backspace');
+        if (scrambleBackspace) scrambleBackspace.addEventListener('click', () => this.scrambleBackspace());
         if (scrambleCategorySelect) scrambleCategorySelect.addEventListener('change', () => {
             this.scrambleGameState.category = scrambleCategorySelect.value;
             this.persistScrambleGamePreferences();
@@ -526,7 +550,6 @@ class BibleQuoteGenerator {
     }
 
     wireWordleControls() {
-        const wordleStartBtn = document.getElementById('wordle-start-btn');
         const wordleNextBtn = document.getElementById('wordle-next-btn');
         const wordleRevealBtn = document.getElementById('wordle-reveal-btn');
         const wordleCategorySelect = document.getElementById('wordle-category-select');
@@ -535,9 +558,11 @@ class BibleQuoteGenerator {
         if (wordleNextBtn) wordleNextBtn.disabled = true;
         if (wordleRevealBtn) wordleRevealBtn.disabled = true;
 
-        if (wordleStartBtn) wordleStartBtn.addEventListener('click', () => this.startWordleGame());
         if (wordleNextBtn) wordleNextBtn.addEventListener('click', () => this.startWordleGame());
         if (wordleRevealBtn) wordleRevealBtn.addEventListener('click', () => this.revealWordleAnswer());
+        // In-board replay: one tap right where the round just ended.
+        const wordleAgainBtn = document.getElementById('wordle-again-btn');
+        if (wordleAgainBtn) wordleAgainBtn.addEventListener('click', () => this.startWordleGame());
 
         if (wordleCategorySelect) wordleCategorySelect.addEventListener('change', () => {
             this.wordleGameState.category = wordleCategorySelect.value;
@@ -546,8 +571,8 @@ class BibleQuoteGenerator {
         if (wordleLengthSelect) wordleLengthSelect.addEventListener('change', () => {
             this.wordleGameState.length = parseInt(wordleLengthSelect.value, 10) || 5;
             this.persistWordleGamePreferences();
-            // A different word length invalidates any running round.
-            this.resetWordleGame();
+            // A different word length starts a fresh round immediately.
+            this.startWordleGame();
         });
 
         this.buildWordleKeyboard();
@@ -575,13 +600,20 @@ class BibleQuoteGenerator {
         const whoamiDidntBtn = document.getElementById('whoami-didnt-btn');
 
         if (whoamiNextBtn) whoamiNextBtn.addEventListener('click', () => this.nextWhoamiCard());
-        if (whoamiFlipCard) whoamiFlipCard.addEventListener('click', () => this.flipWhoamiCard());
-        if (whoamiFlipCard) whoamiFlipCard.addEventListener('keydown', (e) => {
-            if (e.key === 'Enter' || e.key === ' ') {
-                e.preventDefault();
-                this.flipWhoamiCard();
-            }
-        });
+        if (whoamiFlipCard) {
+            whoamiFlipCard.addEventListener('click', () => this.flipWhoamiCard());
+            whoamiFlipCard.addEventListener('keydown', (e) => {
+                if (e.key === 'Enter' || e.key === ' ') {
+                    e.preventDefault();
+                    this.flipWhoamiCard();
+                }
+            });
+            // Phone gesture (RTL): swipe left = knew it, swipe right = didn't.
+            attachSwipeGrading(whoamiFlipCard, {
+                onSwipeLeft: () => this.gradeWhoamiCard(true),
+                onSwipeRight: () => this.gradeWhoamiCard(false)
+            });
+        }
         if (whoamiKnewBtn) whoamiKnewBtn.addEventListener('click', () => this.gradeWhoamiCard(true));
         if (whoamiDidntBtn) whoamiDidntBtn.addEventListener('click', () => this.gradeWhoamiCard(false));
         if (whoamiDifficultySelect) whoamiDifficultySelect.addEventListener('change', () => {
@@ -602,13 +634,20 @@ class BibleQuoteGenerator {
         const didntBtn = document.getElementById('emojiverse-didnt-btn');
 
         if (nextBtn) nextBtn.addEventListener('click', () => this.nextEmojiverseCard());
-        if (flipCard) flipCard.addEventListener('click', () => this.flipEmojiverseCard());
-        if (flipCard) flipCard.addEventListener('keydown', (e) => {
-            if (e.key === 'Enter' || e.key === ' ') {
-                e.preventDefault();
-                this.flipEmojiverseCard();
-            }
-        });
+        if (flipCard) {
+            flipCard.addEventListener('click', () => this.flipEmojiverseCard());
+            flipCard.addEventListener('keydown', (e) => {
+                if (e.key === 'Enter' || e.key === ' ') {
+                    e.preventDefault();
+                    this.flipEmojiverseCard();
+                }
+            });
+            // Phone gesture (RTL): swipe left = knew it, swipe right = didn't.
+            attachSwipeGrading(flipCard, {
+                onSwipeLeft: () => this.gradeEmojiverseCard(true),
+                onSwipeRight: () => this.gradeEmojiverseCard(false)
+            });
+        }
         if (knewBtn) knewBtn.addEventListener('click', () => this.gradeEmojiverseCard(true));
         if (didntBtn) didntBtn.addEventListener('click', () => this.gradeEmojiverseCard(false));
         if (difficultySelect) difficultySelect.addEventListener('change', () => {

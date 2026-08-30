@@ -93,6 +93,12 @@ export const reverseGameMixin = {
     },
 
     startReverseGame() {
+        // Cancel any pending auto-advance from a previous correct answer.
+        if (this.reverseAutoAdvanceTimer) {
+            clearTimeout(this.reverseAutoAdvanceTimer);
+            this.reverseAutoAdvanceTimer = null;
+        }
+
         const selected = this.pickReverseGameTerm();
         if (!selected) {
             document.getElementById('reverse-game-status').textContent = 'لا توجد كلمات متاحة لهذه الفئة.';
@@ -115,7 +121,8 @@ export const reverseGameMixin = {
         document.getElementById('reverse-game-answer').disabled = false;
         document.getElementById('reverse-check-btn').disabled = true;
         document.getElementById('reverse-reveal-btn').disabled = false;
-        document.getElementById('reverse-next-btn').disabled = true;
+        // The word is ready — "كلمة جديدة" now works as a skip.
+        document.getElementById('reverse-next-btn').disabled = false;
         document.getElementById('reverse-game-status').textContent = 'اقرأ الكلمة المعكوسة واكتب الإجابة الصحيحة.';
         document.getElementById('reverse-game-score').textContent = '0%';
         this.startReverseGameTimer();
@@ -160,17 +167,12 @@ export const reverseGameMixin = {
             return;
         }
 
-        const userAnswer = this.normalizeReverseGameText(document.getElementById('reverse-game-answer').value);
-        const expectedAnswers = this.reverseGameState.answers?.length
-            ? this.reverseGameState.answers
-            : this.getReverseAnswerVariants(this.reverseGameState.term);
-
-        const isCorrect = expectedAnswers.some(answer => userAnswer === answer);
+        const isCorrect = this.isReverseAnswerCorrect(document.getElementById('reverse-game-answer').value);
         const score = isCorrect ? this.calcReverseScore() : 0;
 
         this.reverseGameState.lastScore = score;
         document.getElementById('reverse-game-status').textContent = isCorrect
-            ? `إجابة صحيحة. أحسنت.`
+            ? 'إجابة صحيحة. أحسنت.'
             : 'إجابة غير صحيحة. جرّب مرة أخرى.';
         document.getElementById('reverse-game-score').textContent = `${score}%`;
         this.updateReverseHighScore(score);
@@ -178,6 +180,42 @@ export const reverseGameMixin = {
         this.stopReverseGameTimer();
         document.getElementById('reverse-check-btn').disabled = true;
         document.getElementById('reverse-next-btn').disabled = false;
+
+        if (isCorrect) {
+            document.getElementById('reverse-reveal-btn').disabled = true;
+            const answerInput = document.getElementById('reverse-game-answer');
+            if (answerInput) answerInput.disabled = true;
+            // Correct answers flow straight into the next word — no click needed.
+            this.scheduleReverseAutoAdvance();
+        }
+    },
+
+    isReverseAnswerCorrect(value) {
+        if (!this.reverseGameState.term) return false;
+        const userAnswer = this.normalizeReverseGameText(value);
+        const expectedAnswers = this.reverseGameState.answers?.length
+            ? this.reverseGameState.answers
+            : this.getReverseAnswerVariants(this.reverseGameState.term);
+        return expectedAnswers.some(answer => userAnswer === answer);
+    },
+
+    // Live auto-check: called on every keystroke, grades the moment the typed
+    // answer matches — the check button becomes optional.
+    maybeAutoCheckReverseAnswer() {
+        if (!this.reverseGameState.term || this.reverseGameState.lastScore) return;
+        const answerInput = document.getElementById('reverse-game-answer');
+        if (!answerInput || answerInput.disabled) return;
+        if (this.isReverseAnswerCorrect(answerInput.value)) {
+            this.checkReverseGameAnswer();
+        }
+    },
+
+    scheduleReverseAutoAdvance() {
+        if (this.reverseAutoAdvanceTimer) clearTimeout(this.reverseAutoAdvanceTimer);
+        this.reverseAutoAdvanceTimer = setTimeout(() => {
+            this.reverseAutoAdvanceTimer = null;
+            this.startReverseGame();
+        }, 900);
     },
 
     revealReverseGameAnswer() {

@@ -1,5 +1,6 @@
 import {
     buildTermPool,
+    buzz,
     createBibleTermPools,
     getAnswerVariants,
     normalizeAnswerText,
@@ -84,6 +85,12 @@ export const scrambleGameMixin = {
     },
 
     startScrambleGame() {
+        // Cancel any pending auto-advance from a previous correct answer.
+        if (this.scrambleAutoAdvanceTimer) {
+            clearTimeout(this.scrambleAutoAdvanceTimer);
+            this.scrambleAutoAdvanceTimer = null;
+        }
+
         const selected = this.pickScrambleGameTerm();
         if (!selected) {
             document.getElementById('scramble-game-status').textContent = 'لا توجد كلمات متاحة لهذه الفئة.';
@@ -106,9 +113,11 @@ export const scrambleGameMixin = {
         document.getElementById('scramble-game-answer').disabled = false;
         document.getElementById('scramble-check-btn').disabled = true;
         document.getElementById('scramble-reveal-btn').disabled = false;
-        document.getElementById('scramble-next-btn').disabled = true;
+        // The word is ready — "كلمة جديدة" now works as a skip.
+        document.getElementById('scramble-next-btn').disabled = false;
         document.getElementById('scramble-game-status').textContent = 'فك الحروف المبعثرة واكتب الكلمة الأصلية.';
         document.getElementById('scramble-game-score').textContent = '0%';
+        this.buildScrambleTiles();
         this.startScrambleGameTimer();
         this.persistScrambleGameState();
     },
@@ -143,12 +152,7 @@ export const scrambleGameMixin = {
             return;
         }
 
-        const userAnswer = normalizeAnswerText(document.getElementById('scramble-game-answer').value);
-        const expectedAnswers = this.scrambleGameState.answers?.length
-            ? this.scrambleGameState.answers
-            : getAnswerVariants(this.scrambleGameState.term);
-
-        const isCorrect = expectedAnswers.some(answer => userAnswer === answer);
+        const isCorrect = this.isScrambleAnswerCorrect(document.getElementById('scramble-game-answer').value);
         const score = isCorrect ? this.calcScrambleScore() : 0;
 
         this.scrambleGameState.lastScore = score;
@@ -161,12 +165,129 @@ export const scrambleGameMixin = {
         this.stopScrambleGameTimer();
         document.getElementById('scramble-check-btn').disabled = true;
         document.getElementById('scramble-next-btn').disabled = false;
+
+        if (isCorrect) {
+            document.getElementById('scramble-reveal-btn').disabled = true;
+            const answerInput = document.getElementById('scramble-game-answer');
+            if (answerInput) answerInput.disabled = true;
+            // Correct answers flow straight into the next word — no click needed.
+            this.scheduleScrambleAutoAdvance();
+        }
+    },
+
+    isScrambleAnswerCorrect(value) {
+        if (!this.scrambleGameState.term) return false;
+        const userAnswer = normalizeAnswerText(value);
+        const expectedAnswers = this.scrambleGameState.answers?.length
+            ? this.scrambleGameState.answers
+            : getAnswerVariants(this.scrambleGameState.term);
+        return expectedAnswers.some(answer => userAnswer === answer);
+    },
+
+    // Live auto-check: called on every keystroke, grades the moment the typed
+    // answer matches — the check button becomes optional.
+    maybeAutoCheckScrambleAnswer() {
+        if (!this.scrambleGameState.term || this.scrambleGameState.lastScore) return;
+        const answerInput = document.getElementById('scramble-game-answer');
+        if (!answerInput || answerInput.disabled) return;
+        if (this.isScrambleAnswerCorrect(answerInput.value)) {
+            this.checkScrambleGameAnswer();
+        }
+    },
+
+    scheduleScrambleAutoAdvance() {
+        if (this.scrambleAutoAdvanceTimer) clearTimeout(this.scrambleAutoAdvanceTimer);
+        this.scrambleAutoAdvanceTimer = setTimeout(() => {
+            this.scrambleAutoAdvanceTimer = null;
+            this.startScrambleGame();
+        }, 900);
+    },
+
+    // ── Tap-to-build letter tiles (mobile-friendly, no keyboard needed) ──
+
+    buildScrambleTiles() {
+        const container = document.getElementById('scramble-tiles');
+        if (!container) return;
+
+        const chars = Array.from(String(this.scrambleGameState.clue || '')).filter(ch => ch.trim());
+        container.innerHTML = '';
+        chars.forEach(char => {
+            const tile = document.createElement('button');
+            tile.type = 'button';
+            tile.className = 'scramble-tile';
+            tile.textContent = char;
+            container.appendChild(tile);
+        });
+        this.syncScrambleTileStates();
+    },
+
+    handleScrambleTileClick(tileEl) {
+        const input = document.getElementById('scramble-game-answer');
+        if (!input || input.disabled || !this.scrambleGameState.term) return;
+        if (!tileEl || tileEl.classList.contains('used')) return;
+
+        input.value = this.insertScrambleWordGap(input.value) + tileEl.textContent;
+        this.syncScrambleTileStates();
+        buzz(15);
+        input.dispatchEvent(new Event('input', { bubbles: true }));
+    },
+
+    scrambleBackspace() {
+        const input = document.getElementById('scramble-game-answer');
+        if (!input || input.disabled) return;
+
+        input.value = String(input.value || '').slice(0, -1).replace(/\s+$/, '');
+        this.syncScrambleTileStates();
+        input.dispatchEvent(new Event('input', { bubbles: true }));
+    },
+
+    // Mark tiles as consumed greedily — stays in sync whether the answer was
+    // built by tapping tiles or typed manually.
+    syncScrambleTileStates() {
+        const container = document.getElementById('scramble-tiles');
+        const input = document.getElementById('scramble-game-answer');
+        if (!container || !input) return;
+
+        const tiles = Array.from(container.querySelectorAll('.scramble-tile'));
+        const typed = Array.from(String(input.value || '')).filter(ch => ch.trim());
+        const usedFlags = tiles.map(() => false);
+
+        typed.forEach(char => {
+            const matchIndex = tiles.findIndex((tile, index) => !usedFlags[index] && tile.textContent === char);
+            if (matchIndex !== -1) usedFlags[matchIndex] = true;
+        });
+
+        tiles.forEach((tile, index) => tile.classList.toggle('used', usedFlags[index]));
+    },
+
+    getScrambleWordLengths() {
+        return String(this.scrambleGameState.term || '')
+            .trim()
+            .split(/\s+/)
+            .filter(Boolean)
+            .map(word => Array.from(word).length);
+    },
+
+    // Multi-word terms: auto-insert the space when a word is completed, so
+    // tapping tiles alone can produce the exact answer.
+    insertScrambleWordGap(value) {
+        const lengths = this.getScrambleWordLengths();
+        if (lengths.length < 2 || !value || /\s$/.test(value)) return value;
+
+        const typedLetters = Array.from(String(value)).filter(ch => ch.trim()).length;
+        let cumulative = 0;
+        for (let i = 0; i < lengths.length - 1; i++) {
+            cumulative += lengths[i];
+            if (typedLetters === cumulative) return `${value} `;
+        }
+        return value;
     },
 
     revealScrambleGameAnswer() {
         if (!this.scrambleGameState.term) return;
 
         document.getElementById('scramble-game-answer').value = this.scrambleGameState.term;
+        this.syncScrambleTileStates();
         document.getElementById('scramble-game-status').textContent = 'تم إظهار الإجابة الصحيحة.';
         document.getElementById('scramble-reveal-btn').disabled = true;
         this.stopScrambleGameTimer();

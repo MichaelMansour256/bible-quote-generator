@@ -1,4 +1,4 @@
-import { normalizeArabicForMatch, normalizeGameText } from './game-utils.js';
+import { buzz, normalizeArabicForMatch, normalizeGameText } from './game-utils.js';
 
 export const memoryGameMixin = {
     buildMaskedVerse(text) {
@@ -29,7 +29,7 @@ export const memoryGameMixin = {
             if (hiddenIndices.includes(index)) {
                 hiddenWords.push(token);
                 const blankIndex = hiddenWords.length - 1;
-                return `<input class="game-blank" type="text" data-hidden-index="${blankIndex}" aria-label="كلمة ناقصة" autocomplete="off" spellcheck="false">`;
+                return `<input class="game-blank" type="text" data-hidden-index="${blankIndex}" aria-label="كلمة ناقصة" autocomplete="off" autocapitalize="none" autocorrect="off" spellcheck="false" enterkeyhint="next">`;
             }
             return this.escapeHtml(token);
         });
@@ -217,6 +217,12 @@ export const memoryGameMixin = {
     },
 
     startMemorizeGameWithVerse(verse) {
+        // Cancel any pending auto-check from the previous round.
+        if (this.memoryAutoCheckTimer) {
+            clearTimeout(this.memoryAutoCheckTimer);
+            this.memoryAutoCheckTimer = null;
+        }
+
         const masked = this.buildMaskedVerse(verse.text);
         this.stopGameTimer();
         this.gameStartTime = Date.now();
@@ -240,11 +246,14 @@ export const memoryGameMixin = {
         this.updateGameScore(0);
         this.persistGameState();
         this.updateNextVersePreview();
+        this.renderGameWordChips();
 
         const blankInputs = document.querySelectorAll('#game-verse-display .game-blank');
         blankInputs.forEach(input => {
             input.addEventListener('input', () => {
                 document.getElementById('game-check-btn').disabled = !this.areGameAnswersFilled();
+                // Every blank correct → grade the round without a click.
+                this.maybeAutoCheckGameAnswers();
             });
         });
     },
@@ -283,6 +292,66 @@ export const memoryGameMixin = {
         }
 
         return Array.from(blankInputs).every(input => input.value.trim().length > 0);
+    },
+
+    // ── Word-bank chips (tap-to-fill, no typing needed on phones) ──
+
+    renderGameWordChips() {
+        const chipsContainer = document.getElementById('game-word-chips');
+        if (!chipsContainer) return;
+
+        const words = (this.gameState.hiddenWords || []).slice();
+        // Shuffle so the chip order doesn't leak the order of the blanks.
+        for (let i = words.length - 1; i > 0; i--) {
+            const j = Math.floor(Math.random() * (i + 1));
+            [words[i], words[j]] = [words[j], words[i]];
+        }
+
+        chipsContainer.innerHTML = '';
+        chipsContainer.hidden = words.length === 0;
+        words.forEach(word => {
+            const chip = document.createElement('button');
+            chip.type = 'button';
+            chip.className = 'memory-chip';
+            chip.textContent = word;
+            chipsContainer.appendChild(chip);
+        });
+    },
+
+    // Fill the first empty blank with the tapped chip's word.
+    // Returns true when a blank was filled (so the chip can dim).
+    fillGameBlankFromChip(word) {
+        if (!this.gameState.verse) return false;
+
+        const blankInputs = Array.from(document.querySelectorAll('#game-verse-display .game-blank'));
+        const target = blankInputs.find(input => !input.disabled && !input.value.trim());
+        if (!target) return false;
+
+        target.value = word;
+        buzz(15);
+
+        // Park the focus on the next empty blank for rapid chip tapping.
+        const next = blankInputs.find(input => !input.disabled && !input.value.trim());
+        if (next && typeof next.focus === 'function') next.focus();
+
+        target.dispatchEvent(new Event('input', { bubbles: true }));
+        return true;
+    },
+
+    // All blanks filled correctly → grade the round automatically.
+    maybeAutoCheckGameAnswers() {
+        if (!this.gameState.verse || this.gameState.autoChecked) return;
+        if (!this.areGameAnswersFilled()) return;
+
+        const userText = this.getFilledGameAnswerText();
+        if (this.calculateGameScore(this.gameState.verse.text, userText) < 100) return;
+
+        this.gameState.autoChecked = true;
+        if (this.memoryAutoCheckTimer) clearTimeout(this.memoryAutoCheckTimer);
+        this.memoryAutoCheckTimer = setTimeout(() => {
+            this.memoryAutoCheckTimer = null;
+            this.checkMemorizeGameAnswer();
+        }, 500);
     },
 
     calculateGameScore(expectedText, userText) {
