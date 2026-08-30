@@ -1,4 +1,4 @@
-import { buzz, normalizeArabicForMatch, normalizeGameText } from './game-utils.js';
+import { buzz, getAdjacentBibleVerse, normalizeArabicForMatch, normalizeGameText } from './game-utils.js';
 
 // Fallback decoy words used when a verse does not have enough non-hidden words
 // to mix into the word bank.
@@ -93,92 +93,12 @@ export const memoryGameMixin = {
     },
 
     getNextVerseReference(currentVerse) {
-        if (!currentVerse || !this.bibleData) {
-            return null;
-        }
-
-        const bookIndex = this.bibleData.books.findIndex(bookItem => {
-            return bookItem.abbreviation === currentVerse.bookId || bookItem.name === currentVerse.bookId || bookItem.name_ar === currentVerse.bookName || bookItem.name === currentVerse.bookName || bookItem.name_ar === currentVerse.book_ar || bookItem.name === currentVerse.book;
-        });
-        if (bookIndex === -1) {
-            return null;
-        }
-
-        const book = this.bibleData.books[bookIndex];
-        const chapterNumber = parseInt(currentVerse.chapter);
-        const verseNumber = parseInt(currentVerse.verse);
-        const chapterList = bibleAPI.getChaptersForBook(this.bibleData, book.abbreviation || book.name);
-        const chapterObj = chapterList.find(ch => ch && ch.number == chapterNumber);
-        if (!chapterObj || !chapterObj.verses) {
-            return null;
-        }
-
-        const verseList = Object.keys(chapterObj.verses)
-            .map(v => parseInt(v))
-            .filter(v => !isNaN(v))
-            .sort((a, b) => a - b);
-
-        const currentIndex = verseList.indexOf(verseNumber);
-        const nextVerseNumber = verseList[currentIndex + 1];
-        if (nextVerseNumber) {
-            const nextText = bibleAPI.getVerse(this.bibleData, currentVerse.bookId, chapterNumber, nextVerseNumber);
-            if (nextText) {
-                return {
-                    bookId: currentVerse.bookId,
-                    chapter: chapterNumber,
-                    verse: nextVerseNumber,
-                    text: nextText,
-                    reference: bibleAPI.formatArabicReference(book.name_ar || book.name, chapterNumber, nextVerseNumber)
-                };
-            }
-        }
-
-        const nextChapter = chapterList.find(ch => ch && ch.number > chapterNumber);
-        if (nextChapter) {
-            const nextChapterVerseNumbers = Object.keys(nextChapter.verses || {})
-                .map(v => parseInt(v))
-                .filter(v => !isNaN(v))
-                .sort((a, b) => a - b);
-            const nextChapterVerseNumber = nextChapterVerseNumbers[0];
-            if (nextChapterVerseNumber) {
-                const nextText = bibleAPI.getVerse(this.bibleData, currentVerse.bookId, nextChapter.number, nextChapterVerseNumber);
-                if (nextText) {
-                    return {
-                        bookId: currentVerse.bookId,
-                        chapter: nextChapter.number,
-                        verse: nextChapterVerseNumber,
-                        text: nextText,
-                        reference: bibleAPI.formatArabicReference(book.name_ar || book.name, nextChapter.number, nextChapterVerseNumber)
-                    };
-                }
-            }
-        }
-
-        const nextBook = this.bibleData.books[bookIndex + 1];
-        if (nextBook) {
-            const nextBookChapters = bibleAPI.getChaptersForBook(this.bibleData, nextBook.abbreviation || nextBook.name);
-            const firstChapter = nextBookChapters.find(ch => ch && ch.number);
-            if (firstChapter && firstChapter.verses) {
-                const firstVerseNumber = Object.keys(firstChapter.verses)
-                    .map(v => parseInt(v))
-                    .filter(v => !isNaN(v))
-                    .sort((a, b) => a - b)[0];
-                if (firstVerseNumber) {
-                    const nextText = bibleAPI.getVerse(this.bibleData, nextBook.abbreviation || nextBook.name, firstChapter.number, firstVerseNumber);
-                    if (nextText) {
-                        return {
-                            bookId: nextBook.abbreviation || nextBook.name,
-                            chapter: firstChapter.number,
-                            verse: firstVerseNumber,
-                            text: nextText,
-                            reference: bibleAPI.formatArabicReference(nextBook.name_ar || nextBook.name, firstChapter.number, firstVerseNumber)
-                        };
-                    }
-                }
-            }
-        }
-
-        return null;
+        return getAdjacentBibleVerse(
+            this.bibleData,
+            currentVerse,
+            1,
+            (bookName, chapter, verse) => bibleAPI.formatArabicReference(bookName, chapter, verse)
+        );
     },
 
     updateNextVersePreview() {

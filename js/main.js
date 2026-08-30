@@ -155,6 +155,11 @@ class BibleQuoteGenerator {
             if (typeof this.restorePendingGameState === 'function' && document.getElementById('game-verse-display')) {
                 this.restorePendingGameState();
             }
+            // Once the full Bible is available the memory game can resolve the
+            // next verse for its button (a restored round may need re-preview).
+            if (typeof this.updateNextVersePreview === 'function' && document.getElementById('game-next-reference')) {
+                this.updateNextVersePreview();
+            }
             this.bibleDataReady = true;
         }
         return this.bibleData;
@@ -420,6 +425,8 @@ class BibleQuoteGenerator {
         const bookSelect = document.getElementById('book-select');
         const chapterSelect = document.getElementById('chapter-select');
         const verseSelect = document.getElementById('verse-select');
+        const quotePrevBtn = document.getElementById('quote-prev-btn');
+        const quoteNextBtn = document.getElementById('quote-next-btn');
 
         if (generateBtn) generateBtn.addEventListener('click', () => this.generateImage());
         if (downloadBtn) downloadBtn.addEventListener('click', () => this.downloadImage());
@@ -427,6 +434,8 @@ class BibleQuoteGenerator {
         if (bookSelect) bookSelect.addEventListener('change', () => this.onBookChange());
         if (chapterSelect) chapterSelect.addEventListener('change', () => this.onChapterChange());
         if (verseSelect) verseSelect.addEventListener('change', () => this.onVerseChange());
+        if (quotePrevBtn) quotePrevBtn.addEventListener('click', () => this.loadAdjacentQuoteVerse(-1));
+        if (quoteNextBtn) quoteNextBtn.addEventListener('click', () => this.loadAdjacentQuoteVerse(1));
 
         const searchInput = document.getElementById('verse-search');
         if (searchInput) searchInput.value = '';
@@ -844,6 +853,8 @@ class BibleQuoteGenerator {
             document.getElementById('restore-verse-btn').disabled = true;
             document.getElementById('use-selection-btn').disabled = true;
             this.showValidationMessage('تم تحميل الآية بنجاح', 'success');
+            // Re-evaluate the prev/next verse buttons for the newly loaded verse.
+            this.updateQuoteAdjacentButtons();
         } else {
             this.showValidationMessage('الآية غير موجودة', 'error');
         }

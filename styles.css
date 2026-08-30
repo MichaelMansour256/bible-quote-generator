@@ -1784,6 +1784,40 @@ main {
     opacity: 0.6;
 }
 
+/* Previous / next verse buttons on the quote card selection panel */
+.quote-nav-row {
+    display: flex;
+    flex-direction: row;
+    gap: 10px;
+    margin-top: 10px;
+}
+
+.quote-nav-btn {
+    flex: 1 1 0;
+    min-width: 0;
+    padding: 10px 8px;
+    border: none;
+    border-radius: 10px;
+    background: linear-gradient(135deg, #4a6cf7 0%, #5e7cef 100%);
+    color: #ffffff;
+    font-family: inherit;
+    font-size: 0.95rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.quote-nav-btn:hover:not(:disabled) {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 18px rgba(74, 108, 247, 0.3);
+}
+
+.quote-nav-btn:disabled {
+    background: #6c757d;
+    cursor: not-allowed;
+    opacity: 0.6;
+}
+
 .search-results {
     max-height: 320px;
     overflow-y: auto;

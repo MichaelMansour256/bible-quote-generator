@@ -1,3 +1,5 @@
+import { getAdjacentBibleVerse } from './games/game-utils.js';
+
 const FONT_MAP = {
     'thuluth-deco': 'Thuluth Deco, serif',
     'amiri': 'Amiri, serif',
@@ -14,6 +16,11 @@ const FONT_MAP = {
 };
 
 const DECORATIVE_FONTS = new Set(['mirza', 'katibeh', 'diwan-kufi']);
+
+// Formats a book/chapter/verse into the app's Arabic reference style.
+function formatBibleReference(bookName, chapter, verse) {
+    return bibleAPI.formatArabicReference(bookName, chapter, verse);
+}
 
 export const quoteFeatureMixin = {
     getFontFamily(key) {
@@ -379,6 +386,7 @@ export const quoteFeatureMixin = {
 
         // Generate the image immediately
         this.generateImage();
+        this.updateQuoteAdjacentButtons();
 
         const verseSelectionSection = document.querySelector('.verse-selection-section');
         if (verseSelectionSection) {
@@ -392,6 +400,73 @@ export const quoteFeatureMixin = {
     selectVerse(verseData) {
         if (verseData.isChapterResult) return; // chapter results need expansion, not direct selection
         this.selectAndLoadVerse(verseData);
+    },
+
+    // Enables/disables the previous/next verse buttons based on where the
+    // current verse sits in the full Bible. Call this after every verse load.
+    updateQuoteAdjacentButtons() {
+        const prevBtn = document.getElementById('quote-prev-btn');
+        const nextBtn = document.getElementById('quote-next-btn');
+
+        if (!this.currentVerse || !this.currentVerse.text || !this.bibleData) {
+            if (prevBtn) prevBtn.disabled = true;
+            if (nextBtn) nextBtn.disabled = true;
+            return;
+        }
+
+        const previous = getAdjacentBibleVerse(this.bibleData, this.currentVerse, -1);
+        const next = getAdjacentBibleVerse(this.bibleData, this.currentVerse, 1);
+        if (prevBtn) prevBtn.disabled = !previous;
+        if (nextBtn) nextBtn.disabled = !next;
+    },
+
+    // Loads the previous (-1) or next (+1) verse onto the quote card — syncs
+    // the dropdowns, fills the verse text/reference, and re-renders the image
+    // so consecutive verses can be turned into cards back-to-back.
+    loadAdjacentQuoteVerse(direction) {
+        if (!this.currentVerse || !this.currentVerse.text || !this.bibleData) return;
+
+        const adjacent = getAdjacentBibleVerse(
+            this.bibleData,
+            this.currentVerse,
+            direction,
+            formatBibleReference
+        );
+
+        if (!adjacent) {
+            this.showValidationMessage(
+                direction === 1
+                    ? 'لا توجد آية تالية — أنت في آخر آية في الكتاب.'
+                    : 'لا توجد آية سابقة — أنت في أول آية في الكتاب.',
+                'warning'
+            );
+            return;
+        }
+
+        this.currentVerse = adjacent;
+
+        document.getElementById('verse-text').value = adjacent.text;
+        document.getElementById('verse-reference').value = adjacent.reference;
+        this._fullVerseText = null;
+        document.getElementById('restore-verse-btn').disabled = true;
+        document.getElementById('use-selection-btn').disabled = true;
+        document.getElementById('load-verse-btn').disabled = false;
+
+        // Sync the dropdowns so the selection reflects the loaded verse.
+        const bookSelect = document.getElementById('book-select');
+        const chapterSelect = document.getElementById('chapter-select');
+        const verseSelect = document.getElementById('verse-select');
+        bookSelect.value = adjacent.bookId;
+        this.onBookChange();
+        chapterSelect.value = String(adjacent.chapter);
+        this.onChapterChange();
+        verseSelect.value = String(adjacent.verse);
+        this.onVerseChange();
+
+        this.updateQuoteAdjacentButtons();
+
+        // Regenerate the card image for the new verse.
+        this.generateImage();
     },
 
     showValidationMessage(message, type) {

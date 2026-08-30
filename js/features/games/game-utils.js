@@ -517,6 +517,128 @@ export function isWordleGuessValid(dictionary, normalizedGuess) {
     return guess.length > 0 && dictionary.has(guess);
 }
 
+// ── Bible verse navigation (next / previous verse) ─────────────────────────
+
+// Verse numbers present in a chapter, sorted ascending. Handles both shapes of
+// chapter data: an array of { verse, text } items (raw API payload) and an
+// object keyed by verse number (after bibleAPI.getChaptersForBook conversion).
+function getChapterVerseNumbers(chapter) {
+    if (!chapter || !chapter.verses) return [];
+    const items = Array.isArray(chapter.verses) ? chapter.verses : Object.values(chapter.verses);
+    return items
+        .map(item => {
+            if (item && item.verse !== undefined && item.verse !== null) return parseInt(item.verse, 10);
+            return NaN;
+        })
+        .filter(v => Number.isFinite(v))
+        .sort((a, b) => a - b);
+}
+
+// Verse text for a specific verse number within a chapter (arrays OR objects).
+function getChapterVerseText(chapter, verseNumber) {
+    if (!chapter || !chapter.verses) return null;
+    let item;
+    if (Array.isArray(chapter.verses)) {
+        item = chapter.verses.find(v => v && parseInt(v.verse, 10) === verseNumber);
+    } else {
+        item = chapter.verses[String(verseNumber)];
+    }
+    if (!item) return null;
+    return typeof item === 'string' ? item : (item.text || null);
+}
+
+function sortBibleChapters(chapters) {
+    return (chapters || [])
+        .filter(ch => ch && ch.number !== undefined && ch.number !== null)
+        .sort((a, b) => parseInt(a.number, 10) - parseInt(b.number, 10));
+}
+
+// Returns the verse immediately before (direction -1) or after (direction +1)
+// `currentVerse` in canonical Bible order, or null at the boundary / when the
+// data cannot be resolved. `formatReference(bookName, chapter, verse)` is
+// optional — when omitted a plain "book chapter:verse" reference is returned.
+export function getAdjacentBibleVerse(bibleData, currentVerse, direction = 1, formatReference) {
+    if (!bibleData || !Array.isArray(bibleData.books) || !currentVerse) return null;
+    if (direction !== 1 && direction !== -1) return null;
+
+    const bookIndex = bibleData.books.findIndex(book =>
+        book && (
+            (book.abbreviation && book.abbreviation === currentVerse.bookId) ||
+            (book.name && book.name === currentVerse.bookId) ||
+            (book.name_ar && book.name_ar === currentVerse.bookName) ||
+            (book.name && book.name === currentVerse.bookName)
+        )
+    );
+    if (bookIndex === -1) return null;
+
+    const book = bibleData.books[bookIndex];
+    const chapters = sortBibleChapters(book.chapters);
+    const chapterIndex = chapters.findIndex(ch => parseInt(ch.number, 10) === parseInt(currentVerse.chapter, 10));
+    if (chapterIndex === -1) return null;
+
+    const chapter = chapters[chapterIndex];
+    const verseNumbers = getChapterVerseNumbers(chapter);
+    const verseIndex = verseNumbers.indexOf(parseInt(currentVerse.verse, 10));
+    if (verseIndex === -1) return null;
+
+    const buildResult = (targetBook, targetChapter, targetVerseNumber) => {
+        const targetText = getChapterVerseText(targetChapter, targetVerseNumber);
+        if (!targetText) return null;
+        const targetBookName = targetBook.name_ar || targetBook.name;
+        const reference = typeof formatReference === 'function'
+            ? formatReference(targetBookName, targetChapter.number, targetVerseNumber)
+            : `${targetBookName} ${targetChapter.number}:${targetVerseNumber}`;
+        return {
+            bookId: targetBook.abbreviation || targetBook.name,
+            bookName: targetBookName,
+            chapter: targetChapter.number,
+            verse: targetVerseNumber,
+            text: targetText,
+            reference
+        };
+    };
+
+    // Same chapter.
+    const targetVerseIndex = verseIndex + direction;
+    if (targetVerseIndex >= 0 && targetVerseIndex < verseNumbers.length) {
+        return buildResult(book, chapter, verseNumbers[targetVerseIndex]);
+    }
+
+    // Adjacent chapter within the same book.
+    const targetChapterIndex = chapterIndex + direction;
+    if (targetChapterIndex >= 0 && targetChapterIndex < chapters.length) {
+        const targetChapter = chapters[targetChapterIndex];
+        const targetChapterVerseNumbers = getChapterVerseNumbers(targetChapter);
+        if (targetChapterVerseNumbers.length) {
+            const targetVerseNumber = direction === 1
+                ? targetChapterVerseNumbers[0]
+                : targetChapterVerseNumbers[targetChapterVerseNumbers.length - 1];
+            return buildResult(book, targetChapter, targetVerseNumber);
+        }
+    }
+
+    // First / last chapter of the adjacent book.
+    const targetBookIndex = bookIndex + direction;
+    if (targetBookIndex >= 0 && targetBookIndex < bibleData.books.length) {
+        const targetBook = bibleData.books[targetBookIndex];
+        const targetBookChapters = sortBibleChapters(targetBook.chapters);
+        if (targetBookChapters.length) {
+            const targetChapter = direction === 1
+                ? targetBookChapters[0]
+                : targetBookChapters[targetBookChapters.length - 1];
+            const targetChapterVerseNumbers = getChapterVerseNumbers(targetChapter);
+            if (targetChapterVerseNumbers.length) {
+                const targetVerseNumber = direction === 1
+                    ? targetChapterVerseNumbers[0]
+                    : targetChapterVerseNumbers[targetChapterVerseNumbers.length - 1];
+                return buildResult(targetBook, targetChapter, targetVerseNumber);
+            }
+        }
+    }
+
+    return null;
+}
+
 // Single-word Bible terms (no spaces/digits) grouped for the Wordle game,
 // de-duplicated by their normalized form so two spellings of the same word
 // never both appear as answers.
