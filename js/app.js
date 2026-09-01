@@ -192,23 +192,30 @@ class BibleQuoteGenerator {
         if (!splash) return;
 
         const startedAt = Date.now();
-        const MIN_DISPLAY = 1200; // keep the splash visible at least this long
+        const MIN_DISPLAY = 800; // keep the splash visible briefly for the branded intro
 
         const hideSplash = () => {
             const delay = Math.max(0, MIN_DISPLAY - (Date.now() - startedAt));
-            setTimeout(() => {
+            const finalHide = () => {
                 splash.classList.add('splash-hidden');
                 setTimeout(() => {
                     if (splash.parentNode) splash.parentNode.removeChild(splash);
-                }, 700);
-            }, delay);
+                }, 400);
+            };
+
+            if (delay > 0) {
+                setTimeout(finalHide, delay);
+            } else {
+                finalHide();
+            }
         };
 
-        if (document.readyState === 'complete') {
+        if (document.readyState === 'complete' || document.readyState === 'interactive') {
             hideSplash();
         } else {
             window.addEventListener('load', hideSplash, { once: true });
-            setTimeout(hideSplash, 3500); // safety fallback
+            window.addEventListener('pageshow', hideSplash, { once: true });
+            setTimeout(hideSplash, 1800); // guaranteed safety fallback
         }
     }
 
