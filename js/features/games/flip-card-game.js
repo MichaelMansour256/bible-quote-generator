@@ -217,6 +217,7 @@ export function createFlipCardGameMixin({
             const statusEl = document.getElementById(`${prefix}-game-status`);
             if (flipped) {
                 card.setAttribute('aria-pressed', 'true');
+                const item = this[stateProp][itemProp];
                 if (statusEl) statusEl.textContent = flippedStatus(item);
                 this[`set${stem}GradeButtons`](true);
             } else {
