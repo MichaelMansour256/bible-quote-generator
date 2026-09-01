@@ -120,3 +120,97 @@ describe('getAdjacentBibleVerse — backward (-1)', () => {
         assert.equal(prev, null);
     });
 });
+
+describe('getAdjacentBibleVerse — raw getbible.net payload (chapters use `chapter` field)', () => {
+    // Mirrors the REAL live payload shape (verified against
+    // https://api.getbible.net/v2/arabicsv.json): books carry
+    // { nr, name, chapters }, chapters carry { chapter, name, verses },
+    // verses carry { chapter, verse, name, text } — there is no
+    // `number`, `abbreviation`, or `name_ar` field anywhere.
+    function makeRawApiBibleData() {
+        return {
+            translation: 'arabicsv',
+            books: [
+                {
+                    nr: 1,
+                    name: 'تكوين',
+                    chapters: [
+                        {
+                            chapter: 1,
+                            name: 'تكوين 1',
+                            verses: [
+                                { chapter: 1, verse: 1, name: 'تكوين 1:1', text: 'فِي الْبَدْءِ خَلَقَ اللهُ' },
+                                { chapter: 1, verse: 2, name: 'تكوين 1:2', text: 'وَكَانَتِ الأَرْضُ خَرِبَةً' },
+                                { chapter: 1, verse: 3, name: 'تكوين 1:3', text: 'وَقَالَ اللهُ لِيَكُنْ نُورٌ' }
+                            ]
+                        },
+                        {
+                            chapter: 2,
+                            name: 'تكوين 2',
+                            verses: [
+                                { chapter: 2, verse: 1, name: 'تكوين 2:1', text: 'أُكْمِلَتِ السَّمَاوَاتُ' },
+                                { chapter: 2, verse: 2, name: 'تكوين 2:2', text: 'وَاسْتَرَاحَ اللهُ' }
+                            ]
+                        }
+                    ]
+                },
+                {
+                    nr: 2,
+                    name: 'خروج',
+                    chapters: [
+                        {
+                            chapter: 1,
+                            name: 'خروج 1',
+                            verses: [
+                                { chapter: 1, verse: 1, name: 'خروج 1:1', text: 'وَهَذِهِ أَسْمَاءُ بَنِي إِسْرَائِيلَ' },
+                                { chapter: 1, verse: 2, name: 'خروج 1:2', text: 'رَأُوبَيْنُ شِمْعُونُ' }
+                            ]
+                        }
+                    ]
+                }
+            ]
+        };
+    }
+
+    test('same chapter: returns the next verse', () => {
+        const next = getAdjacentBibleVerse(makeRawApiBibleData(), { bookId: 'تكوين', bookName: 'تكوين', chapter: 1, verse: 1 }, 1);
+        assert.ok(next, 'expected the next verse to resolve against the raw API payload');
+        assert.equal(next.bookName, 'تكوين');
+        assert.equal(next.chapter, 1);
+        assert.equal(next.verse, 2);
+        assert.equal(next.reference, 'تكوين 1:2');
+    });
+
+    test('chapter end: jumps to the first verse of the next chapter', () => {
+        const next = getAdjacentBibleVerse(makeRawApiBibleData(), { bookId: 'تكوين', bookName: 'تكوين', chapter: 1, verse: 3 }, 1);
+        assert.ok(next);
+        assert.equal(next.chapter, 2);
+        assert.equal(next.verse, 1);
+    });
+
+    test('book end: jumps to the first verse of the next book', () => {
+        const next = getAdjacentBibleVerse(makeRawApiBibleData(), { bookId: 'تكوين', bookName: 'تكوين', chapter: 2, verse: 2 }, 1);
+        assert.ok(next);
+        assert.equal(next.bookId, 'خروج');
+        assert.equal(next.chapter, 1);
+        assert.equal(next.verse, 1);
+    });
+
+    test('book start: jumps to the last verse of the previous book', () => {
+        const prev = getAdjacentBibleVerse(makeRawApiBibleData(), { bookId: 'خروج', bookName: 'خروج', chapter: 1, verse: 1 }, -1);
+        assert.ok(prev);
+        assert.equal(prev.bookId, 'تكوين');
+        assert.equal(prev.chapter, 2);
+        assert.equal(prev.verse, 2);
+    });
+
+    test('very first verse of the Bible: returns null going backward', () => {
+        const prev = getAdjacentBibleVerse(makeRawApiBibleData(), { bookId: 'تكوين', bookName: 'تكوين', chapter: 1, verse: 1 }, -1);
+        assert.equal(prev, null);
+    });
+
+    test('very last verse of the Bible: returns null going forward', () => {
+        const next = getAdjacentBibleVerse(makeRawApiBibleData(), { bookId: 'خروج', bookName: 'خروج', chapter: 1, verse: 2 }, 1);
+        assert.equal(next, null);
+    });
+});

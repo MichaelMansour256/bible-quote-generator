@@ -549,7 +549,17 @@ function getChapterVerseText(chapter, verseNumber) {
 
 function sortBibleChapters(chapters) {
     return (chapters || [])
-        .filter(ch => ch && ch.number !== undefined && ch.number !== null)
+        .filter(ch => {
+            if (!ch) return false;
+            // Raw API chapters carry their number as `chapter`; converted
+            // payloads (bibleAPI.getChaptersForBook) use `number`.
+            return (ch.number !== undefined && ch.number !== null) ||
+                (ch.chapter !== undefined && ch.chapter !== null);
+        })
+        .map(ch => {
+            const number = (ch.number !== undefined && ch.number !== null) ? ch.number : ch.chapter;
+            return number === ch.number ? ch : { ...ch, number };
+        })
         .sort((a, b) => parseInt(a.number, 10) - parseInt(b.number, 10));
 }
 
