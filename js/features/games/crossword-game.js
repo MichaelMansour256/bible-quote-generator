@@ -136,6 +136,25 @@ const CROSSWORD_LAYOUT = [
 
 export const crosswordGameMixin = {
     async loadCrosswordDictionaryEntries() {
+        const difficulty = this.crosswordGameState.difficulty || 'medium';
+
+        // The easy level uses the dedicated simple-clue puzzle set (short
+        // trivia-style questions like "من بنى الفلك؟") for a gentler
+        // experience. It falls back to the general database when the file
+        // is unavailable. Other levels keep the dictionary-clue puzzles.
+        if (difficulty === 'easy') {
+            const easyUrl = this.getCrosswordDictionaryUrl ? this.getCrosswordDictionaryUrl('crossword-easy') : '../js/data/bible-dictionary/crosswords_easy.json';
+            const easyDatabase = await loadCrosswordPuzzleDatabase(easyUrl);
+            const easyPuzzles = (easyDatabase && Array.isArray(easyDatabase.puzzles))
+                ? easyDatabase.puzzles.filter(p => p && Array.isArray(p.words) && p.words.length)
+                : [];
+            if (easyPuzzles.length) {
+                const easyPuzzle = easyPuzzles[Math.floor(Math.random() * easyPuzzles.length)];
+                return this.applyCrosswordPuzzle(easyPuzzle);
+            }
+            console.warn('Simple easy crossword set unavailable, falling back to the general puzzle database');
+        }
+
         const puzzleDataUrl = this.getCrosswordDictionaryUrl ? this.getCrosswordDictionaryUrl('crossword') : '../js/data/bible-dictionary/bible_crossword_1000.json';
         const database = await loadCrosswordPuzzleDatabase(puzzleDataUrl);
 
@@ -144,7 +163,6 @@ export const crosswordGameMixin = {
             return this.loadCrosswordFromFallback();
         }
 
-        const difficulty = this.crosswordGameState.difficulty || 'medium';
         const puzzlesByDifficulty = database.puzzles.filter(p => p.difficulty === difficulty);
         const selectedPuzzle = puzzlesByDifficulty.length > 0
             ? puzzlesByDifficulty[Math.floor(Math.random() * puzzlesByDifficulty.length)]
@@ -155,17 +173,33 @@ export const crosswordGameMixin = {
             return this.loadCrosswordFromFallback();
         }
 
-        const entries = selectedPuzzle.words.map(word => ({
-            number: word.number,
-            answer: normalizeCrosswordTerm(word.answer),
-            clue: word.clue || word.display || word.answer,
-            direction: word.direction === 'down' ? 'down' : 'across',
-            row: Number.isInteger(word.row) ? word.row : 0,
-            col: Number.isInteger(word.col) ? word.col : 0,
-            source_id: word.source_id,
-            display: word.display,
-            category: 'dictionary'
-        }));
+        return this.applyCrosswordPuzzle(selectedPuzzle);
+    },
+
+    // Maps raw puzzle words onto game entries, auto-places them on a fresh
+    // board, and resets the round state. Works for both the prebuilt layouts
+    // (words carry row/col/direction) and the simple clue-only sets (the
+    // board builder generates an intersecting layout). Duplicate answers
+    // inside one puzzle are dropped so every clue stays answerable.
+    applyCrosswordPuzzle(selectedPuzzle) {
+        const seenAnswers = new Set();
+        const entries = [];
+        (selectedPuzzle.words || []).forEach(word => {
+            const answer = normalizeCrosswordTerm(word.answer);
+            if (!answer || seenAnswers.has(answer)) return;
+            seenAnswers.add(answer);
+            entries.push({
+                number: word.number,
+                answer,
+                clue: word.clue || word.display || word.answer,
+                direction: word.direction === 'down' ? 'down' : 'across',
+                row: Number.isInteger(word.row) ? word.row : 0,
+                col: Number.isInteger(word.col) ? word.col : 0,
+                source_id: word.source_id,
+                display: word.display,
+                category: 'dictionary'
+            });
+        });
 
         const puzzle = this.buildCrosswordPuzzle(entries);
         clearTimeout(this.crosswordAdvanceTimer);
@@ -261,8 +295,9 @@ export const crosswordGameMixin = {
     },
 
     getCrosswordDictionaryUrl(type = 'dictionary') {
-        const path = window.location.pathname || '';
+        const path = (typeof window !== 'undefined' && window.location && window.location.pathname) || '';
         const baseUrl = path.includes('/pages/') ? '../js/data/bible-dictionary/' : 'js/data/bible-dictionary/';
+        if (type === 'crossword-easy') return `${baseUrl}crosswords_easy.json`;
         return type === 'crossword' ? `${baseUrl}bible_crossword_1000.json` : `${baseUrl}bible_dictionary_game.json`;
     },
 
