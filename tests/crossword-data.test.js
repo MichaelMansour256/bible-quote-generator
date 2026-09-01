@@ -3,6 +3,34 @@ import assert from 'node:assert/strict';
 
 import { selectCrosswordEntries, normalizeCrosswordTerm, crosswordGameMixin } from '../js/features/games/crossword-game.js';
 
+describe('crossword new-board flow', () => {
+    test('exposes a new-board loader on the game mixin', () => {
+        assert.equal(typeof crosswordGameMixin.startNewCrosswordBoard, 'function');
+    });
+
+    test('startNewCrosswordBoard flags a loading status and loads a fresh puzzle', async () => {
+        let loaded = 0;
+        const context = {
+            crosswordGameState: { status: 'old status' },
+            crosswordAdvanceTimer: 42,
+            renderCrosswordPuzzle() {
+                this.rendered = (this.rendered || 0) + 1;
+            },
+            loadCrosswordDictionaryEntries() {
+                loaded += 1;
+                return 'puzzle-loaded';
+            }
+        };
+
+        const result = await crosswordGameMixin.startNewCrosswordBoard.call(context);
+
+        assert.equal(result, 'puzzle-loaded');
+        assert.equal(loaded, 1);
+        assert.equal(context.crosswordGameState.status, 'جارٍ تجهيز لوحة جديدة...');
+        assert.equal(context.rendered, 1);
+    });
+});
+
 describe('crossword dictionary selection', () => {
     test('normalizes Arabic dictionary terms for game use', () => {
         assert.equal(normalizeCrosswordTerm('آبَلَ'), 'آبل');

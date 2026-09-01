@@ -211,6 +211,17 @@ export const crosswordGameMixin = {
         return fallback;
     },
 
+    // Loads a completely fresh board (a new random puzzle for the current
+    // difficulty) instead of just hopping to another clue on the same board.
+    startNewCrosswordBoard() {
+        clearTimeout(this.crosswordAdvanceTimer);
+        if (this.crosswordGameState) {
+            this.crosswordGameState.status = 'جارٍ تجهيز لوحة جديدة...';
+            this.renderCrosswordPuzzle();
+        }
+        return this.loadCrosswordDictionaryEntries();
+    },
+
     getCrosswordEntriesFromSource(payload = []) {
         const fallback = CROSSWORD_LAYOUT.map(item => ({
             answer: item.answer,

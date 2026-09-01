@@ -126,6 +126,64 @@
     gap: 12px;
 }
 
+/* Difficulty selector shared by game control bars (e.g. crossword). */
+.game-difficulty-select {
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 10px;
+}
+
+.game-difficulty-select label {
+    font-weight: 700;
+    color: var(--game-text);
+    white-space: nowrap;
+}
+
+.game-difficulty-select select {
+    background: var(--input-bg);
+    border: 1px solid var(--input-border);
+    color: var(--input-color);
+    border-radius: 12px;
+    padding: 10px 14px;
+    font-size: 0.98rem;
+    font-weight: 700;
+    font-family: inherit;
+    cursor: pointer;
+    min-width: 150px;
+    transition: border-color 0.25s ease, background 0.25s ease, box-shadow 0.25s ease;
+    -webkit-appearance: none;
+    appearance: none;
+    background-image: linear-gradient(45deg, transparent 50%, var(--input-color) 50%), linear-gradient(135deg, var(--input-color) 50%, transparent 50%);
+    background-position: calc(0% + 16px) calc(50% + 2px), calc(0% + 21px) calc(50% + 2px);
+    background-size: 5px 5px, 5px 5px;
+    background-repeat: no-repeat;
+    padding-inline-start: 34px;
+}
+
+html[dir="rtl"] .game-difficulty-select select {
+    background-position: calc(100% - 16px) calc(50% + 2px), calc(100% - 21px) calc(50% + 2px);
+    padding-inline-start: 14px;
+    padding-inline-end: 34px;
+}
+
+.game-difficulty-select select:hover {
+    border-color: var(--accent-2);
+}
+
+.game-difficulty-select select:focus {
+    outline: none;
+    border-color: var(--accent-2);
+    background-color: var(--input-bg-focus, var(--input-bg));
+    box-shadow: 0 0 0 3px rgba(91, 140, 255, 0.14);
+}
+
+.game-difficulty-select select option {
+    background: var(--select-option-bg);
+    color: var(--input-color);
+    font-weight: 400;
+}
+
 .game-btn {
     border: none;
     border-radius: 12px;

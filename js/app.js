@@ -683,7 +683,9 @@ class BibleQuoteGenerator {
         const answerInput = document.getElementById('crossword-answer');
         const difficultySelect = document.getElementById('crossword-difficulty-select');
 
-        if (nextBtn) nextBtn.addEventListener('click', () => this.advanceCrosswordPuzzle());
+        // "New Board" loads a whole fresh puzzle, not just the next clue —
+        // switching clues is already possible by clicking a clue or a cell.
+        if (nextBtn) nextBtn.addEventListener('click', () => this.startNewCrosswordBoard());
         if (checkBtn) checkBtn.addEventListener('click', () => this.checkCrosswordAnswer());
         if (revealBtn) revealBtn.addEventListener('click', () => this.revealCrosswordAnswer());
         if (answerInput) {
@@ -706,17 +708,21 @@ class BibleQuoteGenerator {
             difficultySelect.addEventListener('change', () => {
                 this.crosswordGameState.difficulty = difficultySelect.value;
                 localStorage.setItem(this.crosswordDifficultyKey, difficultySelect.value);
-                this.loadCrosswordDictionaryEntries();
+                // Rebuild the whole board for the selected difficulty level.
+                this.startNewCrosswordBoard();
             });
         }
     }
 
     loadCrosswordGamePreferences() {
         const saved = localStorage.getItem(this.crosswordDifficultyKey);
-        if (saved) {
+        if (!saved) return;
+        const select = document.getElementById('crossword-difficulty-select');
+        // Only apply saved values that still exist as dropdown options so a
+        // stale localStorage entry can never leave the dropdown blank.
+        if (select && Array.from(select.options).some(option => option.value === saved)) {
+            select.value = saved;
             this.crosswordGameState.difficulty = saved;
-            const select = document.getElementById('crossword-difficulty-select');
-            if (select) select.value = saved;
         }
     }
 
