@@ -99,6 +99,36 @@ export function selectCrosswordEntries(dictionary = {}, count = 6) {
         .slice(0, count);
 }
 
+export async function loadCrosswordPuzzleDatabase(url = '../js/data/bible-dictionary/bible_crossword_1000.json') {
+    if (typeof fetch !== 'function') {
+        return null;
+    }
+
+    try {
+        const response = await fetch(url, { cache: 'force-cache' });
+        if (!response.ok) return null;
+        return await response.json();
+    } catch (error) {
+        console.warn('Failed to load crossword puzzle database', error);
+        return null;
+    }
+}
+
+export async function loadCrosswordPuzzleDatabase(url = '../js/data/bible-dictionary/bible_crossword_1000.json') {
+    if (typeof fetch !== 'function') {
+        return null;
+    }
+
+    try {
+        const response = await fetch(url, { cache: 'force-cache' });
+        if (!response.ok) return null;
+        return await response.json();
+    } catch (error) {
+        console.warn('Failed to load crossword puzzle database', error);
+        return null;
+    }
+}
+
 export async function loadCrosswordDictionaryData(url = '../js/data/bible-dictionary/bible_dictionary_game.json') {
     if (typeof fetch !== 'function') {
         return [];
@@ -120,6 +150,66 @@ const CROSSWORD_LAYOUT = [
 ];
 
 export const crosswordGameMixin = {
+    async loadCrosswordDictionaryEntries() {
+        const puzzleDataUrl = this.getCrosswordDictionaryUrl ? this.getCrosswordDictionaryUrl('crossword') : '../js/data/bible-dictionary/bible_crossword_1000.json';
+        const database = await loadCrosswordPuzzleDatabase(puzzleDataUrl);
+
+        if (!database || !database.puzzles || !database.puzzles.length) {
+            console.warn('No prebuilt crossword puzzles available, using fallback');
+            return this.loadCrosswordFromFallback();
+        }
+
+        const difficulty = this.crosswordGameState.difficulty || 'medium';
+        const puzzlesByDifficulty = database.puzzles.filter(p => p.difficulty === difficulty);
+        const selectedPuzzle = puzzlesByDifficulty.length > 0
+            ? puzzlesByDifficulty[Math.floor(Math.random() * puzzlesByDifficulty.length)]
+            : database.puzzles[Math.floor(Math.random() * database.puzzles.length)];
+
+        if (!selectedPuzzle || !selectedPuzzle.words) {
+            console.warn('Selected puzzle is invalid, using fallback');
+            return this.loadCrosswordFromFallback();
+        }
+
+        const entries = selectedPuzzle.words.map(word => ({
+            number: word.number,
+            answer: normalizeCrosswordTerm(word.answer),
+            clue: word.clue || word.display || word.answer,
+            direction: word.direction === 'down' ? 'down' : 'across',
+            row: Number.isInteger(word.row) ? word.row : 0,
+            col: Number.isInteger(word.col) ? word.col : 0,
+            source_id: word.source_id,
+            display: word.display,
+            category: 'dictionary'
+        }));
+
+        this.crosswordGameState.entries = entries;
+        this.crosswordGameState.currentIndex = 0;
+        this.crosswordGameState.puzzle = this.buildCrosswordPuzzle(entries);
+        this.crosswordGameState.current = entries[0];
+        this.crosswordGameState.puzzleTitle = selectedPuzzle.title;
+        this.renderCrosswordPuzzle();
+
+        return entries;
+    },
+
+    async loadCrosswordFromFallback() {
+        const fallback = CROSSWORD_LAYOUT.map(item => ({
+            answer: item.answer,
+            clue: item.clue,
+            direction: item.direction,
+            row: item.row,
+            col: item.col,
+            category: 'dictionary'
+        }));
+
+        this.crosswordGameState.entries = fallback;
+        this.crosswordGameState.currentIndex = 0;
+        this.crosswordGameState.puzzle = this.buildCrosswordPuzzle(fallback);
+        this.crosswordGameState.current = fallback[0];
+        this.renderCrosswordPuzzle();
+        return fallback;
+    },
+
     getCrosswordEntriesFromSource(payload = []) {
         const fallback = CROSSWORD_LAYOUT.map(item => ({
             answer: item.answer,
@@ -158,25 +248,10 @@ export const crosswordGameMixin = {
         return ordered.slice(0, 5);
     },
 
-    async loadCrosswordDictionaryEntries() {
-        const dataUrl = this.getCrosswordDictionaryUrl ? this.getCrosswordDictionaryUrl() : '../js/data/bible-dictionary/bible_dictionary_game.json';
-        const payload = await loadCrosswordDictionaryData(dataUrl);
-        const selected = this.getCrosswordEntriesFromSource(payload);
-
-        this.crosswordGameState.entries = selected;
-        this.crosswordGameState.currentIndex = 0;
-        this.crosswordGameState.puzzle = this.buildCrosswordPuzzle(selected);
-        this.crosswordGameState.current = selected[0];
-        this.renderCrosswordPuzzle();
-
-        return selected;
-    },
-
-    getCrosswordDictionaryUrl() {
+    getCrosswordDictionaryUrl(type = 'dictionary') {
         const path = window.location.pathname || '';
-        return path.includes('/pages/')
-            ? '../js/data/bible-dictionary/bible_dictionary_game.json'
-            : 'js/data/bible-dictionary/bible_dictionary_game.json';
+        const baseUrl = path.includes('/pages/') ? '../js/data/bible-dictionary/' : 'js/data/bible-dictionary/';
+        return type === 'crossword' ? `${baseUrl}bible_crossword_1000.json` : `${baseUrl}bible_dictionary_game.json`;
     },
 
     buildCrosswordPuzzle(entries = []) {

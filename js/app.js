@@ -135,9 +135,14 @@ class BibleQuoteGenerator {
             revealed: false,
             score: 0,
             totalRounds: 1,
-            status: ''
+            status: '',
+            difficulty: 'medium',
+            puzzle: null,
+            selectedCell: null,
+            puzzleTitle: ''
         };
         this.crosswordHighScoreKey = 'bible-crossword-high-score';
+        this.crosswordDifficultyKey = 'bible-crossword-difficulty';
 
         this.logoImage.onload = () => { this.logoLoaded = true; };
         this.logoImage.src = 'assets/icons/logo.svg';
@@ -407,6 +412,7 @@ class BibleQuoteGenerator {
                 break;
             case 'crossword':
                 this.wireCrosswordControls();
+                this.loadCrosswordGamePreferences();
                 this.loadCrosswordDictionaryEntries();
                 break;
             default:
@@ -674,6 +680,7 @@ class BibleQuoteGenerator {
         const checkBtn = document.getElementById('crossword-check-btn');
         const revealBtn = document.getElementById('crossword-reveal-btn');
         const answerInput = document.getElementById('crossword-answer');
+        const difficultySelect = document.getElementById('crossword-difficulty-select');
 
         if (nextBtn) nextBtn.addEventListener('click', () => this.advanceCrosswordPuzzle());
         if (checkBtn) checkBtn.addEventListener('click', () => this.checkCrosswordAnswer());
@@ -689,6 +696,22 @@ class BibleQuoteGenerator {
                 this.crosswordGameState.guess = answerInput.value;
                 this.renderCrosswordPuzzle();
             });
+        }
+        if (difficultySelect) {
+            difficultySelect.addEventListener('change', () => {
+                this.crosswordGameState.difficulty = difficultySelect.value;
+                localStorage.setItem(this.crosswordDifficultyKey, difficultySelect.value);
+                this.loadCrosswordDictionaryEntries();
+            });
+        }
+    }
+
+    loadCrosswordGamePreferences() {
+        const saved = localStorage.getItem(this.crosswordDifficultyKey);
+        if (saved) {
+            this.crosswordGameState.difficulty = saved;
+            const select = document.getElementById('crossword-difficulty-select');
+            if (select) select.value = saved;
         }
     }
 
