@@ -87,6 +87,13 @@
     font-weight: 700;
     color: #f8fbff;
     position: relative;
+    overflow: hidden;
+}
+
+.crossword-cell.crossword-black {
+    background: rgba(4, 8, 14, 0.96);
+    border: 1px solid rgba(90, 110, 140, 0.4);
+    box-shadow: inset 0 0 0 1px rgba(34, 39, 46, 0.6);
 }
 
 .crossword-cell.crossword-empty {
@@ -94,12 +101,22 @@
     border-style: dashed;
 }
 
-.crossword-cell:not(.crossword-empty)::after {
+.crossword-cell:not(.crossword-black)::after {
     content: "";
     position: absolute;
     inset: 3px;
     border-radius: 6px;
     box-shadow: inset 0 0 0 1px rgba(128, 170, 255, 0.18);
+}
+
+.crossword-clue-number {
+    position: absolute;
+    top: 0.18rem;
+    right: 0.2rem;
+    font-size: 0.52rem;
+    line-height: 1;
+    color: #9ec7ff;
+    font-weight: 700;
 }
 
 .crossword-cell.crossword-empty {

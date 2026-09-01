@@ -30,13 +30,13 @@ describe('crossword dictionary selection', () => {
     test('builds a board with intersecting letters for a real crossword layout', () => {
         const entries = [
             { answer: 'موسى', clue: 'اسم نبي', direction: 'across', row: 2, col: 0 },
-            { answer: 'سوى', clue: 'غير', direction: 'down', row: 0, col: 1 }
+            { answer: 'سوى', clue: 'غير', direction: 'down', row: 1, col: 1 }
         ];
 
         const puzzle = crosswordGameMixin.buildCrosswordPuzzle(entries);
         assert.ok(puzzle.intersections && puzzle.intersections.length >= 1,
             'Expected at least one intersecting letter on the crossword board');
         assert.ok(puzzle.intersections.some(cell => cell.row === 2 && cell.col === 1),
-            'Expected the second word to intersect the first at a shared letter');
+            'Expected the down word to share a letter with the across word at the true intersection cell');
     });
 });
