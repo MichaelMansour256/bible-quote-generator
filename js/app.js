@@ -139,7 +139,8 @@ class BibleQuoteGenerator {
             difficulty: 'medium',
             puzzle: null,
             selectedCell: null,
-            puzzleTitle: ''
+            puzzleTitle: '',
+            crosswordSolved: new Map()
         };
         this.crosswordHighScoreKey = 'bible-crossword-high-score';
         this.crosswordDifficultyKey = 'bible-crossword-difficulty';

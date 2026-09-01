@@ -36,15 +36,15 @@
             <span></span><span></span><span></span>
         </button>
 
-        <ul class="navbar-links">
-            <li><a class="navbar-link" href="../index.html" data-i18n="nav-short-home">الرئيسية</a></li>
-            <li><a class="navbar-link" href="quote.html" data-i18n="nav-short-quote">الاقتباسات</a></li>
-            <li><a class="navbar-link" href="memory.html" data-i18n="nav-short-memory">الحفظ</a></li>
-            <li><a class="navbar-link" href="reverse.html" data-i18n="nav-short-reverse">المعكوسة</a></li>
-            <li><a class="navbar-link" href="scramble.html" data-i18n="nav-short-scramble">المبعثرة</a></li>
-            <li><a class="navbar-link" href="whoami.html" data-i18n="nav-short-whoami">من أنا؟</a></li>
-            <li><a class="navbar-link active" href="wordle.html" data-i18n="nav-short-wordle">ووردل</a></li>
-            <li><a class="navbar-link" href="emojiverse.html" data-i18n="nav-short-emojiverse">الإيموجي</a></li>
+                <ul class="navbar-links">
+            <li><a class="navbar-link" href="../index.html" data-i18n="nav-short-home">الرئيسية</a></li>
+            <li class="navbar-games" id="navbar-games">
+                <button type="button" class="navbar-link navbar-games-toggle" aria-haspopup="true" aria-expanded="false">
+                    <span data-i18n="nav-short-games">الألعاب</span>
+                    <span class="navbar-games-caret" aria-hidden="true">&#9662;</span>
+                </button>
+                <ul class="navbar-games-menu" id="navbar-games-menu" aria-label="الألعاب"></ul>
+            </li>
         </ul>
 
         <div class="navbar-controls">

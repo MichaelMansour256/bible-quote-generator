@@ -122,6 +122,7 @@ const TRANSLATIONS = {
         'nav-short-scramble':   'فكّها',
         'nav-short-whoami':     'مين أنا؟',
         'nav-short-wordle':     'ووردل',
+        'nav-short-games':      'الألعاب',
         'nav-short-crossword':  'الكلمات المتقاطعة',
         'crossword-title':      'الكلمات المتقاطعة',
         'crossword-desc':       'حل الكلمات من قاموس الكتاب المقدس خطوة بخطوة.',
@@ -314,6 +315,7 @@ const TRANSLATIONS = {
         'nav-short-scramble':   'Scramble',
         'nav-short-whoami':     'Who am I?',
         'nav-short-wordle':     'Wordle',
+        'nav-short-games':      'Games',
 
         'splash-tag':           'Cards, verses, and Bible games — all in one place',
         'home-title':           'Pick the feature you want',

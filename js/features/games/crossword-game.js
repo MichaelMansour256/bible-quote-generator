@@ -176,6 +176,7 @@ export const crosswordGameMixin = {
         this.crosswordGameState.guess = '';
         this.crosswordGameState.status = '';
         this.crosswordGameState.selectedCell = null;
+        this.crosswordGameState.crosswordSolved = new Map();
         this.crosswordGameState.score = 0;
         this.crosswordGameState.totalRounds = Math.max(1, this.crosswordGameState.entries.length);
         this.crosswordGameState.puzzleTitle = selectedPuzzle.title;
@@ -203,6 +204,7 @@ export const crosswordGameMixin = {
         this.crosswordGameState.guess = '';
         this.crosswordGameState.status = '';
         this.crosswordGameState.selectedCell = null;
+        this.crosswordGameState.crosswordSolved = new Map();
         this.crosswordGameState.score = 0;
         this.crosswordGameState.totalRounds = Math.max(1, this.crosswordGameState.entries.length);
         this.renderCrosswordPuzzle();
@@ -449,6 +451,7 @@ export const crosswordGameMixin = {
         const clueMap = new Map((puzzle.clueNumbers || []).map(([key, number]) => [key, number]));
         const guess = (this.crosswordGameState.guess || '').slice(0, active ? active.answer.length : 0);
         const selectedCell = this.crosswordGameState.selectedCell || null;
+        const solvedMap = this.crosswordGameState.crosswordSolved || new Map();
 
         boardEl.innerHTML = '';
         this.crosswordCellElements = new Map();
@@ -466,10 +469,15 @@ export const crosswordGameMixin = {
                 } else {
                     cell.classList.add('crossword-empty');
                     const cellKey = `${row}:${col}`;
+                    const solvedLetter = solvedMap.get(cellKey) || '';
                     const activeCellIndex = (active && active.cells) ? active.cells.findIndex(item => item.row === row && item.col === col) : -1;
-                    const userLetter = activeCellIndex >= 0 ? guess[activeCellIndex] || '' : '';
+                    const userLetter = solvedLetter || (activeCellIndex >= 0 ? guess[activeCellIndex] || '' : '');
 
-                    if (userLetter) {
+                    if (solvedLetter) {
+                        cell.textContent = solvedLetter;
+                        cell.classList.remove('crossword-empty');
+                        cell.classList.add('crossword-filled', 'crossword-solved');
+                    } else if (userLetter) {
                         cell.textContent = userLetter;
                         cell.classList.remove('crossword-empty');
                         cell.classList.add('crossword-filled');
@@ -572,9 +580,12 @@ export const crosswordGameMixin = {
         const active = this.crosswordGameState.current || entries[0];
         if (!active || !active.cells) return;
         const guess = (this.crosswordGameState.guess || '').slice(0, active.answer.length);
+        const solvedMap = this.crosswordGameState.crosswordSolved || new Map();
         active.cells.forEach((cell, index) => {
             const el = this.crosswordCellElements.get(`${cell.row}:${cell.col}`);
             if (!el) return;
+            // Solved letters (from a correct check or reveal) stay on the board.
+            if (solvedMap.has(`${cell.row}:${cell.col}`)) return;
             const letter = guess[index] || '';
             el.textContent = letter;
             el.classList.toggle('crossword-filled', Boolean(letter));
@@ -621,6 +632,14 @@ export const crosswordGameMixin = {
         this.crosswordGameState.totalRounds = Math.max(this.crosswordGameState.totalRounds || 1, 1);
 
         if (isCorrect) {
+            // Lock the correct letters onto the board so they survive word changes.
+            const solvedMap = this.crosswordGameState.crosswordSolved || new Map();
+            if (entry.cells) {
+                entry.cells.forEach((cell, index) => {
+                    solvedMap.set(`${cell.row}:${cell.col}`, expectedAnswer[index] || '');
+                });
+            }
+            this.crosswordGameState.crosswordSolved = solvedMap;
             this.crosswordGameState.score += 1;
             this.crosswordGameState.guess = expectedAnswer;
             this.crosswordGameState.status = 'صح! الإجابة صحيحة.';
@@ -639,6 +658,14 @@ export const crosswordGameMixin = {
         const entry = this.crosswordGameState.current;
         if (!entry) return;
 
+        // Revealed answers also stay locked on the board.
+        const solvedMap = this.crosswordGameState.crosswordSolved || new Map();
+        if (entry.cells) {
+            entry.cells.forEach((cell, index) => {
+                solvedMap.set(`${cell.row}:${cell.col}`, entry.answer[index] || '');
+            });
+        }
+        this.crosswordGameState.crosswordSolved = solvedMap;
         this.crosswordGameState.guess = normalizeCrosswordTerm(entry.answer);
         this.crosswordGameState.status = `الإجابة هي: ${entry.answer}`;
         this.renderCrosswordPuzzle();
