@@ -206,14 +206,6 @@ export const memoryGameMixin = {
         }
     },
 
-    updateHighScore(score) {
-        const currentBest = parseInt(localStorage.getItem(this.gameHighScoreKey) || '0', 10) || 0;
-        if (score > currentBest) {
-            localStorage.setItem(this.gameHighScoreKey, String(score));
-            document.getElementById('game-high-score').textContent = `${score}%`;
-        }
-    },
-
     areGameAnswersFilled() {
         const blankInputs = document.querySelectorAll('#game-verse-display .game-blank');
         if (blankInputs.length === 0) {
@@ -380,7 +372,6 @@ export const memoryGameMixin = {
         const userText = this.getFilledGameAnswerText();
         const score = this.calculateGameScore(this.gameState.verse.text, userText);
         this.updateGameScore(score);
-        this.updateHighScore(score);
         this.persistGameState();
         this.stopGameTimer();
 
@@ -556,7 +547,6 @@ export const memoryGameMixin = {
 
     loadGamePreferences() {
         const savedDifficulty = localStorage.getItem(this.gameDifficultyKey);
-        const savedHighScore = localStorage.getItem(this.gameHighScoreKey);
 
         if (savedDifficulty) {
             this.gameDifficulty = savedDifficulty;
@@ -565,10 +555,6 @@ export const memoryGameMixin = {
         const difficultySelect = document.getElementById('game-difficulty-select');
         if (difficultySelect) {
             difficultySelect.value = this.gameDifficulty;
-        }
-
-        if (savedHighScore !== null) {
-            document.getElementById('game-high-score').textContent = `${parseInt(savedHighScore) || 0}%`;
         }
 
         const savedStateRaw = localStorage.getItem(this.gameStateKey);

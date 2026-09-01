@@ -47,7 +47,6 @@ class BibleQuoteGenerator {
         this.gameStartTime = null;
         this.gameElapsedSeconds = 0;
         this.gameDifficulty = 'medium';
-        this.gameHighScoreKey = 'bible-game-high-score';
         this.gameStateKey = 'bible-game-state';
         this.gameDifficultyKey = 'bible-game-difficulty';
         this.pendingGameRestore = null;
@@ -61,7 +60,6 @@ class BibleQuoteGenerator {
             difficulty: 'medium',
             lastScore: 0
         };
-        this.reverseGameHighScoreKey = 'bible-reverse-game-high-score';
         this.reverseGameStateKey = 'bible-reverse-game-state';
         this.reverseGameCategoryKey = 'bible-reverse-game-category';
         this.reverseGameDifficultyKey = 'bible-reverse-game-difficulty';
@@ -75,7 +73,6 @@ class BibleQuoteGenerator {
             difficulty: 'medium',
             lastScore: 0
         };
-        this.scrambleGameHighScoreKey = 'bible-scramble-game-high-score';
         this.scrambleGameStateKey = 'bible-scramble-game-state';
         this.scrambleGameCategoryKey = 'bible-scramble-game-category';
         this.scrambleGameDifficultyKey = 'bible-scramble-game-difficulty';
@@ -108,7 +105,6 @@ class BibleQuoteGenerator {
             finished: null,
             lastScore: 0
         };
-        this.wordleGameHighScoreKey = 'bible-wordle-game-high-score';
         this.wordleGameStateKey = 'bible-wordle-game-state';
         this.wordleGameCategoryKey = 'bible-wordle-game-category';
         this.wordleGameLengthKey = 'bible-wordle-game-length';
@@ -142,7 +138,6 @@ class BibleQuoteGenerator {
             puzzleTitle: '',
             crosswordSolved: new Map()
         };
-        this.crosswordHighScoreKey = 'bible-crossword-high-score';
         this.crosswordDifficultyKey = 'bible-crossword-difficulty';
 
         this.logoImage.onload = () => { this.logoLoaded = true; };

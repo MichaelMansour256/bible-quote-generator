@@ -27,10 +27,6 @@ export const scrambleGameMixin = {
         this.scrambleGameState.category = savedCategory;
         this.scrambleGameState.difficulty = savedDifficulty;
 
-        const savedScore = parseInt(localStorage.getItem(this.scrambleGameHighScoreKey) || '0', 10) || 0;
-        const highScoreEl = document.getElementById('scramble-game-high-score');
-        if (highScoreEl) highScoreEl.textContent = `${savedScore}%`;
-
         const savedStateRaw = localStorage.getItem(this.scrambleGameStateKey);
         if (savedStateRaw) {
             try {
@@ -47,14 +43,6 @@ export const scrambleGameMixin = {
     persistScrambleGameState() {
         if (!this.scrambleGameState.term) return;
         localStorage.setItem(this.scrambleGameStateKey, JSON.stringify(this.scrambleGameState));
-    },
-
-    updateScrambleHighScore(score) {
-        const currentBest = parseInt(localStorage.getItem(this.scrambleGameHighScoreKey) || '0', 10) || 0;
-        if (score > currentBest) {
-            localStorage.setItem(this.scrambleGameHighScoreKey, String(score));
-            document.getElementById('scramble-game-high-score').textContent = `${score}%`;
-        }
     },
 
     buildScrambleGamePool(category, difficulty = 'medium') {
@@ -160,7 +148,6 @@ export const scrambleGameMixin = {
             ? 'إجابة صحيحة. أحسنت.'
             : 'إجابة غير صحيحة. جرّب مرة أخرى.';
         document.getElementById('scramble-game-score').textContent = `${score}%`;
-        this.updateScrambleHighScore(score);
         this.persistScrambleGameState();
         this.stopScrambleGameTimer();
         document.getElementById('scramble-check-btn').disabled = true;

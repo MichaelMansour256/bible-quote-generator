@@ -43,10 +43,6 @@ export const reverseGameMixin = {
         this.reverseGameState.category = savedCategory;
         this.reverseGameState.difficulty = savedDifficulty;
 
-        const savedScore = parseInt(localStorage.getItem(this.reverseGameHighScoreKey) || '0', 10) || 0;
-        const highScoreEl = document.getElementById('reverse-game-high-score');
-        if (highScoreEl) highScoreEl.textContent = `${savedScore}%`;
-
         const savedStateRaw = localStorage.getItem(this.reverseGameStateKey);
         if (savedStateRaw) {
             try {
@@ -153,14 +149,6 @@ export const reverseGameMixin = {
         return Math.max(10, 100 - elapsed);
     },
 
-    updateReverseHighScore(score) {
-        const currentBest = parseInt(localStorage.getItem(this.reverseGameHighScoreKey) || '0', 10) || 0;
-        if (score > currentBest) {
-            localStorage.setItem(this.reverseGameHighScoreKey, String(score));
-            document.getElementById('reverse-game-high-score').textContent = `${score}%`;
-        }
-    },
-
     checkReverseGameAnswer() {
         if (!this.reverseGameState.term) {
             this.showValidationMessage('ابدأ لعبة الكلمات المعكوسة أولاً.', 'error');
@@ -175,7 +163,6 @@ export const reverseGameMixin = {
             ? 'إجابة صحيحة. أحسنت.'
             : 'إجابة غير صحيحة. جرّب مرة أخرى.';
         document.getElementById('reverse-game-score').textContent = `${score}%`;
-        this.updateReverseHighScore(score);
         this.persistReverseGameState();
         this.stopReverseGameTimer();
         document.getElementById('reverse-check-btn').disabled = true;

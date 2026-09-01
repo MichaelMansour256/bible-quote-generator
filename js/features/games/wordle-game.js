@@ -132,10 +132,6 @@ export const wordleGameMixin = {
         this.wordleGameState.category = savedCategory;
         this.wordleGameState.length = parseInt((lengthSelect && lengthSelect.value) || '5', 10) || 5;
 
-        const savedScore = parseInt(localStorage.getItem(this.wordleGameHighScoreKey) || '0', 10) || 0;
-        const highScoreEl = document.getElementById('wordle-game-high-score');
-        if (highScoreEl) highScoreEl.textContent = `${savedScore}%`;
-
         // Render the idle board for the restored length before replaying a
         // saved round on top of it.
         this.renderWordleBoard();
@@ -166,14 +162,6 @@ export const wordleGameMixin = {
             }
         } catch (error) {
             console.warn('Failed to restore wordle game state', error);
-        }
-    },
-
-    updateWordleHighScore(score) {
-        const currentBest = parseInt(localStorage.getItem(this.wordleGameHighScoreKey) || '0', 10) || 0;
-        if (score > currentBest) {
-            localStorage.setItem(this.wordleGameHighScoreKey, String(score));
-            document.getElementById('wordle-game-high-score').textContent = `${score}%`;
         }
     },
 
@@ -394,7 +382,6 @@ export const wordleGameMixin = {
             document.getElementById('wordle-game-score').textContent = `${score}%`;
             document.getElementById('wordle-game-status').textContent =
                 `أحسنت! الكلمة الصحيحة هي "${state.target}". درجتك: ${score}%`;
-            this.updateWordleHighScore(score);
             this.stopWordleGameTimer();
             document.getElementById('wordle-next-btn').disabled = false;
             document.getElementById('wordle-reveal-btn').disabled = true;

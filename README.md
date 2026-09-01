@@ -104,7 +104,7 @@ Chapter results show a **▼ expand arrow** — clicking opens an inline verse l
 - Words hidden by difficulty ratio (easy 20 % → expert 60 %)
 - Fill blanks by typing **or** tapping the **word-bank chips** below the verse (shuffled, tap-to-fill, no typing needed on phones)
 - When every blank is correct the round is **graded automatically** — no check click needed
-- Score, timer, high score, next-verse progression
+- Score, timer, next-verse progression
 - Last selected verse and difficulty saved and restored on reload
 
 ### Reverse Game
@@ -115,7 +115,7 @@ Chapter results show a **▼ expand arrow** — clicking opens an inline verse l
 - **Live auto-check**: the answer is graded on every keystroke — a correct answer jumps straight to the next word with no clicks at all
 - Time-bonus scoring: `max(10, 100 − seconds)` — faster answers score higher
 - `Enter` key still submits manually; "كلمة جديدة" works as a skip
-- Tracks score, timer, high score; state persisted in `localStorage`
+- Tracks score, timer; state persisted in `localStorage`
 
 ### Scrambled Words Game
 
@@ -139,8 +139,8 @@ Chapter results show a **▼ expand arrow** — clicking opens an inline verse l
 - A **"كلمة جديدة" replay button appears inside the board** when a round ends — one tap to play again
 - Haptic feedback (vibration) on tile reveals and win/lose where supported
 - Keyboard keys light up with the best known status of each letter
-- Time-bonus scoring on win: `max(10, 100 − seconds)`; timer, high score, category and remaining-attempts stats
-- Board, category, length, high score and in-progress round are saved in `localStorage` and restored on reload
+- Time-bonus scoring on win: `max(10, 100 − seconds)`; timer, category and remaining-attempts stats
+- Board, category, length and in-progress round are saved in `localStorage` and restored on reload
 
 ### Who Am I? (Flash Cards)
 

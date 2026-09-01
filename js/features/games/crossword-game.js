@@ -477,7 +477,6 @@ export const crosswordGameMixin = {
         const clueListEl = document.getElementById('crossword-clues');
         const answerInput = document.getElementById('crossword-answer');
         const score = document.getElementById('crossword-game-score');
-        const highScore = document.getElementById('crossword-game-high-score');
         const status = document.getElementById('crossword-game-status');
 
         if (!boardEl) return;
@@ -600,10 +599,6 @@ export const crosswordGameMixin = {
             const total = Math.max(this.crosswordGameState.totalRounds || 1, 1);
             score.textContent = `${Math.max(0, Math.min(100, Math.round((this.crosswordGameState.score / total) * 100)))}%`;
         }
-        if (highScore) {
-            const stored = parseInt(localStorage.getItem(this.crosswordHighScoreKey) || '0', 10) || 0;
-            highScore.textContent = `${stored}%`;
-        }
         if (status) {
             status.textContent = this.crosswordGameState.status || 'اكتب كلمة، ثم اضغط تحقق أو Enter. الكلمات تتقاطع مع بعضها في الخلية الوسطية.';
         }
@@ -627,15 +622,6 @@ export const crosswordGameMixin = {
             el.classList.toggle('crossword-filled', Boolean(letter));
             el.classList.toggle('crossword-empty', !letter);
         });
-    },
-
-    updateCrosswordHighScore(score) {
-        const best = parseInt(localStorage.getItem(this.crosswordHighScoreKey) || '0', 10) || 0;
-        if (score > best) {
-            localStorage.setItem(this.crosswordHighScoreKey, String(score));
-            const highScore = document.getElementById('crossword-game-high-score');
-            if (highScore) highScore.textContent = `${Math.min(100, score)}%`;
-        }
     },
 
     advanceCrosswordPuzzle() {
@@ -679,7 +665,6 @@ export const crosswordGameMixin = {
             this.crosswordGameState.score += 1;
             this.crosswordGameState.guess = expectedAnswer;
             this.crosswordGameState.status = 'صح! الإجابة صحيحة.';
-            this.updateCrosswordHighScore(Math.round((this.crosswordGameState.score / Math.max(this.crosswordGameState.totalRounds || 1, 1)) * 100));
             this.renderCrosswordPuzzle();
             clearTimeout(this.crosswordAdvanceTimer);
             this.crosswordAdvanceTimer = setTimeout(() => this.advanceCrosswordPuzzle(), 850);
