@@ -693,8 +693,12 @@ class BibleQuoteGenerator {
                 }
             });
             answerInput.addEventListener('input', () => {
+                const active = this.crosswordGameState.current || (this.crosswordGameState.entries || [])[0];
+                if (active && active.answer) {
+                    answerInput.value = answerInput.value.slice(0, active.answer.length);
+                }
                 this.crosswordGameState.guess = answerInput.value;
-                this.renderCrosswordPuzzle();
+                this.updateCrosswordTypedLetters();
             });
         }
         if (difficultySelect) {

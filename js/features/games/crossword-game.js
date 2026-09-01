@@ -114,21 +114,6 @@ export async function loadCrosswordPuzzleDatabase(url = '../js/data/bible-dictio
     }
 }
 
-export async function loadCrosswordPuzzleDatabase(url = '../js/data/bible-dictionary/bible_crossword_1000.json') {
-    if (typeof fetch !== 'function') {
-        return null;
-    }
-
-    try {
-        const response = await fetch(url, { cache: 'force-cache' });
-        if (!response.ok) return null;
-        return await response.json();
-    } catch (error) {
-        console.warn('Failed to load crossword puzzle database', error);
-        return null;
-    }
-}
-
 export async function loadCrosswordDictionaryData(url = '../js/data/bible-dictionary/bible_dictionary_game.json') {
     if (typeof fetch !== 'function') {
         return [];
@@ -182,10 +167,17 @@ export const crosswordGameMixin = {
             category: 'dictionary'
         }));
 
-        this.crosswordGameState.entries = entries;
+        const puzzle = this.buildCrosswordPuzzle(entries);
+        clearTimeout(this.crosswordAdvanceTimer);
+        this.crosswordGameState.puzzle = puzzle;
+        this.crosswordGameState.entries = (puzzle.entries && puzzle.entries.length) ? puzzle.entries : entries;
         this.crosswordGameState.currentIndex = 0;
-        this.crosswordGameState.puzzle = this.buildCrosswordPuzzle(entries);
-        this.crosswordGameState.current = entries[0];
+        this.crosswordGameState.current = this.crosswordGameState.entries[0];
+        this.crosswordGameState.guess = '';
+        this.crosswordGameState.status = '';
+        this.crosswordGameState.selectedCell = null;
+        this.crosswordGameState.score = 0;
+        this.crosswordGameState.totalRounds = Math.max(1, this.crosswordGameState.entries.length);
         this.crosswordGameState.puzzleTitle = selectedPuzzle.title;
         this.renderCrosswordPuzzle();
 
@@ -202,10 +194,17 @@ export const crosswordGameMixin = {
             category: 'dictionary'
         }));
 
-        this.crosswordGameState.entries = fallback;
+        const puzzle = this.buildCrosswordPuzzle(fallback);
+        clearTimeout(this.crosswordAdvanceTimer);
+        this.crosswordGameState.puzzle = puzzle;
+        this.crosswordGameState.entries = (puzzle.entries && puzzle.entries.length) ? puzzle.entries : fallback;
         this.crosswordGameState.currentIndex = 0;
-        this.crosswordGameState.puzzle = this.buildCrosswordPuzzle(fallback);
-        this.crosswordGameState.current = fallback[0];
+        this.crosswordGameState.current = this.crosswordGameState.entries[0];
+        this.crosswordGameState.guess = '';
+        this.crosswordGameState.status = '';
+        this.crosswordGameState.selectedCell = null;
+        this.crosswordGameState.score = 0;
+        this.crosswordGameState.totalRounds = Math.max(1, this.crosswordGameState.entries.length);
         this.renderCrosswordPuzzle();
         return fallback;
     },
@@ -275,7 +274,7 @@ export const crosswordGameMixin = {
         const intersections = [];
         let nextClueNumber = 1;
 
-        const placeWord = (entry) => {
+        const placeWord = (entry, sourceEntry = null) => {
             const cells = [];
             const foundIntersections = [];
 
@@ -314,6 +313,10 @@ export const crosswordGameMixin = {
 
             foundIntersections.forEach(item => intersections.push(item));
             entry.cells = cells;
+            if (sourceEntry) {
+                sourceEntry.cells = cells;
+                sourceEntry.number = entry.number;
+            }
             placedEntries.push(entry);
             return true;
         };
@@ -329,7 +332,7 @@ export const crosswordGameMixin = {
                     ? normalizedEntries[0].col
                     : Math.floor((boardSize - normalizedEntries[0].answer.length) / 2)
             };
-            placeWord(primary);
+            placeWord(primary, normalizedEntries[0]);
         }
 
         for (let i = 1; i < normalizedEntries.length; i += 1) {
@@ -395,7 +398,7 @@ export const crosswordGameMixin = {
             }
 
             if (bestCandidate) {
-                placed = placeWord(bestCandidate.candidate);
+                placed = placeWord(bestCandidate.candidate, normalizedEntries[i]);
             }
 
             if (!placed) {
@@ -404,7 +407,7 @@ export const crosswordGameMixin = {
                     for (let row = 0; row < boardSize; row += 1) {
                         for (let col = 0; col < boardSize; col += 1) {
                             const candidate = { ...entry, direction, row, col };
-                            if (placeWord(candidate)) {
+                            if (placeWord(candidate, normalizedEntries[i])) {
                                 placed = true;
                                 break;
                             }
@@ -448,6 +451,7 @@ export const crosswordGameMixin = {
         const selectedCell = this.crosswordGameState.selectedCell || null;
 
         boardEl.innerHTML = '';
+        this.crosswordCellElements = new Map();
         boardEl.style.setProperty('--crossword-cols', String(puzzle.board.length));
         boardEl.style.gridTemplateColumns = `repeat(${puzzle.board.length}, minmax(0, 1fr))`;
 
@@ -502,6 +506,7 @@ export const crosswordGameMixin = {
                     });
                 }
 
+                this.crosswordCellElements.set(`${row}:${col}`, cell);
                 boardEl.appendChild(cell);
             }
         }
@@ -549,7 +554,7 @@ export const crosswordGameMixin = {
 
         if (score) {
             const total = Math.max(this.crosswordGameState.totalRounds || 1, 1);
-            score.textContent = `${Math.round((this.crosswordGameState.score / total) * 100)}%`;
+            score.textContent = `${Math.max(0, Math.min(100, Math.round((this.crosswordGameState.score / total) * 100)))}%`;
         }
         if (highScore) {
             const stored = parseInt(localStorage.getItem(this.crosswordHighScoreKey) || '0', 10) || 0;
@@ -560,23 +565,42 @@ export const crosswordGameMixin = {
         }
     },
 
+    updateCrosswordTypedLetters() {
+        const puzzle = this.crosswordGameState.puzzle;
+        if (!puzzle || !this.crosswordCellElements) return;
+        const entries = this.crosswordGameState.entries || [];
+        const active = this.crosswordGameState.current || entries[0];
+        if (!active || !active.cells) return;
+        const guess = (this.crosswordGameState.guess || '').slice(0, active.answer.length);
+        active.cells.forEach((cell, index) => {
+            const el = this.crosswordCellElements.get(`${cell.row}:${cell.col}`);
+            if (!el) return;
+            const letter = guess[index] || '';
+            el.textContent = letter;
+            el.classList.toggle('crossword-filled', Boolean(letter));
+            el.classList.toggle('crossword-empty', !letter);
+        });
+    },
+
     updateCrosswordHighScore(score) {
         const best = parseInt(localStorage.getItem(this.crosswordHighScoreKey) || '0', 10) || 0;
         if (score > best) {
             localStorage.setItem(this.crosswordHighScoreKey, String(score));
             const highScore = document.getElementById('crossword-game-high-score');
-            if (highScore) highScore.textContent = `${score}%`;
+            if (highScore) highScore.textContent = `${Math.min(100, score)}%`;
         }
     },
 
     advanceCrosswordPuzzle() {
         if (!this.crosswordGameState.entries || !this.crosswordGameState.entries.length) return;
+        clearTimeout(this.crosswordAdvanceTimer);
 
         const nextIndex = (this.crosswordGameState.currentIndex + 1) % this.crosswordGameState.entries.length;
         this.crosswordGameState.currentIndex = nextIndex;
         this.crosswordGameState.current = this.crosswordGameState.entries[nextIndex];
         this.crosswordGameState.guess = '';
         this.crosswordGameState.status = '';
+        this.crosswordGameState.selectedCell = null;
         this.renderCrosswordPuzzle();
     },
 
@@ -602,7 +626,8 @@ export const crosswordGameMixin = {
             this.crosswordGameState.status = 'صح! الإجابة صحيحة.';
             this.updateCrosswordHighScore(Math.round((this.crosswordGameState.score / Math.max(this.crosswordGameState.totalRounds || 1, 1)) * 100));
             this.renderCrosswordPuzzle();
-            setTimeout(() => this.advanceCrosswordPuzzle(), 850);
+            clearTimeout(this.crosswordAdvanceTimer);
+            this.crosswordAdvanceTimer = setTimeout(() => this.advanceCrosswordPuzzle(), 850);
             return;
         }
 
@@ -617,6 +642,7 @@ export const crosswordGameMixin = {
         this.crosswordGameState.guess = normalizeCrosswordTerm(entry.answer);
         this.crosswordGameState.status = `الإجابة هي: ${entry.answer}`;
         this.renderCrosswordPuzzle();
-        setTimeout(() => this.advanceCrosswordPuzzle(), 1200);
+        clearTimeout(this.crosswordAdvanceTimer);
+        this.crosswordAdvanceTimer = setTimeout(() => this.advanceCrosswordPuzzle(), 1200);
     }
 };
