@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+    <title>صليب الكتاب — VerseUp Arena</title>
+    <meta name="description" content="لعبة لغوية كتابية تستعمل كلمات من قاموس الكتاب المقدس.">
+    <meta name="theme-color" content="#0d1b2e">
+    <link rel="icon" type="image/png" href="../assets/images/verseup_logo.png">
+    <link rel="stylesheet" href="../css/base.css">
+    <link rel="stylesheet" href="../css/components.css">
+    <link rel="stylesheet" href="../css/games/common.css">
+    <link rel="stylesheet" href="../css/layout.css">
+    <link rel="stylesheet" href="../css/navigation.css">
+    <link rel="stylesheet" href="../css/games/crossword.css">
+    <link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@400;700&family=Amiri:wght@400;700&family=Aref+Ruqaa:wght@400;700&family=Reem+Kufi:wght@400;700&family=Lateef:wght@400;700&family=Scheherazade:wght@400;700&family=Noto+Naskh+Arabic:wght@400;700&family=Changa:wght@400;700&family=Cairo:wght@400;700&family=Markazi+Text:wght@400;700&family=Katibeh:wght@400;700&family=Mirza:wght@400;700&family=Harmattan:wght@400;700&family=El+Messiri:wght@400;700&family=Diwan+Kufi:wght@400;700&family=Thuluth+Deco:wght@400;700&display=swap" rel="stylesheet">
+</head>
+<body data-page="crossword">
+    <div id="splash">
+        <div class="splash-inner">
+            <img src="../assets/images/verseup_logo.png" alt="VerseUp Arena" class="splash-logo">
+            <div class="splash-title">VerseUp Arena</div>
+            <div class="splash-tag" data-i18n="splash-tag">بطاقات، آيات، وألعاب كتابية في مكان واحد</div>
+            <div class="splash-spinner" aria-hidden="true"></div>
+        </div>
+    </div>
+
+    <div class="container">
+        <nav class="navbar" aria-label="التنقل الرئيسي">
+            <a class="navbar-brand" href="../index.html">
+                <img src="../assets/images/verseup_logo.png" alt="VerseUp Arena">
+                <span class="navbar-brand-text">VerseUp Arena</span>
+            </a>
+            <button class="navbar-toggle" type="button" aria-label="القائمة" aria-expanded="false">
+                <span></span><span></span><span></span>
+            </button>
+            <ul class="navbar-links">
+                <li><a class="navbar-link" href="../index.html" data-i18n="nav-short-home">الرئيسية</a></li>
+                <li><a class="navbar-link" href="quote.html" data-i18n="nav-short-quote">الاقتباسات</a></li>
+                <li><a class="navbar-link" href="memory.html" data-i18n="nav-short-memory">الحفظ</a></li>
+                <li><a class="navbar-link" href="reverse.html" data-i18n="nav-short-reverse">المعكوسة</a></li>
+                <li><a class="navbar-link" href="scramble.html" data-i18n="nav-short-scramble">المبعثرة</a></li>
+                <li><a class="navbar-link" href="whoami.html" data-i18n="nav-short-whoami">من أنا؟</a></li>
+                <li><a class="navbar-link" href="wordle.html" data-i18n="nav-short-wordle">ووردل</a></li>
+                <li><a class="navbar-link" href="emojiverse.html" data-i18n="nav-short-emojiverse">الإيموجي</a></li>
+                <li><a class="navbar-link active" href="crossword.html" data-i18n="nav-short-crossword">الكلمات المتقاطعة</a></li>
+            </ul>
+            <div class="navbar-controls">
+                <button id="lang-toggle" class="nav-btn" type="button" data-i18n="lang-toggle">EN</button>
+                <button id="theme-toggle" class="nav-btn" type="button" aria-label="تبديل المظهر">🌙</button>
+            </div>
+        </nav>
+
+        <main>
+            <section class="crossword-game-section view-panel" id="crossword-view-panel">
+                <div class="game-header">
+                    <div>
+                        <h2 data-i18n="crossword-title">الكلمات المتقاطعة</h2>
+                        <p data-i18n="crossword-desc">حلّ الكلمات من قاموس الكتاب المقدس، كلمةً بعد كلمة.</p>
+                    </div>
+                    <div class="game-score-card">
+                        <span data-i18n="score-label">الدرجة</span>
+                        <strong id="crossword-game-score">0%</strong>
+                    </div>
+                </div>
+
+                <div class="game-controls crossword-controls">
+                    <div class="game-stats-bar crossword-stats-bar">
+                        <div class="game-stat"><span data-i18n="stat-category">الفئة</span><strong id="crossword-game-category">قاموس</strong></div>
+                        <div class="game-stat"><span data-i18n="stat-highscore">أفضل نتيجة</span><strong id="crossword-game-high-score">0%</strong></div>
+                    </div>
+
+                    <div class="game-buttons">
+                        <button id="crossword-next-btn" class="game-btn" data-i18n="btn-new-word">كلمة جديدة</button>
+                        <button id="crossword-check-btn" class="game-btn" data-i18n="btn-check">تحقق</button>
+                        <button id="crossword-reveal-btn" class="game-btn secondary" data-i18n="btn-reveal">أظهر الإجابة</button>
+                    </div>
+
+                    <div class="game-status" id="crossword-game-status" aria-live="polite">اكتب الإجابة ثم اضغط تحقق أو Enter.</div>
+                </div>
+
+                <div class="game-board crossword-board">
+                    <div class="crossword-prompt">
+                        <label data-i18n="label-crossword-clue">التلميح:</label>
+                        <p id="crossword-clue">جارٍ تجهيز الكلمات...</p>
+                    </div>
+
+                    <div class="crossword-grid" id="crossword-grid" aria-label="لوحة الكلمة"></div>
+
+                    <div class="crossword-clues-wrap">
+                        <ul class="crossword-clues" id="crossword-clues" aria-label="قائمة التلميحات"></ul>
+                    </div>
+
+                    <div class="crossword-input-wrap">
+                        <label for="crossword-answer" data-i18n="label-answer">اكتب إجابتك:</label>
+                        <input id="crossword-answer" type="text" dir="rtl" autocomplete="off" spellcheck="false" placeholder="اكتب الاسم أو المكان أو الكلمة">
+                    </div>
+                </div>
+            </section>
+        </main>
+
+        <footer class="site-footer">
+            <p class="footer-note" data-i18n="footer-note">صمم وطور بواسطة مايكل منصور</p>
+        </footer>
+    </div>
+
+    <script src="../js/data/bible-database.js"></script>
+    <script src="../js/services/bible-api.js"></script>
+    <script src="../js/services/i18n.js"></script>
+    <script type="module" src="../js/app.js"></script>
+</body>
+</html>

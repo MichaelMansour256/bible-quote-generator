@@ -9,6 +9,7 @@ import { memoryGameMixin } from './features/games/memory-game.js';
 import { whoamiGameMixin } from './features/games/whoami-game.js';
 import { wordleGameMixin } from './features/games/wordle-game.js';
 import { emojiverseGameMixin } from './features/games/emojiverse-game.js';
+import { crosswordGameMixin } from './features/games/crossword-game.js';
 import { attachSwipeGrading } from './features/games/game-utils.js';
 import { navbarMixin } from './shared/navbar.js';
 import { themeMixin } from './shared/theme.js';
@@ -126,6 +127,17 @@ class BibleQuoteGenerator {
         this.emojiverseGameDifficultyKey = 'bible-emojiverse-game-difficulty';
         this.emojiverseGamePool = this.createEmojiverseGamePool();
         this.emojiverseUsedCards = new Set();
+        this.crosswordGameState = {
+            entries: [],
+            current: null,
+            currentIndex: 0,
+            guess: '',
+            revealed: false,
+            score: 0,
+            totalRounds: 1,
+            status: ''
+        };
+        this.crosswordHighScoreKey = 'bible-crossword-high-score';
 
         this.logoImage.onload = () => { this.logoLoaded = true; };
         this.logoImage.src = 'assets/icons/logo.svg';
@@ -385,6 +397,10 @@ class BibleQuoteGenerator {
                 this.loadEmojiverseGamePreferences();
                 // First card is ready immediately — no start button needed.
                 this.startEmojiverseGame();
+                break;
+            case 'crossword':
+                this.wireCrosswordControls();
+                this.loadCrosswordDictionaryEntries();
                 break;
             default:
                 // 'home' page needs no feature wiring, but its launcher cards
@@ -646,6 +662,29 @@ class BibleQuoteGenerator {
         });
     }
 
+    wireCrosswordControls() {
+        const nextBtn = document.getElementById('crossword-next-btn');
+        const checkBtn = document.getElementById('crossword-check-btn');
+        const revealBtn = document.getElementById('crossword-reveal-btn');
+        const answerInput = document.getElementById('crossword-answer');
+
+        if (nextBtn) nextBtn.addEventListener('click', () => this.advanceCrosswordPuzzle());
+        if (checkBtn) checkBtn.addEventListener('click', () => this.checkCrosswordAnswer());
+        if (revealBtn) revealBtn.addEventListener('click', () => this.revealCrosswordAnswer());
+        if (answerInput) {
+            answerInput.addEventListener('keydown', (event) => {
+                if (event.key === 'Enter' && !event.shiftKey) {
+                    event.preventDefault();
+                    this.checkCrosswordAnswer();
+                }
+            });
+            answerInput.addEventListener('input', () => {
+                this.crosswordGameState.guess = answerInput.value;
+                this.renderCrosswordPuzzle();
+            });
+        }
+    }
+
 
     getGameVersePool() {
         const verses = [];
@@ -831,7 +870,8 @@ Object.assign(
     quoteFeatureMixin,
     memoryGameMixin,
     whoamiGameMixin,
-    emojiverseGameMixin
+    emojiverseGameMixin,
+    crosswordGameMixin
 );
 
 document.addEventListener('DOMContentLoaded', () => {

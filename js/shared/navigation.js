@@ -8,7 +8,8 @@ export const navigationMixin = {
             game: document.getElementById('game-view-btn'),
             reverse: document.getElementById('reverse-view-btn'),
             scramble: document.getElementById('scramble-view-btn'),
-            whoami: document.getElementById('whoami-view-btn')
+            whoami: document.getElementById('whoami-view-btn'),
+            crossword: document.getElementById('crossword-view-btn')
         };
 
         this.viewPanels = {
@@ -17,7 +18,8 @@ export const navigationMixin = {
             game: document.getElementById('game-view-panel'),
             reverse: document.getElementById('reverse-view-panel'),
             scramble: document.getElementById('scramble-view-panel'),
-            whoami: document.getElementById('whoami-view-panel')
+            whoami: document.getElementById('whoami-view-panel'),
+            crossword: document.getElementById('crossword-view-panel')
         };
 
         Object.entries(this.viewButtons).forEach(([key, btn]) => {
@@ -64,7 +66,8 @@ export const navigationMixin = {
             scramble: 'pages/scramble.html',
             whoami: 'pages/whoami.html',
             wordle: 'pages/wordle.html',
-            emojiverse: 'pages/emojiverse.html'
+            emojiverse: 'pages/emojiverse.html',
+            crossword: 'pages/crossword.html'
         };
         document.querySelectorAll('.home-card[data-target]').forEach(card => {
             card.addEventListener('click', () => {
