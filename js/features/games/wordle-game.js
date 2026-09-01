@@ -7,7 +7,9 @@ import {
     getWordleDisplayLetters,
     getWordleLetterCount,
     isWordleGuessValid,
-    normalizeArabicForMatch
+    normalizeArabicForMatch,
+    calcTimeBonusScore,
+    formatGameClock
 } from './game-utils.js';
 
 import {
@@ -513,9 +515,7 @@ export const wordleGameMixin = {
         this.wordleGameStartTime = Date.now();
         this.wordleGameTimer = setInterval(() => {
             const elapsed = Math.floor((Date.now() - this.wordleGameStartTime) / 1000);
-            const minutes = String(Math.floor(elapsed / 60)).padStart(2, '0');
-            const seconds = String(elapsed % 60).padStart(2, '0');
-            timerEl.textContent = `${minutes}:${seconds}`;
+            timerEl.textContent = formatGameClock(elapsed);
         }, 1000);
     },
 
@@ -527,7 +527,6 @@ export const wordleGameMixin = {
     },
 
     calcWordleScore() {
-        const elapsed = Math.floor((Date.now() - this.wordleGameStartTime) / 1000);
-        return Math.max(10, 100 - elapsed);
+        return calcTimeBonusScore(this.wordleGameStartTime);
     }
 };

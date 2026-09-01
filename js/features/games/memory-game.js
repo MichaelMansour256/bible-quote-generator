@@ -1,4 +1,4 @@
-import { buzz, getAdjacentBibleVerse, normalizeArabicForMatch, normalizeGameText } from './game-utils.js';
+import { buzz, formatGameClock, getAdjacentBibleVerse, normalizeArabicForMatch, normalizeGameText } from './game-utils.js';
 
 // Fallback decoy words used when a verse does not have enough non-hidden words
 // to mix into the word bank.
@@ -193,9 +193,7 @@ export const memoryGameMixin = {
         this.gameTimer = setInterval(() => {
             const elapsed = Math.floor((Date.now() - this.gameStartTime) / 1000);
             this.gameElapsedSeconds = elapsed;
-            const minutes = String(Math.floor(elapsed / 60)).padStart(2, '0');
-            const seconds = String(elapsed % 60).padStart(2, '0');
-            timerEl.textContent = `${minutes}:${seconds}`;
+            timerEl.textContent = formatGameClock(elapsed);
         }, 1000);
     },
 

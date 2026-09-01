@@ -679,6 +679,23 @@ export function buildWordleWordPool(pools, category = 'random') {
     });
 }
 
+// ── Shared game clock & scoring ─────────────────────────────────────────────
+
+// Formats a whole number of seconds as a "mm:ss" wall clock. Every timed
+// game (memory, reverse, scramble, wordle) renders its timer with this.
+export function formatGameClock(totalSeconds) {
+    const seconds = Math.max(0, Math.floor(Number(totalSeconds) || 0));
+    const minutes = String(Math.floor(seconds / 60)).padStart(2, '0');
+    return `${minutes}:${String(seconds % 60).padStart(2, '0')}`;
+}
+
+// Time-bonus scoring shared by the reverse, scramble, and wordle games:
+// start at 100 and lose one point per elapsed second, never below 10.
+export function calcTimeBonusScore(startTime, now = Date.now()) {
+    const elapsed = Math.floor((now - startTime) / 1000);
+    return Math.max(10, 100 - elapsed);
+}
+
 // ── Mobile helpers ──────────────────────────────────────────────────────────
 
 // Haptic feedback where supported (Android browsers); silently ignored
