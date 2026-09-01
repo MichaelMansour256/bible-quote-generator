@@ -99,7 +99,7 @@ export function selectCrosswordEntries(dictionary = {}, count = 6) {
         .slice(0, count);
 }
 
-export async function loadCrosswordPuzzleDatabase(url = '../js/data/bible-dictionary/bible_crossword_1000.json') {
+export async function loadCrosswordPuzzleDatabase(url = '../js/data/bible-dictionary/bible_crossword_ar.json') {
     if (typeof fetch !== 'function') {
         return null;
     }
@@ -136,26 +136,14 @@ const CROSSWORD_LAYOUT = [
 
 export const crosswordGameMixin = {
     async loadCrosswordDictionaryEntries() {
-        const difficulty = this.crosswordGameState.difficulty || 'medium';
+        const requestedDifficulty = this.crosswordGameState.difficulty || 'medium';
 
-        // The easy level uses the dedicated simple-clue puzzle set (short
-        // trivia-style questions like "من بنى الفلك؟") for a gentler
-        // experience. It falls back to the general database when the file
-        // is unavailable. Other levels keep the dictionary-clue puzzles.
-        if (difficulty === 'easy') {
-            const easyUrl = this.getCrosswordDictionaryUrl ? this.getCrosswordDictionaryUrl('crossword-easy') : '../js/data/bible-dictionary/crosswords_easy.json';
-            const easyDatabase = await loadCrosswordPuzzleDatabase(easyUrl);
-            const easyPuzzles = (easyDatabase && Array.isArray(easyDatabase.puzzles))
-                ? easyDatabase.puzzles.filter(p => p && Array.isArray(p.words) && p.words.length)
-                : [];
-            if (easyPuzzles.length) {
-                const easyPuzzle = easyPuzzles[Math.floor(Math.random() * easyPuzzles.length)];
-                return this.applyCrosswordPuzzle(easyPuzzle);
-            }
-            console.warn('Simple easy crossword set unavailable, falling back to the general puzzle database');
-        }
+        // Every board comes from the Arabic Bible crossword set, whose puzzles
+        // are tagged with difficulty levels. "expert" has no puzzles in that
+        // set, so it maps onto the hardest level actually available ("hard").
+        const difficulty = requestedDifficulty === 'expert' ? 'hard' : requestedDifficulty;
 
-        const puzzleDataUrl = this.getCrosswordDictionaryUrl ? this.getCrosswordDictionaryUrl('crossword') : '../js/data/bible-dictionary/bible_crossword_1000.json';
+        const puzzleDataUrl = this.getCrosswordDictionaryUrl ? this.getCrosswordDictionaryUrl('crossword') : '../js/data/bible-dictionary/bible_crossword_ar.json';
         const database = await loadCrosswordPuzzleDatabase(puzzleDataUrl);
 
         if (!database || !database.puzzles || !database.puzzles.length) {
@@ -163,7 +151,10 @@ export const crosswordGameMixin = {
             return this.loadCrosswordFromFallback();
         }
 
-        const puzzlesByDifficulty = database.puzzles.filter(p => p.difficulty === difficulty);
+        // Filter the puzzle pool down to the selected difficulty level and
+        // pick a random puzzle from it, falling back to the whole pool when
+        // the data carries no puzzles for that level.
+        const puzzlesByDifficulty = database.puzzles.filter(p => p && p.difficulty === difficulty && Array.isArray(p.words) && p.words.length);
         const selectedPuzzle = puzzlesByDifficulty.length > 0
             ? puzzlesByDifficulty[Math.floor(Math.random() * puzzlesByDifficulty.length)]
             : database.puzzles[Math.floor(Math.random() * database.puzzles.length)];
@@ -297,8 +288,7 @@ export const crosswordGameMixin = {
     getCrosswordDictionaryUrl(type = 'dictionary') {
         const path = (typeof window !== 'undefined' && window.location && window.location.pathname) || '';
         const baseUrl = path.includes('/pages/') ? '../js/data/bible-dictionary/' : 'js/data/bible-dictionary/';
-        if (type === 'crossword-easy') return `${baseUrl}crosswords_easy.json`;
-        return type === 'crossword' ? `${baseUrl}bible_crossword_1000.json` : `${baseUrl}bible_dictionary_game.json`;
+        return type === 'crossword' ? `${baseUrl}bible_crossword_ar.json` : `${baseUrl}bible_dictionary_game.json`;
     },
 
     buildCrosswordPuzzle(entries = []) {

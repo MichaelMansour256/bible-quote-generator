@@ -78,11 +78,9 @@ describe('crossword dictionary selection', () => {
     });
 });
 
-describe('crossword easy simple-clue set', () => {
-    const easySet = JSON.parse(readFileSync(
-        path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..', 'js/data/bible-dictionary/crosswords_easy.json'),
-        'utf8'
-    ));
+describe('crossword Arabic puzzle set (bible_crossword_ar)', () => {
+    const dataDir = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..', 'js/data/bible-dictionary');
+    const arSet = JSON.parse(readFileSync(path.join(dataDir, 'bible_crossword_ar.json'), 'utf8'));
 
     // Same mapping the game applies inside applyCrosswordPuzzle.
     const mapPuzzleWords = (puzzle) => {
@@ -103,24 +101,30 @@ describe('crossword easy simple-clue set', () => {
         return entries;
     };
 
-    test('exposes the easy set through the dictionary URL helper', () => {
-        const url = crosswordGameMixin.getCrosswordDictionaryUrl('crossword-easy');
-        assert.ok(url.endsWith('crosswords_easy.json'), `unexpected easy set url: ${url}`);
+    test('exposes the Arabic set through the dictionary URL helper', () => {
+        const url = crosswordGameMixin.getCrosswordDictionaryUrl('crossword');
+        assert.ok(url.endsWith('bible_crossword_ar.json'), `unexpected crossword set url: ${url}`);
         assert.ok(url.includes('bible-dictionary'), `unexpected base directory: ${url}`);
     });
 
-    test('easy set ships simple clue-only puzzles with unique answers', () => {
-        assert.ok(easySet.puzzles.length >= 100, 'expected at least 100 easy puzzles');
-        for (const puzzle of easySet.puzzles) {
-            assert.equal(puzzle.difficulty, 'easy', `${puzzle.title} should be easy`);
-            assert.ok(puzzle.words.length >= 3, `${puzzle.title} should have at least 3 words`);
+    test('ships clue-only puzzles for every supported difficulty level', () => {
+        const levels = new Set(['easy', 'medium', 'hard']);
+        const perLevel = new Map();
+        assert.ok(arSet.puzzles.length >= 500, 'expected a large Arabic puzzle pool');
+        for (const puzzle of arSet.puzzles) {
+            assert.ok(levels.has(puzzle.difficulty), `${puzzle.title} has unknown difficulty "${puzzle.difficulty}"`);
+            perLevel.set(puzzle.difficulty, (perLevel.get(puzzle.difficulty) || 0) + 1);
+            assert.ok(Array.isArray(puzzle.words) && puzzle.words.length >= 3, `${puzzle.title} should have at least 3 words`);
             const answers = puzzle.words.map(w => normalizeCrosswordTerm(w.answer));
             assert.ok(new Set(answers).size === answers.length, `${puzzle.title} has duplicate answers`);
         }
+        for (const level of levels) {
+            assert.ok(perLevel.get(level) > 0, `no puzzles tagged "${level}" in the Arabic set`);
+        }
     });
 
-    test('auto-layout places every easy word on the generated board', () => {
-        for (const puzzle of easySet.puzzles) {
+    test('auto-layout places every word of every puzzle on the generated board', () => {
+        for (const puzzle of arSet.puzzles) {
             const entries = mapPuzzleWords(puzzle);
             const board = crosswordGameMixin.buildCrosswordPuzzle(entries);
             const size = board.board.length;
@@ -135,5 +139,48 @@ describe('crossword easy simple-clue set', () => {
                 }
             }
         }
+    });
+
+    // Runs loadCrosswordDictionaryEntries against a stubbed fetch so the
+    // difficulty filtering itself is exercised, not just the raw data.
+    const loadWithStubbedFetch = async (difficulty) => {
+        const applied = [];
+        const context = {
+            crosswordGameState: { difficulty },
+            getCrosswordDictionaryUrl(type) {
+                assert.equal(type, 'crossword', 'the game must request the crossword puzzle set');
+                return path.join(dataDir, 'bible_crossword_ar.json');
+            },
+            applyCrosswordPuzzle(puzzle) {
+                applied.push(puzzle);
+                return puzzle.words;
+            },
+            loadCrosswordFromFallback() {
+                applied.push(null);
+                return [];
+            }
+        };
+        const originalFetch = globalThis.fetch;
+        globalThis.fetch = async () => ({ ok: true, json: async () => arSet });
+        try {
+            await crosswordGameMixin.loadCrosswordDictionaryEntries.call(context);
+        } finally {
+            globalThis.fetch = originalFetch;
+        }
+        return applied;
+    };
+
+    test('picks a puzzle matching the selected difficulty level', async () => {
+        for (const difficulty of ['easy', 'medium', 'hard']) {
+            const applied = await loadWithStubbedFetch(difficulty);
+            assert.equal(applied.length, 1, `expected one applied puzzle for "${difficulty}"`);
+            assert.equal(applied[0].difficulty, difficulty, `expected a "${difficulty}" puzzle`);
+        }
+    });
+
+    test('maps the expert level onto the hardest available puzzles', async () => {
+        const applied = await loadWithStubbedFetch('expert');
+        assert.equal(applied.length, 1);
+        assert.equal(applied[0].difficulty, 'hard', 'expert should fall back to the hard level');
     });
 });
