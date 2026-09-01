@@ -2,9 +2,10 @@ import { normalizeArabicForMatch } from './game-utils.js';
 
 export function normalizeCrosswordTerm(text = '') {
     return String(text || '')
+        .replace(/[أإ]/g, 'ا')
         .normalize('NFKD')
+        .replace(/ا\u0653/g, 'آ')
         .replace(/[\u064B-\u065F\u0670\u0640]/g, '')
-        .replace(/[أإآٱ]/g, 'ا')
         .replace(/ى/g, 'ي')
         .replace(/ة/g, 'ه')
         .replace(/ؤ/g, 'و')
@@ -129,7 +130,7 @@ export const crosswordGameMixin = {
             category: 'dictionary'
         }));
 
-        const dictionaryWords = selectCrosswordEntries(payload, 16)
+        const dictionaryWords = selectCrosswordEntries(payload, 12)
             .filter(entry => entry.answer.length >= 4 && entry.answer.length <= 8);
 
         if (dictionaryWords.length < 3) {
@@ -193,42 +194,37 @@ export const crosswordGameMixin = {
 
         const boardSize = Math.max(9, Math.min(15, Math.max(...normalizedEntries.map(entry => entry.answer.length + 4), 9)));
         const board = Array.from({ length: boardSize }, () => Array(boardSize).fill(null));
-        const filled = new Map();
-        const intersections = [];
+        const solutionMap = new Map();
         const placedEntries = [];
         const clueNumbers = new Map();
+        const intersections = [];
         let nextClueNumber = 1;
 
-        const canPlace = (entry) => {
+        const placeWord = (entry) => {
             const cells = [];
-            let intersectionCount = 0;
+            const foundIntersections = [];
 
             for (let charIndex = 0; charIndex < entry.answer.length; charIndex += 1) {
                 const row = entry.direction === 'down' ? entry.row + charIndex : entry.row;
                 const col = entry.direction === 'down' ? entry.col : entry.col + charIndex;
 
                 if (row < 0 || col < 0 || row >= boardSize || col >= boardSize) {
-                    return null;
+                    return false;
                 }
 
                 const current = board[row][col];
-                if (current && current !== entry.answer[charIndex]) {
-                    return null;
+                if (current !== null && current !== entry.answer[charIndex]) {
+                    return false;
                 }
+
                 if (current === entry.answer[charIndex]) {
-                    intersectionCount += 1;
+                    foundIntersections.push({ row, col, char: entry.answer[charIndex], answer: entry.answer });
                 }
+
                 cells.push({ row, col, char: entry.answer[charIndex] });
             }
 
-            return { cells, intersectionCount };
-        };
-
-        const placeWord = (entry) => {
-            const placement = canPlace(entry);
-            if (!placement) return false;
-
-            const startCell = placement.cells[0];
+            const startCell = cells[0];
             const startKey = `${startCell.row}:${startCell.col}`;
             if (!clueNumbers.has(startKey)) {
                 clueNumbers.set(startKey, nextClueNumber);
@@ -236,57 +232,15 @@ export const crosswordGameMixin = {
             }
             entry.number = clueNumbers.get(startKey);
 
-            placement.cells.forEach(({ row, col, char }) => {
-                if (!board[row][col]) {
-                    board[row][col] = char;
-                    filled.set(`${row}:${col}`, true);
-                    return;
-                }
-                if (board[row][col] === char) {
-                    intersections.push({ row, col, char, answer: entry.answer });
-                }
+            cells.forEach(({ row, col, char }) => {
+                board[row][col] = board[row][col] || char;
+                solutionMap.set(`${row}:${col}`, char);
             });
 
-            entry.cells = placement.cells;
+            foundIntersections.forEach(item => intersections.push(item));
+            entry.cells = cells;
             placedEntries.push(entry);
             return true;
-        };
-
-        const findBestPlacement = (entry) => {
-            let best = null;
-
-            for (const existing of placedEntries) {
-                for (let existingIndex = 0; existingIndex < existing.answer.length; existingIndex += 1) {
-                    for (let currentIndex = 0; currentIndex < entry.answer.length; currentIndex += 1) {
-                        if (existing.answer[existingIndex] !== entry.answer[currentIndex]) continue;
-
-                        const coreScore = scoreCrosswordWordPair(existing.answer, entry.answer);
-                        const downCandidate = {
-                            ...entry,
-                            direction: 'down',
-                            row: existing.row - currentIndex,
-                            col: existing.col + existingIndex
-                        };
-                        const acrossCandidate = {
-                            ...entry,
-                            direction: 'across',
-                            row: existing.row + existingIndex,
-                            col: existing.col - currentIndex
-                        };
-
-                        [downCandidate, acrossCandidate].forEach((candidate) => {
-                            const placement = canPlace(candidate);
-                            if (!placement) return;
-                            const score = placement.intersectionCount * 25 + coreScore + 8;
-                            if (!best || score > best.score) {
-                                best = { candidate, score, placement };
-                            }
-                        });
-                    }
-                }
-            }
-
-            return best;
         };
 
         if (normalizedEntries.length) {
@@ -304,46 +258,101 @@ export const crosswordGameMixin = {
         }
 
         for (let i = 1; i < normalizedEntries.length; i += 1) {
-            const entry = { ...normalizedEntries[i], row: 0, col: 0, direction: normalizedEntries[i].direction === 'down' ? 'down' : 'across' };
-            const bestPlacement = findBestPlacement(entry);
+            const entry = {
+                ...normalizedEntries[i],
+                row: Number.isInteger(normalizedEntries[i].row) ? normalizedEntries[i].row : 0,
+                col: Number.isInteger(normalizedEntries[i].col) ? normalizedEntries[i].col : 0,
+                direction: normalizedEntries[i].direction === 'down' ? 'down' : 'across'
+            };
+            let placed = false;
+            let bestCandidate = null;
 
-            if (bestPlacement) {
-                const chosen = { ...entry, ...bestPlacement.candidate };
-                if (placeWord(chosen)) continue;
-            }
+            for (const existing of placedEntries) {
+                for (let existingIndex = 0; existingIndex < existing.answer.length; existingIndex += 1) {
+                    for (let currentIndex = 0; currentIndex < entry.answer.length; currentIndex += 1) {
+                        if (existing.answer[existingIndex] !== entry.answer[currentIndex]) continue;
 
-            let fallbackPlaced = false;
-            const directions = ['across', 'down'];
-            for (const direction of directions) {
-                for (let row = 0; row < boardSize; row += 1) {
-                    for (let col = 0; col < boardSize; col += 1) {
-                        const candidate = { ...entry, direction, row, col };
-                        if (placeWord(candidate)) {
-                            fallbackPlaced = true;
-                            break;
-                        }
+                        const acrossCandidate = {
+                            ...entry,
+                            direction: 'across',
+                            row: existing.row + existingIndex,
+                            col: existing.col - currentIndex
+                        };
+                        const downCandidate = {
+                            ...entry,
+                            direction: 'down',
+                            row: existing.row - currentIndex,
+                            col: existing.col + existingIndex
+                        };
+
+                        [acrossCandidate, downCandidate].forEach(candidate => {
+                            const cells = [];
+                            let overlapCount = 0;
+                            let valid = true;
+
+                            for (let charIndex = 0; charIndex < candidate.answer.length; charIndex += 1) {
+                                const row = candidate.direction === 'down' ? candidate.row + charIndex : candidate.row;
+                                const col = candidate.direction === 'down' ? candidate.col : candidate.col + charIndex;
+                                if (row < 0 || col < 0 || row >= boardSize || col >= boardSize) {
+                                    valid = false;
+                                    break;
+                                }
+                                const current = board[row][col];
+                                if (current !== null && current !== candidate.answer[charIndex]) {
+                                    valid = false;
+                                    break;
+                                }
+                                if (current === candidate.answer[charIndex]) {
+                                    overlapCount += 1;
+                                }
+                                cells.push({ row, col, char: candidate.answer[charIndex] });
+                            }
+
+                            if (valid && (overlapCount > 0 || !bestCandidate)) {
+                                const score = overlapCount * 100 + candidate.answer.length;
+                                if (!bestCandidate || score > bestCandidate.score) {
+                                    bestCandidate = { candidate, score, overlapCount };
+                                }
+                            }
+                        });
                     }
-                    if (fallbackPlaced) break;
                 }
-                if (fallbackPlaced) break;
             }
 
-            if (!fallbackPlaced && placedEntries.length) {
-                const fallback = {
-                    ...entry,
-                    direction: placedEntries[0].direction || 'across',
-                    row: placedEntries[0].row,
-                    col: placedEntries[0].col + 1
-                };
-                placeWord(fallback);
+            if (bestCandidate) {
+                placed = placeWord(bestCandidate.candidate);
+            }
+
+            if (!placed) {
+                const fallbackDirections = ['across', 'down'];
+                for (const direction of fallbackDirections) {
+                    for (let row = 0; row < boardSize; row += 1) {
+                        for (let col = 0; col < boardSize; col += 1) {
+                            const candidate = { ...entry, direction, row, col };
+                            if (placeWord(candidate)) {
+                                placed = true;
+                                break;
+                            }
+                        }
+                        if (placed) break;
+                    }
+                    if (placed) break;
+                }
             }
         }
 
         const dedupedIntersections = [...new Map(
-            intersections.map(item => [`${item.row}:${item.col}`, item])
+            intersections.map(item => [`${item.row}:${item.col}:${item.char}`, item])
         ).values()];
 
-        return { board, filled, intersections: dedupedIntersections, entries: normalizedEntries, clueNumbers: Array.from(clueNumbers.entries()) };
+        return {
+            board,
+            solutionMap,
+            filled: solutionMap,
+            intersections: dedupedIntersections,
+            entries: normalizedEntries,
+            clueNumbers: Array.from(clueNumbers.entries())
+        };
     },
 
     renderCrosswordPuzzle() {
@@ -360,6 +369,8 @@ export const crosswordGameMixin = {
         const puzzle = this.crosswordGameState.puzzle || this.buildCrosswordPuzzle(this.crosswordGameState.entries || []);
         const active = this.crosswordGameState.current || this.crosswordGameState.entries[0];
         const clueMap = new Map((puzzle.clueNumbers || []).map(([key, number]) => [key, number]));
+        const guess = (this.crosswordGameState.guess || '').slice(0, active ? active.answer.length : 0);
+        const selectedCell = this.crosswordGameState.selectedCell || null;
 
         boardEl.innerHTML = '';
         boardEl.style.setProperty('--crossword-cols', String(puzzle.board.length));
@@ -368,21 +379,54 @@ export const crosswordGameMixin = {
         for (let row = 0; row < puzzle.board.length; row += 1) {
             for (let col = 0; col < puzzle.board[row].length; col += 1) {
                 const cell = document.createElement('div');
-                const value = puzzle.board[row][col];
-                const filled = !!value;
+                const isBlocked = puzzle.board[row][col] === null || puzzle.board[row][col] === undefined;
                 cell.className = 'crossword-cell';
-                if (!filled) cell.classList.add('crossword-black');
-                if (value) {
-                    cell.textContent = value;
+
+                if (isBlocked) {
+                    cell.classList.add('crossword-black');
+                } else {
+                    cell.classList.add('crossword-empty');
+                    const cellKey = `${row}:${col}`;
+                    const activeCellIndex = (active && active.cells) ? active.cells.findIndex(item => item.row === row && item.col === col) : -1;
+                    const userLetter = activeCellIndex >= 0 ? guess[activeCellIndex] || '' : '';
+
+                    if (userLetter) {
+                        cell.textContent = userLetter;
+                        cell.classList.remove('crossword-empty');
+                        cell.classList.add('crossword-filled');
+                    }
+
+                    if (selectedCell && selectedCell.row === row && selectedCell.col === col) {
+                        cell.classList.add('crossword-selected');
+                    }
+
+                    if (active && active.cells && active.cells.some(item => item.row === row && item.col === col)) {
+                        cell.classList.add('crossword-in-word');
+                    }
+
+                    const clueNumber = clueMap.get(cellKey);
+                    if (clueNumber) {
+                        const num = document.createElement('span');
+                        num.className = 'crossword-clue-number';
+                        num.textContent = String(clueNumber);
+                        cell.appendChild(num);
+                    }
+
+                    cell.addEventListener('click', () => {
+                        const targetEntry = (this.crosswordGameState.entries || []).find(entry => {
+                            if (!entry.cells) return false;
+                            return entry.cells.some(item => item.row === row && item.col === col);
+                        }) || active;
+
+                        if (!targetEntry) return;
+
+                        this.crosswordGameState.current = targetEntry;
+                        this.crosswordGameState.currentIndex = (this.crosswordGameState.entries || []).indexOf(targetEntry);
+                        this.crosswordGameState.selectedCell = { row, col };
+                        this.renderCrosswordPuzzle();
+                    });
                 }
 
-                const clueNumber = clueMap.get(`${row}:${col}`);
-                if (clueNumber) {
-                    const num = document.createElement('span');
-                    num.className = 'crossword-clue-number';
-                    num.textContent = String(clueNumber);
-                    cell.appendChild(num);
-                }
                 boardEl.appendChild(cell);
             }
         }
@@ -390,18 +434,37 @@ export const crosswordGameMixin = {
         if (clueEl && active) clueEl.textContent = active.clue || 'اكتب الاسم الصحيح.';
         if (clueListEl) {
             clueListEl.innerHTML = '';
-            (this.crosswordGameState.entries || []).forEach((entry, index) => {
-                const item = document.createElement('li');
-                if (this.crosswordGameState.currentIndex === index) item.classList.add('active');
-                item.textContent = `${index + 1}. ${entry.clue}`;
-                item.addEventListener('click', () => {
-                    this.crosswordGameState.currentIndex = index;
-                    this.crosswordGameState.current = entry;
-                    this.crosswordGameState.guess = this.crosswordGameState.guess || '';
-                    this.renderCrosswordPuzzle();
+            const acrossEntries = (this.crosswordGameState.entries || []).filter(entry => entry.direction === 'across');
+            const downEntries = (this.crosswordGameState.entries || []).filter(entry => entry.direction === 'down');
+
+            const renderSection = (title, entries) => {
+                if (!entries.length) return;
+                const section = document.createElement('div');
+                section.className = 'crossword-clue-section';
+                const heading = document.createElement('h3');
+                heading.textContent = title;
+                section.appendChild(heading);
+
+                const list = document.createElement('ul');
+                entries.forEach((entry, index) => {
+                    const item = document.createElement('li');
+                    const actualIndex = (this.crosswordGameState.entries || []).indexOf(entry);
+                    if (this.crosswordGameState.currentIndex === actualIndex) item.classList.add('active');
+                    item.textContent = `${entry.number || actualIndex + 1}. ${entry.clue}`;
+                    item.addEventListener('click', () => {
+                        this.crosswordGameState.currentIndex = actualIndex;
+                        this.crosswordGameState.current = entry;
+                        this.crosswordGameState.selectedCell = entry.cells ? entry.cells[0] : null;
+                        this.renderCrosswordPuzzle();
+                    });
+                    list.appendChild(item);
                 });
-                clueListEl.appendChild(item);
-            });
+                section.appendChild(list);
+                clueListEl.appendChild(section);
+            };
+
+            renderSection('Across', acrossEntries);
+            renderSection('Down', downEntries);
         }
 
         if (answerInput) {
